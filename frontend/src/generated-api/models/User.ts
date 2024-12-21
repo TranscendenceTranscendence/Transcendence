@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -13,6 +13,49 @@
  */
 
 import { mapValues } from '../runtime';
+import type { Game } from './Game';
+import {
+    GameFromJSON,
+    GameFromJSONTyped,
+    GameToJSON,
+    GameToJSONTyped,
+} from './Game';
+import type { Friend } from './Friend';
+import {
+    FriendFromJSON,
+    FriendFromJSONTyped,
+    FriendToJSON,
+    FriendToJSONTyped,
+} from './Friend';
+import type { ChatMessage } from './ChatMessage';
+import {
+    ChatMessageFromJSON,
+    ChatMessageFromJSONTyped,
+    ChatMessageToJSON,
+    ChatMessageToJSONTyped,
+} from './ChatMessage';
+import type { ChatParticipant } from './ChatParticipant';
+import {
+    ChatParticipantFromJSON,
+    ChatParticipantFromJSONTyped,
+    ChatParticipantToJSON,
+    ChatParticipantToJSONTyped,
+} from './ChatParticipant';
+import type { Achievement } from './Achievement';
+import {
+    AchievementFromJSON,
+    AchievementFromJSONTyped,
+    AchievementToJSON,
+    AchievementToJSONTyped,
+} from './Achievement';
+import type { Blocked } from './Blocked';
+import {
+    BlockedFromJSON,
+    BlockedFromJSONTyped,
+    BlockedToJSON,
+    BlockedToJSONTyped,
+} from './Blocked';
+
 /**
  * 
  * @export
@@ -72,8 +115,81 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    userStatus: string;
+    userStatus: UserUserStatusEnum;
+    /**
+     * 
+     * @type {Array<Achievement>}
+     * @memberof User
+     */
+    achievements: Array<Achievement>;
+    /**
+     * 
+     * @type {Array<Blocked>}
+     * @memberof User
+     */
+    blockedUsers: Array<Blocked>;
+    /**
+     * 
+     * @type {Array<Blocked>}
+     * @memberof User
+     */
+    users: Array<Blocked>;
+    /**
+     * 
+     * @type {Array<ChatMessage>}
+     * @memberof User
+     */
+    chatMessages: Array<ChatMessage>;
+    /**
+     * 
+     * @type {Array<ChatParticipant>}
+     * @memberof User
+     */
+    chatParticipants: Array<ChatParticipant>;
+    /**
+     * 
+     * @type {Array<Friend>}
+     * @memberof User
+     */
+    friends1: Array<Friend>;
+    /**
+     * 
+     * @type {Array<Friend>}
+     * @memberof User
+     */
+    friends2: Array<Friend>;
+    /**
+     * 
+     * @type {Array<Game>}
+     * @memberof User
+     */
+    players1: Array<Game>;
+    /**
+     * 
+     * @type {Array<Game>}
+     * @memberof User
+     */
+    players2: Array<Game>;
+    /**
+     * 
+     * @type {Array<Game>}
+     * @memberof User
+     */
+    winners: Array<Game>;
 }
+
+
+/**
+ * @export
+ */
+export const UserUserStatusEnum = {
+    Offline: 'offline',
+    Online: 'online',
+    Waiting: 'waiting',
+    Playing: 'playing'
+} as const;
+export type UserUserStatusEnum = typeof UserUserStatusEnum[keyof typeof UserUserStatusEnum];
+
 
 /**
  * Check if a given object implements the User interface.
@@ -88,6 +204,16 @@ export function instanceOfUser(value: object): value is User {
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('ladderLevel' in value) || value['ladderLevel'] === undefined) return false;
     if (!('userStatus' in value) || value['userStatus'] === undefined) return false;
+    if (!('achievements' in value) || value['achievements'] === undefined) return false;
+    if (!('blockedUsers' in value) || value['blockedUsers'] === undefined) return false;
+    if (!('users' in value) || value['users'] === undefined) return false;
+    if (!('chatMessages' in value) || value['chatMessages'] === undefined) return false;
+    if (!('chatParticipants' in value) || value['chatParticipants'] === undefined) return false;
+    if (!('friends1' in value) || value['friends1'] === undefined) return false;
+    if (!('friends2' in value) || value['friends2'] === undefined) return false;
+    if (!('players1' in value) || value['players1'] === undefined) return false;
+    if (!('players2' in value) || value['players2'] === undefined) return false;
+    if (!('winners' in value) || value['winners'] === undefined) return false;
     return true;
 }
 
@@ -110,6 +236,16 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         'email': json['email'],
         'ladderLevel': json['ladder_level'],
         'userStatus': json['user_status'],
+        'achievements': ((json['achievements'] as Array<any>).map(AchievementFromJSON)),
+        'blockedUsers': ((json['blockedUsers'] as Array<any>).map(BlockedFromJSON)),
+        'users': ((json['users'] as Array<any>).map(BlockedFromJSON)),
+        'chatMessages': ((json['chatMessages'] as Array<any>).map(ChatMessageFromJSON)),
+        'chatParticipants': ((json['chatParticipants'] as Array<any>).map(ChatParticipantFromJSON)),
+        'friends1': ((json['friends1'] as Array<any>).map(FriendFromJSON)),
+        'friends2': ((json['friends2'] as Array<any>).map(FriendFromJSON)),
+        'players1': ((json['players1'] as Array<any>).map(GameFromJSON)),
+        'players2': ((json['players2'] as Array<any>).map(GameFromJSON)),
+        'winners': ((json['winners'] as Array<any>).map(GameFromJSON)),
     };
 }
 
@@ -133,6 +269,16 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
         'email': value['email'],
         'ladder_level': value['ladderLevel'],
         'user_status': value['userStatus'],
+        'achievements': ((value['achievements'] as Array<any>).map(AchievementToJSON)),
+        'blockedUsers': ((value['blockedUsers'] as Array<any>).map(BlockedToJSON)),
+        'users': ((value['users'] as Array<any>).map(BlockedToJSON)),
+        'chatMessages': ((value['chatMessages'] as Array<any>).map(ChatMessageToJSON)),
+        'chatParticipants': ((value['chatParticipants'] as Array<any>).map(ChatParticipantToJSON)),
+        'friends1': ((value['friends1'] as Array<any>).map(FriendToJSON)),
+        'friends2': ((value['friends2'] as Array<any>).map(FriendToJSON)),
+        'players1': ((value['players1'] as Array<any>).map(GameToJSON)),
+        'players2': ((value['players2'] as Array<any>).map(GameToJSON)),
+        'winners': ((value['winners'] as Array<any>).map(GameToJSON)),
     };
 }
 

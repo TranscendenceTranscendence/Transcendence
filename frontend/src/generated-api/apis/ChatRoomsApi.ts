@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -22,19 +22,19 @@ import {
     CreateChatRoomDtoToJSON,
 } from '../models/index';
 
-export interface ChatRoomsControllerCreateRequest {
+export interface ChatRoomsCreateRequest {
     createChatRoomDto: CreateChatRoomDto;
 }
 
-export interface ChatRoomsControllerFindOneRequest {
+export interface ChatRoomsFindOneRequest {
     id: string;
 }
 
-export interface ChatRoomsControllerRemoveRequest {
+export interface ChatRoomsRemoveRequest {
     id: string;
 }
 
-export interface ChatRoomsControllerUpdateRequest {
+export interface ChatRoomsUpdateRequest {
     id: string;
     body: object;
 }
@@ -47,11 +47,11 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Create a new chat room
      */
-    async chatRoomsControllerCreateRaw(requestParameters: ChatRoomsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsCreateRaw(requestParameters: ChatRoomsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createChatRoomDto'] == null) {
             throw new runtime.RequiredError(
                 'createChatRoomDto',
-                'Required parameter "createChatRoomDto" was null or undefined when calling chatRoomsControllerCreate().'
+                'Required parameter "createChatRoomDto" was null or undefined when calling chatRoomsCreate().'
             );
         }
 
@@ -75,14 +75,14 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Create a new chat room
      */
-    async chatRoomsControllerCreate(requestParameters: ChatRoomsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerCreateRaw(requestParameters, initOverrides);
+    async chatRoomsCreate(requestParameters: ChatRoomsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Get a list of all chat rooms
      */
-    async chatRoomsControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -100,14 +100,14 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Get a list of all chat rooms
      */
-    async chatRoomsControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerFindAllRaw(initOverrides);
+    async chatRoomsFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsFindAllRaw(initOverrides);
     }
 
     /**
      * Get all public chat rooms
      */
-    async chatRoomsControllerFindAllWithoutPrivateRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsFindAllWithoutPrivateRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -125,14 +125,14 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Get all public chat rooms
      */
-    async chatRoomsControllerFindAllWithoutPrivate(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerFindAllWithoutPrivateRaw(initOverrides);
+    async chatRoomsFindAllWithoutPrivate(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsFindAllWithoutPrivateRaw(initOverrides);
     }
 
     /**
      * Get all chat rooms including participants
      */
-    async chatRoomsControllerFindAllincludeParticipantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsFindAllincludeParticipantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -150,18 +150,18 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Get all chat rooms including participants
      */
-    async chatRoomsControllerFindAllincludeParticipant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
+    async chatRoomsFindAllincludeParticipant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsFindAllincludeParticipantRaw(initOverrides);
     }
 
     /**
      * Get a specific chat room by ID
      */
-    async chatRoomsControllerFindOneRaw(requestParameters: ChatRoomsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsFindOneRaw(requestParameters: ChatRoomsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatRoomsControllerFindOne().'
+                'Required parameter "id" was null or undefined when calling chatRoomsFindOne().'
             );
         }
 
@@ -182,18 +182,18 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Get a specific chat room by ID
      */
-    async chatRoomsControllerFindOne(requestParameters: ChatRoomsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerFindOneRaw(requestParameters, initOverrides);
+    async chatRoomsFindOne(requestParameters: ChatRoomsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsFindOneRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete a chat room by ID
      */
-    async chatRoomsControllerRemoveRaw(requestParameters: ChatRoomsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsRemoveRaw(requestParameters: ChatRoomsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatRoomsControllerRemove().'
+                'Required parameter "id" was null or undefined when calling chatRoomsRemove().'
             );
         }
 
@@ -214,25 +214,25 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Delete a chat room by ID
      */
-    async chatRoomsControllerRemove(requestParameters: ChatRoomsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerRemoveRaw(requestParameters, initOverrides);
+    async chatRoomsRemove(requestParameters: ChatRoomsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsRemoveRaw(requestParameters, initOverrides);
     }
 
     /**
      * Update a chat room by ID
      */
-    async chatRoomsControllerUpdateRaw(requestParameters: ChatRoomsControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsUpdateRaw(requestParameters: ChatRoomsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatRoomsControllerUpdate().'
+                'Required parameter "id" was null or undefined when calling chatRoomsUpdate().'
             );
         }
 
         if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
                 'body',
-                'Required parameter "body" was null or undefined when calling chatRoomsControllerUpdate().'
+                'Required parameter "body" was null or undefined when calling chatRoomsUpdate().'
             );
         }
 
@@ -256,8 +256,8 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Update a chat room by ID
      */
-    async chatRoomsControllerUpdate(requestParameters: ChatRoomsControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerUpdateRaw(requestParameters, initOverrides);
+    async chatRoomsUpdate(requestParameters: ChatRoomsUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatRoomsUpdateRaw(requestParameters, initOverrides);
     }
 
 }

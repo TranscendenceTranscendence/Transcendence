@@ -18,11 +18,11 @@ import * as runtime from '../runtime';
 /**
  * 
  */
-export class DefaultApi extends runtime.BaseAPI {
+export class AppApi extends runtime.BaseAPI {
 
     /**
      */
-    async appGetHelloRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async appGetHelloRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -34,13 +34,14 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      */
-    async appGetHello(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.appGetHelloRaw(initOverrides);
+    async appGetHello(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.appGetHelloRaw(initOverrides);
+        return await response.value();
     }
 
 }

@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -23,7 +23,7 @@ export class QueueApi extends runtime.BaseAPI {
     /**
      * Get the current queue status
      */
-    async queueControllerGetQueueStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async queueGetQueueStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -41,14 +41,14 @@ export class QueueApi extends runtime.BaseAPI {
     /**
      * Get the current queue status
      */
-    async queueControllerGetQueueStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.queueControllerGetQueueStatusRaw(initOverrides);
+    async queueGetQueueStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.queueGetQueueStatusRaw(initOverrides);
     }
 
     /**
      * Join the queue
      */
-    async queueControllerJoinQueueRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async queueJoinQueueRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -66,8 +66,8 @@ export class QueueApi extends runtime.BaseAPI {
     /**
      * Join the queue
      */
-    async queueControllerJoinQueue(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.queueControllerJoinQueueRaw(initOverrides);
+    async queueJoinQueue(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.queueJoinQueueRaw(initOverrides);
     }
 
 }

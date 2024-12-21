@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -23,7 +23,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * 42 OAuth callback
      */
-    async authControllerFortyTwoCallbackRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async authFortyTwoCallbackRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -41,14 +41,14 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * 42 OAuth callback
      */
-    async authControllerFortyTwoCallback(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.authControllerFortyTwoCallbackRaw(initOverrides);
+    async authFortyTwoCallback(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authFortyTwoCallbackRaw(initOverrides);
     }
 
     /**
      * Login with 42 OAuth
      */
-    async authControllerFortyTwoLoginRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async authFortyTwoLoginRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -66,14 +66,14 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * Login with 42 OAuth
      */
-    async authControllerFortyTwoLogin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.authControllerFortyTwoLoginRaw(initOverrides);
+    async authFortyTwoLogin(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authFortyTwoLoginRaw(initOverrides);
     }
 
     /**
      * Logout from 42 OAuth
      */
-    async authControllerFortyTwoLogoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async authFortyTwoLogoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -91,8 +91,8 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * Logout from 42 OAuth
      */
-    async authControllerFortyTwoLogout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.authControllerFortyTwoLogoutRaw(initOverrides);
+    async authFortyTwoLogout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authFortyTwoLogoutRaw(initOverrides);
     }
 
 }

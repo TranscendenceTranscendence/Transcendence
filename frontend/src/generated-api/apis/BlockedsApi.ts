@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -22,15 +22,15 @@ import {
     CreateBlockedDtoToJSON,
 } from '../models/index';
 
-export interface BlockedsControllerCreateRequest {
+export interface BlockedsCreateRequest {
     createBlockedDto: CreateBlockedDto;
 }
 
-export interface BlockedsControllerFindOneRequest {
+export interface BlockedsFindOneRequest {
     id: string;
 }
 
-export interface BlockedsControllerRemoveRequest {
+export interface BlockedsRemoveRequest {
     id: string;
 }
 
@@ -42,11 +42,11 @@ export class BlockedsApi extends runtime.BaseAPI {
     /**
      * Create a blocked entry
      */
-    async blockedsControllerCreateRaw(requestParameters: BlockedsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async blockedsCreateRaw(requestParameters: BlockedsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createBlockedDto'] == null) {
             throw new runtime.RequiredError(
                 'createBlockedDto',
-                'Required parameter "createBlockedDto" was null or undefined when calling blockedsControllerCreate().'
+                'Required parameter "createBlockedDto" was null or undefined when calling blockedsCreate().'
             );
         }
 
@@ -70,14 +70,14 @@ export class BlockedsApi extends runtime.BaseAPI {
     /**
      * Create a blocked entry
      */
-    async blockedsControllerCreate(requestParameters: BlockedsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.blockedsControllerCreateRaw(requestParameters, initOverrides);
+    async blockedsCreate(requestParameters: BlockedsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.blockedsCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Retrieve all blocked entries
      */
-    async blockedsControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async blockedsFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -95,18 +95,18 @@ export class BlockedsApi extends runtime.BaseAPI {
     /**
      * Retrieve all blocked entries
      */
-    async blockedsControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.blockedsControllerFindAllRaw(initOverrides);
+    async blockedsFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.blockedsFindAllRaw(initOverrides);
     }
 
     /**
      * Retrieve a blocked entry by user ID
      */
-    async blockedsControllerFindOneRaw(requestParameters: BlockedsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async blockedsFindOneRaw(requestParameters: BlockedsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling blockedsControllerFindOne().'
+                'Required parameter "id" was null or undefined when calling blockedsFindOne().'
             );
         }
 
@@ -127,18 +127,18 @@ export class BlockedsApi extends runtime.BaseAPI {
     /**
      * Retrieve a blocked entry by user ID
      */
-    async blockedsControllerFindOne(requestParameters: BlockedsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.blockedsControllerFindOneRaw(requestParameters, initOverrides);
+    async blockedsFindOne(requestParameters: BlockedsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.blockedsFindOneRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete a blocked entry by ID
      */
-    async blockedsControllerRemoveRaw(requestParameters: BlockedsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async blockedsRemoveRaw(requestParameters: BlockedsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling blockedsControllerRemove().'
+                'Required parameter "id" was null or undefined when calling blockedsRemove().'
             );
         }
 
@@ -159,8 +159,8 @@ export class BlockedsApi extends runtime.BaseAPI {
     /**
      * Delete a blocked entry by ID
      */
-    async blockedsControllerRemove(requestParameters: BlockedsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.blockedsControllerRemoveRaw(requestParameters, initOverrides);
+    async blockedsRemove(requestParameters: BlockedsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.blockedsRemoveRaw(requestParameters, initOverrides);
     }
 
 }

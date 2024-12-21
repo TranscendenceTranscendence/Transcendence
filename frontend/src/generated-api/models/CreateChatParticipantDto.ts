@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -24,25 +24,25 @@ export interface CreateChatParticipantDto {
      * @type {string}
      * @memberof CreateChatParticipantDto
      */
-    chatParticipantRole: string;
+    chatParticipantRole?: CreateChatParticipantDtoChatParticipantRoleEnum;
     /**
      * Is banned
      * @type {boolean}
      * @memberof CreateChatParticipantDto
      */
-    isBanned: boolean;
+    isBanned?: boolean;
     /**
      * Is muted
      * @type {boolean}
      * @memberof CreateChatParticipantDto
      */
-    isMuted: boolean;
+    isMuted?: boolean;
     /**
      * Entrance time
      * @type {Date}
      * @memberof CreateChatParticipantDto
      */
-    entranceTime: Date;
+    entranceTime?: Date;
     /**
      * User ID
      * @type {number}
@@ -57,14 +57,22 @@ export interface CreateChatParticipantDto {
     chatRoomId: number;
 }
 
+
+/**
+ * @export
+ */
+export const CreateChatParticipantDtoChatParticipantRoleEnum = {
+    Owner: 'owner',
+    Admin: 'admin',
+    Guest: 'guest'
+} as const;
+export type CreateChatParticipantDtoChatParticipantRoleEnum = typeof CreateChatParticipantDtoChatParticipantRoleEnum[keyof typeof CreateChatParticipantDtoChatParticipantRoleEnum];
+
+
 /**
  * Check if a given object implements the CreateChatParticipantDto interface.
  */
 export function instanceOfCreateChatParticipantDto(value: object): value is CreateChatParticipantDto {
-    if (!('chatParticipantRole' in value) || value['chatParticipantRole'] === undefined) return false;
-    if (!('isBanned' in value) || value['isBanned'] === undefined) return false;
-    if (!('isMuted' in value) || value['isMuted'] === undefined) return false;
-    if (!('entranceTime' in value) || value['entranceTime'] === undefined) return false;
     if (!('userId' in value) || value['userId'] === undefined) return false;
     if (!('chatRoomId' in value) || value['chatRoomId'] === undefined) return false;
     return true;
@@ -80,10 +88,10 @@ export function CreateChatParticipantDtoFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'chatParticipantRole': json['chat_participant_role'],
-        'isBanned': json['is_banned'],
-        'isMuted': json['is_muted'],
-        'entranceTime': (new Date(json['entrance_time'])),
+        'chatParticipantRole': json['chat_participant_role'] == null ? undefined : json['chat_participant_role'],
+        'isBanned': json['is_banned'] == null ? undefined : json['is_banned'],
+        'isMuted': json['is_muted'] == null ? undefined : json['is_muted'],
+        'entranceTime': json['entrance_time'] == null ? undefined : (new Date(json['entrance_time'])),
         'userId': json['user_id'],
         'chatRoomId': json['chat_room_id'],
     };
@@ -103,7 +111,7 @@ export function CreateChatParticipantDtoToJSONTyped(value?: CreateChatParticipan
         'chat_participant_role': value['chatParticipantRole'],
         'is_banned': value['isBanned'],
         'is_muted': value['isMuted'],
-        'entrance_time': ((value['entranceTime']).toISOString()),
+        'entrance_time': value['entranceTime'] == null ? undefined : ((value['entranceTime']).toISOString()),
         'user_id': value['userId'],
         'chat_room_id': value['chatRoomId'],
     };

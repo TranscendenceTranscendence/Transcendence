@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -28,19 +28,19 @@ import {
     UserToJSON,
 } from '../models/index';
 
-export interface UsersControllerCreateRequest {
+export interface UsersCreateRequest {
     createUserDto: CreateUserDto;
 }
 
-export interface UsersControllerFindOneRequest {
+export interface UsersFindOneRequest {
     id: number;
 }
 
-export interface UsersControllerRemoveRequest {
+export interface UsersRemoveRequest {
     id: string;
 }
 
-export interface UsersControllerUpdateRequest {
+export interface UsersUpdateRequest {
     updateUserDto: UpdateUserDto;
 }
 
@@ -52,11 +52,11 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Create a new user
      */
-    async usersControllerCreateRaw(requestParameters: UsersControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async usersCreateRaw(requestParameters: UsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createUserDto'] == null) {
             throw new runtime.RequiredError(
                 'createUserDto',
-                'Required parameter "createUserDto" was null or undefined when calling usersControllerCreate().'
+                'Required parameter "createUserDto" was null or undefined when calling usersCreate().'
             );
         }
 
@@ -80,14 +80,14 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Create a new user
      */
-    async usersControllerCreate(requestParameters: UsersControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.usersControllerCreateRaw(requestParameters, initOverrides);
+    async usersCreate(requestParameters: UsersCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.usersCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Get all users
      */
-    async usersControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async usersFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -105,18 +105,18 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Get all users
      */
-    async usersControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.usersControllerFindAllRaw(initOverrides);
+    async usersFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.usersFindAllRaw(initOverrides);
     }
 
     /**
      * Get a user by ID
      */
-    async usersControllerFindOneRaw(requestParameters: UsersControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+    async usersFindOneRaw(requestParameters: UsersFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling usersControllerFindOne().'
+                'Required parameter "id" was null or undefined when calling usersFindOne().'
             );
         }
 
@@ -137,19 +137,19 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Get a user by ID
      */
-    async usersControllerFindOne(requestParameters: UsersControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
-        const response = await this.usersControllerFindOneRaw(requestParameters, initOverrides);
+    async usersFindOne(requestParameters: UsersFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+        const response = await this.usersFindOneRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Delete a user by ID
      */
-    async usersControllerRemoveRaw(requestParameters: UsersControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async usersRemoveRaw(requestParameters: UsersRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling usersControllerRemove().'
+                'Required parameter "id" was null or undefined when calling usersRemove().'
             );
         }
 
@@ -170,18 +170,18 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Delete a user by ID
      */
-    async usersControllerRemove(requestParameters: UsersControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.usersControllerRemoveRaw(requestParameters, initOverrides);
+    async usersRemove(requestParameters: UsersRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.usersRemoveRaw(requestParameters, initOverrides);
     }
 
     /**
      * Update current user details
      */
-    async usersControllerUpdateRaw(requestParameters: UsersControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async usersUpdateRaw(requestParameters: UsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['updateUserDto'] == null) {
             throw new runtime.RequiredError(
                 'updateUserDto',
-                'Required parameter "updateUserDto" was null or undefined when calling usersControllerUpdate().'
+                'Required parameter "updateUserDto" was null or undefined when calling usersUpdate().'
             );
         }
 
@@ -205,8 +205,8 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Update current user details
      */
-    async usersControllerUpdate(requestParameters: UsersControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.usersControllerUpdateRaw(requestParameters, initOverrides);
+    async usersUpdate(requestParameters: UsersUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.usersUpdateRaw(requestParameters, initOverrides);
     }
 
 }

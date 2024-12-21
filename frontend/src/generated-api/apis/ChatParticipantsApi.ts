@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -25,34 +25,34 @@ import {
     UpdateChatParticipantDtoToJSON,
 } from '../models/index';
 
-export interface ChatParticipantsControllerAddParticipantToChatroomRequest {
+export interface ChatParticipantsAddParticipantToChatroomRequest {
     chatRoomId: number;
     userId: number;
 }
 
-export interface ChatParticipantsControllerCreateRequest {
+export interface ChatParticipantsCreateRequest {
     createChatParticipantDto: CreateChatParticipantDto;
 }
 
-export interface ChatParticipantsControllerFindOneRequest {
+export interface ChatParticipantsFindOneRequest {
     id: string;
 }
 
-export interface ChatParticipantsControllerFindParticipantByChatRoomRequest {
+export interface ChatParticipantsFindParticipantByChatRoomRequest {
     chatRoomId: number;
 }
 
-export interface ChatParticipantsControllerFindParticipantChatRoomUserIdRequest {
+export interface ChatParticipantsFindParticipantChatRoomUserIdRequest {
     chatRoomId: number;
     userId: number;
 }
 
-export interface ChatParticipantsControllerRemoveRequest {
+export interface ChatParticipantsRemoveRequest {
     id: string;
     chatRoomId: string;
 }
 
-export interface ChatParticipantsControllerUpdateParticipantRequest {
+export interface ChatParticipantsUpdateParticipantRequest {
     chatRoomId: number;
     id: number;
     updateChatParticipantDto: UpdateChatParticipantDto;
@@ -66,18 +66,18 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Add a participant to a chat room
      */
-    async chatParticipantsControllerAddParticipantToChatroomRaw(requestParameters: ChatParticipantsControllerAddParticipantToChatroomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsAddParticipantToChatroomRaw(requestParameters: ChatParticipantsAddParticipantToChatroomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsControllerAddParticipantToChatroom().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsAddParticipantToChatroom().'
             );
         }
 
         if (requestParameters['userId'] == null) {
             throw new runtime.RequiredError(
                 'userId',
-                'Required parameter "userId" was null or undefined when calling chatParticipantsControllerAddParticipantToChatroom().'
+                'Required parameter "userId" was null or undefined when calling chatParticipantsAddParticipantToChatroom().'
             );
         }
 
@@ -98,18 +98,18 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Add a participant to a chat room
      */
-    async chatParticipantsControllerAddParticipantToChatroom(requestParameters: ChatParticipantsControllerAddParticipantToChatroomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerAddParticipantToChatroomRaw(requestParameters, initOverrides);
+    async chatParticipantsAddParticipantToChatroom(requestParameters: ChatParticipantsAddParticipantToChatroomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsAddParticipantToChatroomRaw(requestParameters, initOverrides);
     }
 
     /**
      * Create a chat participant
      */
-    async chatParticipantsControllerCreateRaw(requestParameters: ChatParticipantsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsCreateRaw(requestParameters: ChatParticipantsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createChatParticipantDto'] == null) {
             throw new runtime.RequiredError(
                 'createChatParticipantDto',
-                'Required parameter "createChatParticipantDto" was null or undefined when calling chatParticipantsControllerCreate().'
+                'Required parameter "createChatParticipantDto" was null or undefined when calling chatParticipantsCreate().'
             );
         }
 
@@ -133,14 +133,14 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Create a chat participant
      */
-    async chatParticipantsControllerCreate(requestParameters: ChatParticipantsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerCreateRaw(requestParameters, initOverrides);
+    async chatParticipantsCreate(requestParameters: ChatParticipantsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Fetch all chat participants
      */
-    async chatParticipantsControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -158,18 +158,18 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Fetch all chat participants
      */
-    async chatParticipantsControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindAllRaw(initOverrides);
+    async chatParticipantsFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsFindAllRaw(initOverrides);
     }
 
     /**
      * Fetch a chat participant by ID
      */
-    async chatParticipantsControllerFindOneRaw(requestParameters: ChatParticipantsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsFindOneRaw(requestParameters: ChatParticipantsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatParticipantsControllerFindOne().'
+                'Required parameter "id" was null or undefined when calling chatParticipantsFindOne().'
             );
         }
 
@@ -190,18 +190,18 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Fetch a chat participant by ID
      */
-    async chatParticipantsControllerFindOne(requestParameters: ChatParticipantsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindOneRaw(requestParameters, initOverrides);
+    async chatParticipantsFindOne(requestParameters: ChatParticipantsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsFindOneRaw(requestParameters, initOverrides);
     }
 
     /**
      * Fetch participants by chat room ID
      */
-    async chatParticipantsControllerFindParticipantByChatRoomRaw(requestParameters: ChatParticipantsControllerFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsFindParticipantByChatRoomRaw(requestParameters: ChatParticipantsFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsControllerFindParticipantByChatRoom().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsFindParticipantByChatRoom().'
             );
         }
 
@@ -222,25 +222,25 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Fetch participants by chat room ID
      */
-    async chatParticipantsControllerFindParticipantByChatRoom(requestParameters: ChatParticipantsControllerFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindParticipantByChatRoomRaw(requestParameters, initOverrides);
+    async chatParticipantsFindParticipantByChatRoom(requestParameters: ChatParticipantsFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsFindParticipantByChatRoomRaw(requestParameters, initOverrides);
     }
 
     /**
      * Fetch participant in chat room by user ID
      */
-    async chatParticipantsControllerFindParticipantChatRoomUserIdRaw(requestParameters: ChatParticipantsControllerFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsFindParticipantChatRoomUserIdRaw(requestParameters: ChatParticipantsFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsControllerFindParticipantChatRoomUserId().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsFindParticipantChatRoomUserId().'
             );
         }
 
         if (requestParameters['userId'] == null) {
             throw new runtime.RequiredError(
                 'userId',
-                'Required parameter "userId" was null or undefined when calling chatParticipantsControllerFindParticipantChatRoomUserId().'
+                'Required parameter "userId" was null or undefined when calling chatParticipantsFindParticipantChatRoomUserId().'
             );
         }
 
@@ -261,25 +261,25 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Fetch participant in chat room by user ID
      */
-    async chatParticipantsControllerFindParticipantChatRoomUserId(requestParameters: ChatParticipantsControllerFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindParticipantChatRoomUserIdRaw(requestParameters, initOverrides);
+    async chatParticipantsFindParticipantChatRoomUserId(requestParameters: ChatParticipantsFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsFindParticipantChatRoomUserIdRaw(requestParameters, initOverrides);
     }
 
     /**
      * Remove a chat participant
      */
-    async chatParticipantsControllerRemoveRaw(requestParameters: ChatParticipantsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsRemoveRaw(requestParameters: ChatParticipantsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatParticipantsControllerRemove().'
+                'Required parameter "id" was null or undefined when calling chatParticipantsRemove().'
             );
         }
 
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsControllerRemove().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsRemove().'
             );
         }
 
@@ -300,32 +300,32 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Remove a chat participant
      */
-    async chatParticipantsControllerRemove(requestParameters: ChatParticipantsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerRemoveRaw(requestParameters, initOverrides);
+    async chatParticipantsRemove(requestParameters: ChatParticipantsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsRemoveRaw(requestParameters, initOverrides);
     }
 
     /**
      * Update a chat participant
      */
-    async chatParticipantsControllerUpdateParticipantRaw(requestParameters: ChatParticipantsControllerUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsUpdateParticipantRaw(requestParameters: ChatParticipantsUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsControllerUpdateParticipant().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatParticipantsUpdateParticipant().'
             );
         }
 
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatParticipantsControllerUpdateParticipant().'
+                'Required parameter "id" was null or undefined when calling chatParticipantsUpdateParticipant().'
             );
         }
 
         if (requestParameters['updateChatParticipantDto'] == null) {
             throw new runtime.RequiredError(
                 'updateChatParticipantDto',
-                'Required parameter "updateChatParticipantDto" was null or undefined when calling chatParticipantsControllerUpdateParticipant().'
+                'Required parameter "updateChatParticipantDto" was null or undefined when calling chatParticipantsUpdateParticipant().'
             );
         }
 
@@ -349,8 +349,8 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Update a chat participant
      */
-    async chatParticipantsControllerUpdateParticipant(requestParameters: ChatParticipantsControllerUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerUpdateParticipantRaw(requestParameters, initOverrides);
+    async chatParticipantsUpdateParticipant(requestParameters: ChatParticipantsUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatParticipantsUpdateParticipantRaw(requestParameters, initOverrides);
     }
 
 }

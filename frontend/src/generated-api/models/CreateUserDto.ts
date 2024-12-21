@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -66,8 +66,21 @@ export interface CreateUserDto {
      * @type {string}
      * @memberof CreateUserDto
      */
-    userStatus: string;
+    userStatus: CreateUserDtoUserStatusEnum;
 }
+
+
+/**
+ * @export
+ */
+export const CreateUserDtoUserStatusEnum = {
+    Offline: 'offline',
+    Online: 'online',
+    Waiting: 'waiting',
+    Playing: 'playing'
+} as const;
+export type CreateUserDtoUserStatusEnum = typeof CreateUserDtoUserStatusEnum[keyof typeof CreateUserDtoUserStatusEnum];
+
 
 /**
  * Check if a given object implements the CreateUserDto interface.

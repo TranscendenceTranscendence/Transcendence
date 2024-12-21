@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -24,28 +24,37 @@ export interface UpdateChatParticipantDto {
      * @type {string}
      * @memberof UpdateChatParticipantDto
      */
-    chatParticipantRole: string;
+    chatParticipantRole?: UpdateChatParticipantDtoChatParticipantRoleEnum;
     /**
      * Is banned
      * @type {boolean}
      * @memberof UpdateChatParticipantDto
      */
-    isBanned: boolean;
+    isBanned?: boolean;
     /**
      * Is muted
      * @type {boolean}
      * @memberof UpdateChatParticipantDto
      */
-    isMuted: boolean;
+    isMuted?: boolean;
 }
+
+
+/**
+ * @export
+ */
+export const UpdateChatParticipantDtoChatParticipantRoleEnum = {
+    Owner: 'owner',
+    Admin: 'admin',
+    Guest: 'guest'
+} as const;
+export type UpdateChatParticipantDtoChatParticipantRoleEnum = typeof UpdateChatParticipantDtoChatParticipantRoleEnum[keyof typeof UpdateChatParticipantDtoChatParticipantRoleEnum];
+
 
 /**
  * Check if a given object implements the UpdateChatParticipantDto interface.
  */
 export function instanceOfUpdateChatParticipantDto(value: object): value is UpdateChatParticipantDto {
-    if (!('chatParticipantRole' in value) || value['chatParticipantRole'] === undefined) return false;
-    if (!('isBanned' in value) || value['isBanned'] === undefined) return false;
-    if (!('isMuted' in value) || value['isMuted'] === undefined) return false;
     return true;
 }
 
@@ -59,9 +68,9 @@ export function UpdateChatParticipantDtoFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'chatParticipantRole': json['chat_participant_role'],
-        'isBanned': json['is_banned'],
-        'isMuted': json['is_muted'],
+        'chatParticipantRole': json['chat_participant_role'] == null ? undefined : json['chat_participant_role'],
+        'isBanned': json['is_banned'] == null ? undefined : json['is_banned'],
+        'isMuted': json['is_muted'] == null ? undefined : json['is_muted'],
     };
 }
 

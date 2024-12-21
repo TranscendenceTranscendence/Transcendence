@@ -12,7 +12,8 @@ import {
     InternalServerErrorException,
     Req,
     UseInterceptors,
-    UploadedFile
+    UploadedFile,
+    UseGuards
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -22,6 +23,7 @@ import { UsersService } from './users.service';
 import { JwtService } from '@nestjs/jwt';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {User} from "./user.entity";
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Users')
 @Controller('users')
@@ -54,6 +56,7 @@ export class UsersController {
     @ApiOperation({ summary: 'Get all users' })
     @ApiResponse({ status: 200, description: 'Users fetched successfully.' })
     @ApiResponse({ status: 500, description: 'Internal server error.' })
+    @UseGuards(AuthGuard('jwt'))
     async findAll() {
         try {
             const data = await this.usersService.findAll();
@@ -89,6 +92,7 @@ export class UsersController {
         }
     }
 
+
     @Patch('me')
     @UseInterceptors(FileInterceptor('avatar'))
     @ApiOperation({ summary: 'Update current user details' })
@@ -96,8 +100,9 @@ export class UsersController {
     @ApiResponse({ status: 400, description: 'Invalid data provided.' })
     @ApiResponse({ status: 401, description: 'Unauthorized access.' })
     async update(@UploadedFile() avatar, @Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
-        const token = req.signedCookies['jwt'];
+        const token = (req.headers['authorization'] as string).split(' ')[1] || req.signedCookies['jwt'];
         try {
+            console.log("updateUserDto:", updateUserDto);
             const userId = await this.usersService.getUserIdFromCookie(token);
             await this.usersService.update(userId, {
                 ...updateUserDto,
