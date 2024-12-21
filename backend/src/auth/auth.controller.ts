@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Req, Res, UseGuards, UnauthorizedException, Delete, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import { ConfigService } from '@nestjs/config';
+// Auth Controller
+import {
+    Controller,
+    Get,
+    HttpStatus,
+    Req,
+    Res,
+    Delete,
+    UseGuards
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request, Response as ExpressResponse } from 'express';
 import { FortyTwoAuthGuard } from './guards/ft-auth/ft-auth.guard';
+import { UsersService } from "../users/users.service";
+import { ConfigService } from "./config/config.service";
 import { AuthGuard } from '@nestjs/passport';
 
+@ApiTags('Auth') // Grouping for Swagger
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -14,34 +24,60 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
-  // https://localhost:3000/auth/42/login
-  @Get('42/login')
-  @UseGuards(FortyTwoAuthGuard)
-  fortyTwoLogin(@Req() req: Request) {}
+    @Get('42/login')
+    @ApiOperation({ summary: 'Login with 42 OAuth' })
+    @ApiResponse({
+        status: 302,
+        description: 'Redirect to 42 OAuth login page.',
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized.',
+    })
+    @UseGuards(FortyTwoAuthGuard)
+    fortyTwoLogin(@Req() req: Request) {}
 
-  @Get('42/callback')
-  @UseGuards(FortyTwoAuthGuard)
-  async fortyTwoCallback(@Req() req: Request, @Res() res: ExpressResponse) {
-    if (req.user['enable_two_factor'] == true) {
-      const checkCookie = await this.usersService.checkToken(req.user['id']);
-      req.res.cookie('jwt', checkCookie, { path: '/', httpOnly: true, signed: true });
-      req.res.redirect('http://localhost:3001/2fa/authenticate');
+    @Get('42/callback')
+    @ApiOperation({ summary: '42 OAuth callback' })
+    @ApiResponse({
+        status: 302,
+        description: 'Redirect based on user status (e.g., two-factor, nickname update).',
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized.',
+    })
+    @UseGuards(FortyTwoAuthGuard)
+    async fortyTwoCallback(@Req() req: Request, @Res() res: ExpressResponse) {
+        if (req.user['twofactor'] == true) {
+            const checkCookie = await this.usersService.checkToken(req.user['id']);
+            req.res.cookie('jwt', checkCookie, {path: '/', httpOnly: true, signed: true});
+        }
+        const token = await this.usersService.signToken(req.user['id']);
+        req.res.cookie('jwt', token, { httpOnly: true, signed: true });
+        if (req.user['nickname'] == null || req.user['nickname'].length == 0) {
+            req.res.redirect(`http://localhost:3001/update`);
+        } else {
+            req.res.redirect('http://localhost:3001');
+        }
+        return;
     }
-    const token = await this.usersService.signToken(req.user['id']);
-    req.res.cookie('jwt', token, { httpOnly: true, signed: true });
-    if (req.user['nickname'] == null || req.user['nickname'].length == 0) {
-      req.res.redirect(`http://localhost:3001/update`);
-    } else {
-      req.res.redirect('http://localhost:3001');
-    }
-    return;
-  }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Delete('42/logout')
-  async fortyTwoLogout(@Req() req: Request, @Res() res: ExpressResponse) {
-    res.clearCookie('jwt');
-    res.status(HttpStatus.OK).send();
-    req.res.redirect('http://localhost:3001/login');
-  }
+    @Delete('42/logout')
+    @ApiOperation({ summary: 'Logout from 42 OAuth' })
+    @ApiResponse({
+        status: 200,
+        description: 'Logout successful and JWT cookie cleared.',
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized.',
+    })
+    @UseGuards(AuthGuard('jwt'))
+    async fortyTwoLogout(@Req() req: Request, @Res() res: ExpressResponse) {
+        res.clearCookie('jwt');
+        res.status(HttpStatus.OK).send();
+        req.res.redirect('http://localhost:3001/login');
+    }
 }
+
