@@ -1,33 +1,36 @@
+// Chat Messages Controller
 import {
     Controller,
     Get,
     Post,
     Body,
-    Patch,
     Param,
-    ParseIntPipe,
     Delete,
-  } from '@nestjs/common';
-  import { CreateChatMessageDto } from './dto/create-chat_message.dto';
-  import { ChatMessagesService } from './chat_messages.service';
-  import { ChatMessage } from './chat_message.entity'
-  
-  @Controller('chatMessages')
-  export class ChatMessagesController {
-    constructor(private readonly chatMessagesService: ChatMessagesService) {}
-    
-    @Post()
-    async create(
-        @Body() createChatMessageDto: CreateChatMessageDto,
-    ) {
-        console.log("messages recived");
-        try {
-            await this.chatMessagesService.create(
-                createChatMessageDto,
-            );
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateChatMessageDto } from './dto/create-chat_message.dto';
+import { ChatMessagesService } from './chat_messages.service';
 
+@ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
+@Controller('chatMessages')
+export class ChatMessagesController {
+    constructor(private readonly chatMessagesService: ChatMessagesService) {}
+
+    @Post()
+    @ApiOperation({ summary: 'Create a chat message' })
+    @ApiResponse({
+        status: 201,
+        description: 'Chat message created successfully.',
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'Bad Request.',
+    })
+    async create(@Body() createChatMessageDto: CreateChatMessageDto) {
+        try {
+            await this.chatMessagesService.create(createChatMessageDto);
             return {
-                success: true,  
+                success: true,
                 message: 'ChatMessage Created Successfully',
             };
         } catch (error) {
@@ -39,30 +42,18 @@ import {
     }
 
     @Get()
+    @ApiOperation({ summary: 'Retrieve all chat messages' })
+    @ApiResponse({
+        status: 200,
+        description: 'Chat messages fetched successfully.',
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Internal server error.',
+    })
     async findAll() {
         try {
-            const data =
-            await this.chatMessagesService.findAllAndSortByTime();
-            console.log("Message findAll get request");
-            return {
-                success: true,
-                data,
-                message: 'ChatMessage Fetched Successfully',
-            };
-        } catch (error) {
-            return {
-                sucess: false,
-                message: error.message,
-            };
-        }
-    }
-  
-    @Get(':id')
-    async findOne(@Param('id') id: string) {
-        try {
-            const data = await this.chatMessagesService.findByChatRoomId(
-                +id,
-            );
+            const data = await this.chatMessagesService.findAllAndSortByTime();
             return {
                 success: true,
                 data,
@@ -75,11 +66,46 @@ import {
             };
         }
     }
-  
-    @Delete(':chatRoomId')
-    async remove(@Param('id') id: string) {
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Retrieve chat messages by chat room ID' })
+    @ApiResponse({
+        status: 200,
+        description: 'Chat messages fetched successfully.',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Chat room not found.',
+    })
+    async findOne(@Param('id') id: string) {
         try {
-            await this.chatMessagesService.remove(+id);
+            const data = await this.chatMessagesService.findByChatRoomId(+id);
+            return {
+                success: true,
+                data,
+                message: 'ChatMessage Fetched Successfully',
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message,
+            };
+        }
+    }
+
+    @Delete(':chatRoomId')
+    @ApiOperation({ summary: 'Delete all chat messages for a chat room' })
+    @ApiResponse({
+        status: 200,
+        description: 'Chat messages deleted successfully.',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Chat room not found.',
+    })
+    async remove(@Param('chatRoomId') chatRoomId: string) {
+        try {
+            await this.chatMessagesService.remove(+chatRoomId);
             return {
                 success: true,
                 message: 'ChatMessage Deleted Successfully',
@@ -92,35 +118,19 @@ import {
         }
     }
 
-
-  @Get('user/:userId')
-  async findAllByUserId(@Param('userId') userId: string){
-      try {
-          const messages = await this.chatMessagesService.findByUserId(+userId); // Convert string to number
-          return {
-              success: true,
-              data: messages,
-              message: 'Messages fetched successfully.',
-          };
-      } catch (error) {
-          return {
-              success: false,
-              message: error.message,
-          };
-      }
-  }
-
-
-    @Get('chatRoom/:chatRoomId/user/:userId')
-    async findAllByUserAndChatRoom(
-        @Param('chatRoomId') chatRoomId: string,
-        @Param('userId') userId: string,
-    ) {
+    @Get('user/:userId')
+    @ApiOperation({ summary: 'Retrieve all messages by user ID' })
+    @ApiResponse({
+        status: 200,
+        description: 'Messages fetched successfully.',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'User not found.',
+    })
+    async findAllByUserId(@Param('userId') userId: string) {
         try {
-            const messages = await this.chatMessagesService.findByUserIdAndChatRoomId(
-                +userId,
-                +chatRoomId,
-            );
+            const messages = await this.chatMessagesService.findByUserId(+userId);
             return {
                 success: true,
                 data: messages,
@@ -134,8 +144,32 @@ import {
         }
     }
 
-    @Get('sorted')
-    async findAllMessages(): Promise<ChatMessage[]> {
-      return this.chatMessagesService.findAllAndSortByTime();
+    @Get('chatRoom/:chatRoomId/user/:userId')
+    @ApiOperation({ summary: 'Retrieve messages by user ID and chat room ID' })
+    @ApiResponse({
+        status: 200,
+        description: 'Messages fetched successfully.',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'Chat room or user not found.',
+    })
+    async findAllByUserAndChatRoom(
+        @Param('chatRoomId') chatRoomId: string,
+        @Param('userId') userId: string,
+    ) {
+        try {
+            const messages = await this.chatMessagesService.findByUserIdAndChatRoomId(+userId, +chatRoomId);
+            return {
+                success: true,
+                data: messages,
+                message: 'Messages fetched successfully.',
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message,
+            };
+        }
     }
 }

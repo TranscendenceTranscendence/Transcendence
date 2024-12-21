@@ -1,11 +1,14 @@
 import React, { useCallback } from "react";
 import ReactDOM from "react-dom";
-import axios from "axios";
 import { useState } from "react";
+import Cookies from 'js-cookie';
+import { useApi } from "../utils/api";
+
 
 export default function UpdateUser() {
     const [enabledTwoFactor, setEnabledTwoFactor] = React.useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const api = useApi();
     
     const updateUser = useCallback(async (formData: FormData) => {
         const nickname = formData.get("nickname");
@@ -26,19 +29,39 @@ export default function UpdateUser() {
         data.append("enabledTwoFactor", `${enabledTwoFactor}`);
         data.append("avatar", selectedFile);
         
-        try {
-            const response = await axios(
-                {
-                    method: 'patch',
-                    url: 'https://localhost:3000/users/me',
-                    data: data,
-                    withCredentials: true,
-                }
-            )
+        console.log('Updating user:', data);
+        console.log("Cookies:", Cookies.get()); 
+        const token = Cookies.get('jwt');
+        console.log('JWT:', token);
+        // try {
+        api.Users.usersUpdate({
+            'updateUserDto': {
+                'nickname': nickname.toString(),
+                'enableTwoFactor': enabledTwoFactor.valueOf(),
+                'avatar': 'test'
+            }
+        }).then((response) => {
             console.log('User updated successfully:', response.data);
-        } catch (error) {
+        }).catch((error) => {
             console.error('Failed to update user:', error);
-        }
+        });
+            // const response = await axios(
+            //     {
+            //         method: 'patch',
+            //         url: 'https://localhost:3000/users/me',
+            //         data: data,
+            //         withCredentials: true,
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data',
+            //             'Authorization': `Bearer ${token}`
+            //         }
+            //     }
+            // )
+
+            // console.log('User updated successfully:', response.data);
+        // } catch (error) {
+        //     console.error('Failed to update user:', error);
+        // }
 
     }, [enabledTwoFactor, selectedFile]);
 
