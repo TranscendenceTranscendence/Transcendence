@@ -17,7 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const user = request.user;
-    if (user.enable_two_factor) {
+    if (user.two_factor_enabled) {
       const is2FAVerified = request.headers['x-2fa-verified'];
       if (!is2FAVerified) {
         throw new UnauthorizedException('2FA verification required');

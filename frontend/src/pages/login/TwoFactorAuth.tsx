@@ -9,27 +9,45 @@ const TwoFactorAuth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('https://localhost:3000/verify-2fa', { code });
-      if (response.data.success) {
+
+    console.log('code:', code);
+    var fd = new FormData();
+    fd.append("twoFactorAuthenticationCode", code);
+
+    fetch(`https://localhost:3000/2fa/turn-on`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: 'POST',
+        credentials: 'include',
+        body: JSON.stringify({twoFactorAuthenticationCode: code}),
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    }).then(data => {
+      if (data.success) {
         setSuccess('2FA verification successful!');
         setError('');
       } else {
         setError('Invalid 2FA code. Please try again.');
         setSuccess('');
       }
-    } catch (err) {
+    }).catch(error => {
       setError('An error occurred. Please try again.');
       setSuccess('');
-    }
+    });
   };
 
   return (
     <Container>
       <h1>Google 2-Factor Authentication</h1>
       <form onSubmit={handleSubmit}>
+        <img src="https://localhost:3000/2fa/generate" alt="2FA QR Code" />
         <input
           type="text"
+          name="twoFactorAuthenticationCode"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Enter 2FA code"

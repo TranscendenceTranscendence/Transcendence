@@ -22,12 +22,14 @@ import { TwoFactorAuthController } from './twoFactorAuth/twoFactorAuth.controlle
     PassportModule.register({ defaultStrategy: 'ft' }),
     HttpModule,
     UsersModule,
-    ConfigModule.forRoot(), // Ensure ConfigModule is imported and configured
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }), // Ensure ConfigModule is imported and configured
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: '30d' },
       }),
       inject: [ConfigService],
     }),

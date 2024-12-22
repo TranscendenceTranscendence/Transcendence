@@ -17,7 +17,7 @@ export default function UpdateUser() {
 
         var fd = new FormData();
         fd.append("avatar", selectedFile);
-        fd.append("enable_two_factor", enabledTwoFactor.toString());
+        fd.append("two_factor_enabled", enabledTwoFactor.toString());
         fd.append("nickname", nickname);
 
         fetch(`https://localhost:3000/users/me`, {

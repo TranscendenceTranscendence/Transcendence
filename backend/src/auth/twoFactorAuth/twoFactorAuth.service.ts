@@ -3,7 +3,8 @@ import { User } from "../../users/user.entity";
 import { UsersService } from "../../users/users.service";
 import { authenticator } from "otplib";
 import { Response } from "express";
-import { toFileStream } from "qrcode";
+import { toFileStream, toDataURL } from "qrcode";
+import { PassThrough } from 'stream';
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
@@ -14,16 +15,16 @@ export class TwoFactorAuthService {
   ) {}
 
   public async generateTwoFactorAuthenticationSecret(user: User): Promise<{ secret: string, otpAuthUrl: string}> {
-    
     // otplib를 설치한 후, 해당 라이브러리를 통해 시크릿 키 생성
-    const secret = authenticator.generateSecret();
-	
+    let secret = user.two_factor_auth_secret;
+    if (secret === null) {
+        secret = authenticator.generateSecret();
+        // User 테이블 내부에 시크릿 키 저장 (UserService에 작성)
+        await this.userService.setTwoFactorAuthenticationSecret(secret, user.id);
+    }
+
     // accountName + issuer + secret 을 활용하여 인증 코드 갱신을 위한 인증 앱 주소 설정 
     const otpAuthUrl = authenticator.keyuri(user.email, this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'), secret);
-	
-    // User 테이블 내부에 시크릿 키 저장 (UserService에 작성)
-    await this.userService.setTwoFactorAuthenticationSecret(secret, user.id);
-	
     // 생성 객체 리턴
     return {
       secret,
@@ -33,8 +34,13 @@ export class TwoFactorAuthService {
 
     // qrcode의 toFileStream()을 사용해 QR 이미지를 클라이언트에게 응답
   // 이때, Express의 Response 객체를 받아옴으로써 클라이언트에게 응답할 수 있다.
-  public async pipeQrCodeStream(stream: Response, otpAuthUrl: string): Promise<void> {
+  public pipeQrCodeStream(stream: Response, otpAuthUrl: string): Promise<void> {
     return toFileStream(stream, otpAuthUrl);
+  }
+
+  // qrcode의 toDataURL()
+  public async qrCodeData(otpAuthUrl: string): Promise<string> {
+    return toDataURL("poep");
   }
 
   public async isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {

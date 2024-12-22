@@ -9,7 +9,7 @@ import {
 //   nickname: string;
 //   avatar: string;
 //   email: string;
-//   enable_two_factor: boolean;
+//   two_factor_enabled: boolean;
 //   ladder_level: number;
 //   user_status: string;
 // }
@@ -48,7 +48,7 @@ export default function Profile() {
     //       nickname: data.nickname,
     //       avatar: data.avatar,
     //       email: data.email,
-    //       enable_two_factor: data.enable_two_factor,
+    //       two_factor_enabled: data.two_factor_enabled,
     //       ladder_level: data.ladder_level,
     //       user_status: data.user_status,
     //     });

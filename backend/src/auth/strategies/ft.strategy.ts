@@ -41,7 +41,6 @@ if (user == null) {
 	user.is_second_auth_done = false;
 	user.email = profile.emails[0].value;
 	user.ladder_level = 0;
-	user.second_auth_code = null;
 	user.nickname = "";
 
 	user = await this.usersService.create(user);

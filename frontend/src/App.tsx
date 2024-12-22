@@ -5,6 +5,7 @@ import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser";
 import Profile from './pages/user/Profile';
 import { Chat } from "./chat/Chat.jsx"
+import TwoFactorAuth from './pages/login/TwoFactorAuth';
 // import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Route path="/update" element={<UpdateUser />} />
       <Route path='/chat' element={<Chat />}/>
       <Route path="/profile/:id" element={<Profile />} />
+      <Route path='/2fa' element={<TwoFactorAuth />} />
     </Routes>
   );
 }

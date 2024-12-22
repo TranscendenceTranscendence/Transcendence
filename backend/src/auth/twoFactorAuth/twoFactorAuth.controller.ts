@@ -1,22 +1,24 @@
 import { TwoFactorAuthService } from "./twoFactorAuth.service";
-import { 
-    Body, 
+import {
     ClassSerializerInterceptor, 
     Controller, 
     Post, 
-    Req, 
-    Res, 
+    Get, 
+    Req,
+    Body,
     UseGuards, 
     UseInterceptors,
     UnauthorizedException,
-    ForbiddenException
+    ForbiddenException,
+    StreamableFile
 } from "@nestjs/common";
-import { Response } from "express";
 import { JwtAccessAuthGuard } from "../guards/jwt-access.guard";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import { UsersService } from "../../users/users.service";
 import { AuthService } from "../auth.service";
-import { TwoFactorAuthCodeDto } from "../dto/twoFactorAuthCode.dto";
+import { Request } from 'express';
+import { toFileStream } from "qrcode";
+import { PassThrough } from 'stream';
 
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -27,27 +29,38 @@ export class TwoFactorAuthController {
     private readonly authService: AuthService
   ) {}
 
-  @Post('generate')
-  @UseGuards(JwtAccessAuthGuard)
-  async register(@Res() res: Response, @Req() request: RequestWithUser) {
-    const { otpAuthUrl } = await this.twoFactorAuthService.generateTwoFactorAuthenticationSecret(request.user);
-
-    return await this.twoFactorAuthService.pipeQrCodeStream(res, otpAuthUrl);
+  @Get('generate') // TODO add guard, check if user has already 2fa enabled
+  async register(@Req() request: Request) {
+    console.log("generate");
+    const token = request.signedCookies['jwt'];
+    const userId = await this.usersService.getUserIdFromCookie(token);
+    const user = await this.usersService.findOne(userId);
+    const { otpAuthUrl } = await this.twoFactorAuthService.generateTwoFactorAuthenticationSecret(user);
+    
+    const qrStream = new PassThrough();
+    await toFileStream(qrStream, otpAuthUrl);
+    return new StreamableFile(qrStream);
   }
 
   @Post('turn-on')
-  @UseGuards(JwtAccessAuthGuard)
   async turnOnTwoFactorAuthentication(
-    @Req() req: RequestWithUser,
-    @Body() twoFactorAuthCodeDto: TwoFactorAuthCodeDto
+    @Req() req: Request,
+    @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
+    console.log("turn-on");
+    console.log(twoFactorAuthenticationCode);
+
+    const token = req.signedCookies['jwt'];
+    const userId = await this.usersService.getUserIdFromCookie(token);
+    const user = await this.usersService.findOne(userId);
+
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthCodeDto.twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, user
     );
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
-    await this.usersService.turnOnTwoFactorAuthentication(req.user.id);
+    await this.usersService.turnOnTwoFactorAuthentication(user.id);
 
     return {
       msg: "TwoFactorAuthentication turned on"
@@ -58,10 +71,10 @@ export class TwoFactorAuthController {
   @UseGuards(JwtAccessAuthGuard)
   async turnOffTwoFactorAuthentication(
     @Req() req: RequestWithUser,
-    @Body() twoFactorAuthCodeDto: TwoFactorAuthCodeDto
+    @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthCodeDto.twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, req.user
     );
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
@@ -77,10 +90,10 @@ export class TwoFactorAuthController {
   @UseGuards(JwtAccessAuthGuard)
   async authenticate(
     @Req() req: any,
-    @Body() twoFactorAuthCodeDto: TwoFactorAuthCodeDto
+    @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthCodeDto.twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, req.user
     );
 
     if (!req.user.twoFactorAuthEnabled) {

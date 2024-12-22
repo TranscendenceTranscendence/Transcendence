@@ -12,8 +12,9 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request, Response as ExpressResponse } from 'express';
 import { FortyTwoAuthGuard } from './guards/ft-auth/ft-auth.guard';
 import { UsersService } from "../users/users.service";
-import { ConfigService } from "./config/config.service";
+import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
 
 @ApiTags('Auth') // Grouping for Swagger
 @Controller('auth')

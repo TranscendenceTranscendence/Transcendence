@@ -102,7 +102,7 @@ export class UsersController {
             await this.usersService.update(userId, {
                 ...updateUserDto,
                 avatar: avatar.buffer,
-                enable_two_factor: updateUserDto.enable_two_factor,
+                two_factor_enabled: updateUserDto.two_factor_enabled,
             });
             return {
                 success: true,
