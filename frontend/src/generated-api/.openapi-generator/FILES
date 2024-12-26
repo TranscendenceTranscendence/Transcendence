@@ -5,6 +5,7 @@ apis/BlockedsApi.ts
 apis/ChatMessagesApi.ts
 apis/ChatParticipantsApi.ts
 apis/ChatRoomsApi.ts
+apis/FileUploadApi.ts
 apis/FriendsApi.ts
 apis/GamesApi.ts
 apis/QueueApi.ts

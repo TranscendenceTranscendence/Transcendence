@@ -22,7 +22,7 @@ export interface FileUploadUploadFileRequest {
 /**
  * 
  */
-export class DefaultApi extends runtime.BaseAPI {
+export class FileUploadApi extends runtime.BaseAPI {
 
     /**
      */

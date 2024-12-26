@@ -7,6 +7,7 @@ export * from './BlockedsApi';
 export * from './ChatMessagesApi';
 export * from './ChatParticipantsApi';
 export * from './ChatRoomsApi';
+export * from './FileUploadApi';
 export * from './FriendsApi';
 export * from './GamesApi';
 export * from './QueueApi';
