@@ -1,22 +1,3 @@
-// import { NestFactory } from '@nestjs/core';
-// import { AppModule } from './app.module';
-// import { ValidationPipe } from '@nestjs/common';
-
-// async function bootstrap() {
-//   const app = await NestFactory.create(AppModule);
-//   app.useGlobalPipes(
-//     new ValidationPipe({ whitelist: true }),
-//   );
-//   app.enableCors({
-//     origin: '*', // Replace with your frontend origin for production
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//     credentials: true,
-// });
-//   await app.listen(3000);
-// }
-// bootstrap();
-
-
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
@@ -47,7 +28,6 @@ const setupSwagger = (app: INestApplication) => {
   for (const path in document.paths) {
     for (const method in document.paths[path]) {
       const operation = document.paths[path][method];
-      console.log(operation);
       operation.operationId = operation.operationId.replace('Controller', '');
     }
   }
@@ -59,7 +39,7 @@ const setupSwagger = (app: INestApplication) => {
 }
 
 
-async function bootstrap() {
+(async () => {
   const app = await NestFactory.create(AppModule, {httpsOptions});
 
   setupSwagger(app);
@@ -69,12 +49,13 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       process.env.FRONTEND_ORIGIN || 'http://localhost:3001',
-    ], // Replace with your frontend origin for production
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
 
   await app.listen(3000);
-}
-bootstrap();
+  console.info(`Swagger documentation available at https://localhost:3000/api-docs`);
+  console.log(`listening on https://localhost:3000`);
+})();
