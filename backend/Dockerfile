@@ -1,23 +1,23 @@
+# Base image
 FROM node:20-alpine
 
-# Install Python and other dependencies
-RUN apk add --no-cache python3 make g++
-
-# Create app directory
+# Set the working directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
+# Copy dependency files first to leverage Docker's caching
 COPY package*.json ./
-RUN npm install
 
-# Copy app source code
+# Use `npm ci` to install dependencies
+RUN npm ci
+
+# Copy the rest of the application code
 COPY . .
 
-# Copy image files
-COPY img ./dist/img
-
-# Expose the port the app runs on
+# Ensure hot-reloading works by exposing necessary ports and mounting volumes
 EXPOSE 3000
 
-# Start the app
+# Set environment variables
+ENV NODE_ENV=development
+
+# Default command to start the app in development mode
 CMD ["npm", "run", "start:dev"]

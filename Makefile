@@ -4,7 +4,6 @@ all: up
 up: ssl
 	@docker compose -f ./docker-compose.yml build --parallel
 	@docker compose -f ./docker-compose.yml up -d
-	# up: creating and starting containers / --build: building services / -d: daemon
 
 # Stop and remove containers
 down:

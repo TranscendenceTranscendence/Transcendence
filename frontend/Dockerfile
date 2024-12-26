@@ -1,14 +1,20 @@
-FROM node:18.1.0-alpine3.14
+# Use a lightweight and recent Node.js image
+FROM node:18.1.0-alpine3.14 AS base
 
+# Set working directory inside the container
 WORKDIR /app
 
-COPY package.json ./
-COPY package-lock.json ./
+# Copy dependency files first for better caching
+COPY package.json package-lock.json ./
 
-COPY ./ ./
+# Install dependencies
+RUN npm ci
 
-RUN npm install
+# Copy application source code
+COPY . .
 
+# Expose the application port
 EXPOSE 3000
 
-CMD ["npm", "start"]{% raw %}`
+# Run the application
+CMD ["npm", "start"]
