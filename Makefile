@@ -1,30 +1,34 @@
-all : up
+all: up
 
-up : ssl
-	@docker compose -f ./docker-compose.yml up --build -d
-# up : creating and starting containers / --build : building services / -d : daemon
-down :
+# Create and start containers
+up: ssl
+	@docker compose -f ./docker-compose.yml build --parallel
+	@docker compose -f ./docker-compose.yml up -d
+
+# Stop and remove containers
+down:
 	@docker compose -f ./docker-compose.yml down
 
-stop :
+# Stop containers
+stop:
 	@docker compose -f ./docker-compose.yml stop
 
-re :
-	@docker compose -f ./docker-compose.yml up --build -d
+# Rebuild and restart containers
+re: fclean all
 
+# Clean containers
 clean: stop down
 
+# Fully clean images, volumes, and orphans
 fclean: clean
-		@docker image prune -a -f
-		@docker compose -f ./docker-compose.yml down --remove-orphans
-		@docker compose -f ./docker-compose.yml down --volumes
+	@docker image prune -a -f
+	@docker compose -f ./docker-compose.yml down --volumes --remove-orphans
 
-#create .pem and .key files
+# Create SSL certificates
 ssl: ./backend/secrets/cert.pem ./backend/secrets/cert-key.pem
-	mkdir -p ./backend/secrets
+
+./backend/secrets/cert.pem ./backend/secrets/cert-key.pem:
+	@mkdir -p ./backend/secrets
 	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./backend/secrets/cert-key.pem -out ./backend/secrets/cert.pem
 
-re : fclean all
-
 .PHONY: all up down stop re clean fclean ssl
-
