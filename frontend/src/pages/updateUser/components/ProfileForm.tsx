@@ -42,7 +42,7 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
     }).catch((error) => {
       console.error(error);
     });
-  }, [api.Users, getValues, setValue]);
+  }, [api.Users, getValues, props, setValue]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<{
