@@ -93,6 +93,29 @@ export class UsersController {
         }
     }
 
+    @Get('me')
+    @ApiOperation({ summary: 'Get current user details' })
+    @ApiResponse({ status: 200, description: 'User fetched successfully.', type: User })
+    @ApiResponse({ status: 404, description: 'User not found.' })
+    @UseGuards(JwtAuthGuard)
+    async me(@Req() req: Request): Promise<User> {
+        try {
+            const userId = req.user.id;
+            if (userId === undefined) {
+                throw new HttpException('Unauthorized access', 401);
+            }
+            const data = await this.usersService.findOne(userId);
+            if (data === undefined) {
+                throw new NotFoundException('User not found');
+            }
+            return {
+                ...data,
+                avatar: data.avatar,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
 
     @Patch('me')
     @ApiOperation({ summary: 'Update current user details' })

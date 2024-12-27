@@ -143,6 +143,32 @@ export class UsersApi extends runtime.BaseAPI {
     }
 
     /**
+     * Get current user details
+     */
+    async usersControllerMeRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/users/me`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
+    }
+
+    /**
+     * Get current user details
+     */
+    async usersControllerMe(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
+        const response = await this.usersControllerMeRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Delete a user by ID
      */
     async usersControllerRemoveRaw(requestParameters: UsersControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
