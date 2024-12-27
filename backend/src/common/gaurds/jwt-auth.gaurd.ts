@@ -13,7 +13,7 @@ export class JwtAuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException('No JWT found in cookies');
     }
-
+    console.log("teeeeeeeestttttttttteeeeeeee")
     try {
       // Verify the token and attach the payload to the request
       const payload = this.jwtService.verify(token, {

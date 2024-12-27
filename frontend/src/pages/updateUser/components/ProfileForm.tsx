@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/system';
 import { Button, Snackbar, Alert, CircularProgress } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '../../../utils/api';
 import type { UpdateUserDto } from '../../../generated-api';
 import { Typography } from '@mui/joy';
@@ -22,6 +22,7 @@ interface ProfileFormProps {
 }
 
 const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
+  const api = useApi();
   const { control, register, handleSubmit, setValue, getValues } = useForm<UpdateUserDto>({
     defaultValues: {
       nickname: '',
@@ -30,7 +31,18 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
     },
   });
 
-  const api = useApi();
+  useEffect(() => {
+    if (getValues('nickname') !== "") return;
+    api.Users.usersControllerMe().then((response) => {
+      console.log("response", response);
+      setValue('nickname', response.nickname);
+      setValue('enableTwoFactor', response.enableTwoFactor);
+      setValue('avatar', response.avatar);
+    }).catch((error) => {
+      console.error(error);
+    });
+  }, [api.Users, getValues, setValue]);
+
   const [isSaving, setIsSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;

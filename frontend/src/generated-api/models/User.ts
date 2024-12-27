@@ -69,11 +69,11 @@ export interface User {
      */
     id: number;
     /**
-     * The avatar of the user.
-     * @type {object}
+     * The url to avatar
+     * @type {string}
      * @memberof User
      */
-    avatar: object;
+    avatar: string;
     /**
      * The nickname of the user.
      * @type {string}
