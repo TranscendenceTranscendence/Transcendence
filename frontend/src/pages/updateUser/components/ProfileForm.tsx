@@ -34,7 +34,6 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
   useEffect(() => {
     if (getValues('nickname') !== "") return;
     api.Users.usersControllerMe().then((response) => {
-      console.log("response", response);
       setValue('nickname', response.nickname);
       setValue('enableTwoFactor', response.enableTwoFactor);
       setValue('avatar', response.avatar);
