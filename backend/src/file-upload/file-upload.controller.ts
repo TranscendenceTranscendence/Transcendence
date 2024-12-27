@@ -9,10 +9,10 @@ import { ApiBody, ApiConsumes, ApiProperty, ApiResponse, ApiTags } from '@nestjs
 class FileUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
   file: Express.Multer.File;
-  @ApiProperty()
-  filename: string;
-  @ApiProperty()
-  category: string;
+  @ApiProperty({required: false})
+  filename?: string;
+  @ApiProperty({required: false})
+  category?: string;
 }
 
 class FileUploadResponseSuccess {
@@ -32,6 +32,7 @@ export class FileUploadController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   @ApiResponse({ status: 201, description: 'File uploaded successfully', type: FileUploadResponseSuccess })
+  @ApiResponse({ status: 400, description: 'Bad request' })
   uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: FileUploadDto) {
     console.log(body);
     return this.fileUploadService.handleFileUpload(file);

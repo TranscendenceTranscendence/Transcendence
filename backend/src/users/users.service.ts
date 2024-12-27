@@ -42,9 +42,9 @@ export class UsersService {
     id: number,
     UpdateUserDto: UpdateUserDto,
   ): Promise<User> {
-    console.log(id);
+    console.log("id:", id);
     const existingUser = await this.findOne(id);
-    console.log(existingUser);
+    console.log("existingUser:", existingUser);
     const userData = this.usersRepository.merge(
         existingUser,
         UpdateUserDto,

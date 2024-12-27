@@ -22,24 +22,24 @@ import {
     CreateChatMessageDtoToJSON,
 } from '../models/index';
 
-export interface ChatMessagesCreateRequest {
+export interface ChatMessagesControllerCreateRequest {
     createChatMessageDto: CreateChatMessageDto;
 }
 
-export interface ChatMessagesFindAllByUserAndChatRoomRequest {
+export interface ChatMessagesControllerFindAllByUserAndChatRoomRequest {
     chatRoomId: string;
     userId: string;
 }
 
-export interface ChatMessagesFindAllByUserIdRequest {
+export interface ChatMessagesControllerFindAllByUserIdRequest {
     userId: string;
 }
 
-export interface ChatMessagesFindOneRequest {
+export interface ChatMessagesControllerFindOneRequest {
     id: string;
 }
 
-export interface ChatMessagesRemoveRequest {
+export interface ChatMessagesControllerRemoveRequest {
     chatRoomId: string;
 }
 
@@ -51,11 +51,11 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Create a chat message
      */
-    async chatMessagesCreateRaw(requestParameters: ChatMessagesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerCreateRaw(requestParameters: ChatMessagesControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createChatMessageDto'] == null) {
             throw new runtime.RequiredError(
                 'createChatMessageDto',
-                'Required parameter "createChatMessageDto" was null or undefined when calling chatMessagesCreate().'
+                'Required parameter "createChatMessageDto" was null or undefined when calling chatMessagesControllerCreate().'
             );
         }
 
@@ -79,14 +79,14 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Create a chat message
      */
-    async chatMessagesCreate(requestParameters: ChatMessagesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesCreateRaw(requestParameters, initOverrides);
+    async chatMessagesControllerCreate(requestParameters: ChatMessagesControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatMessagesControllerCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Retrieve all chat messages
      */
-    async chatMessagesFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -104,25 +104,25 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Retrieve all chat messages
      */
-    async chatMessagesFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesFindAllRaw(initOverrides);
+    async chatMessagesControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatMessagesControllerFindAllRaw(initOverrides);
     }
 
     /**
      * Retrieve messages by user ID and chat room ID
      */
-    async chatMessagesFindAllByUserAndChatRoomRaw(requestParameters: ChatMessagesFindAllByUserAndChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerFindAllByUserAndChatRoomRaw(requestParameters: ChatMessagesControllerFindAllByUserAndChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatMessagesFindAllByUserAndChatRoom().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatMessagesControllerFindAllByUserAndChatRoom().'
             );
         }
 
         if (requestParameters['userId'] == null) {
             throw new runtime.RequiredError(
                 'userId',
-                'Required parameter "userId" was null or undefined when calling chatMessagesFindAllByUserAndChatRoom().'
+                'Required parameter "userId" was null or undefined when calling chatMessagesControllerFindAllByUserAndChatRoom().'
             );
         }
 
@@ -143,18 +143,18 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Retrieve messages by user ID and chat room ID
      */
-    async chatMessagesFindAllByUserAndChatRoom(requestParameters: ChatMessagesFindAllByUserAndChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesFindAllByUserAndChatRoomRaw(requestParameters, initOverrides);
+    async chatMessagesControllerFindAllByUserAndChatRoom(requestParameters: ChatMessagesControllerFindAllByUserAndChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatMessagesControllerFindAllByUserAndChatRoomRaw(requestParameters, initOverrides);
     }
 
     /**
      * Retrieve all messages by user ID
      */
-    async chatMessagesFindAllByUserIdRaw(requestParameters: ChatMessagesFindAllByUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerFindAllByUserIdRaw(requestParameters: ChatMessagesControllerFindAllByUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['userId'] == null) {
             throw new runtime.RequiredError(
                 'userId',
-                'Required parameter "userId" was null or undefined when calling chatMessagesFindAllByUserId().'
+                'Required parameter "userId" was null or undefined when calling chatMessagesControllerFindAllByUserId().'
             );
         }
 
@@ -175,18 +175,18 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Retrieve all messages by user ID
      */
-    async chatMessagesFindAllByUserId(requestParameters: ChatMessagesFindAllByUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesFindAllByUserIdRaw(requestParameters, initOverrides);
+    async chatMessagesControllerFindAllByUserId(requestParameters: ChatMessagesControllerFindAllByUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatMessagesControllerFindAllByUserIdRaw(requestParameters, initOverrides);
     }
 
     /**
      * Retrieve chat messages by chat room ID
      */
-    async chatMessagesFindOneRaw(requestParameters: ChatMessagesFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerFindOneRaw(requestParameters: ChatMessagesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling chatMessagesFindOne().'
+                'Required parameter "id" was null or undefined when calling chatMessagesControllerFindOne().'
             );
         }
 
@@ -207,18 +207,18 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Retrieve chat messages by chat room ID
      */
-    async chatMessagesFindOne(requestParameters: ChatMessagesFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesFindOneRaw(requestParameters, initOverrides);
+    async chatMessagesControllerFindOne(requestParameters: ChatMessagesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatMessagesControllerFindOneRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete all chat messages for a chat room
      */
-    async chatMessagesRemoveRaw(requestParameters: ChatMessagesRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerRemoveRaw(requestParameters: ChatMessagesControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
-                'Required parameter "chatRoomId" was null or undefined when calling chatMessagesRemove().'
+                'Required parameter "chatRoomId" was null or undefined when calling chatMessagesControllerRemove().'
             );
         }
 
@@ -239,8 +239,8 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Delete all chat messages for a chat room
      */
-    async chatMessagesRemove(requestParameters: ChatMessagesRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesRemoveRaw(requestParameters, initOverrides);
+    async chatMessagesControllerRemove(requestParameters: ChatMessagesControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.chatMessagesControllerRemoveRaw(requestParameters, initOverrides);
     }
 
 }

@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import { Route, Routes } from 'react-router-dom';
 import Home from "./pages/Home";
 import Login from "./pages/login/index";
-import UpdateUser from "./pages/updateUser";
+import UpdateUser from "./pages/updateUser/updateUser.tsx";
 import Profile from './pages/user/Profile';
 // import './App.css';
 

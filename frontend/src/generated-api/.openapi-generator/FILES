@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AchievementsApi.ts
 apis/AppApi.ts
 apis/AuthApi.ts
@@ -25,6 +24,7 @@ models/CreateChatParticipantDto.ts
 models/CreateChatRoomDto.ts
 models/CreateGameDto.ts
 models/CreateUserDto.ts
+models/FileUploadResponseSuccess.ts
 models/Friend.ts
 models/Game.ts
 models/UpdateAchievementDto.ts

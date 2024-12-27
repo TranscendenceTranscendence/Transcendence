@@ -1,15 +1,9 @@
 import * as generatedApi from '../../generated-api/index';
-import Cookies from 'js-cookie';
-
 
 export const useApi = () => {
-    // get the token from cookies
-    const token = Cookies.get('jwt');
     const config = new generatedApi.Configuration({
         basePath: process.env.REACT_APP_API_URL,
-        headers: {
-            'Authorization': `Bearer ${token || 'badbadbadbadbadbadbad'}`,
-        },
+        credentials: 'include'
     });
     const api = {
         Auth: new generatedApi.AuthApi(config),

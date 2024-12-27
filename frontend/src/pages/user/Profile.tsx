@@ -75,7 +75,7 @@ export default function Profile() {
       <h1>Profile</h1>
       <p>Status: {user.userStatus}</p>
       <div>
-        <img src={`data:image/jpeg;base64, ${user.avatar}`} alt="User Avatar"
+        <img src={`data:image/jpeg;base64, ${user.avatar}`} alt="User AvatarDisplay"
              style={{width: '100px', height: '140px', borderRadius: '10%'}}/>
       </div>
       <div>

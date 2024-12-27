@@ -23,7 +23,7 @@ export class QueueApi extends runtime.BaseAPI {
     /**
      * Get the current queue status
      */
-    async queueGetQueueStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async queueControllerGetQueueStatusRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -41,14 +41,14 @@ export class QueueApi extends runtime.BaseAPI {
     /**
      * Get the current queue status
      */
-    async queueGetQueueStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.queueGetQueueStatusRaw(initOverrides);
+    async queueControllerGetQueueStatus(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.queueControllerGetQueueStatusRaw(initOverrides);
     }
 
     /**
      * Join the queue
      */
-    async queueJoinQueueRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async queueControllerJoinQueueRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -66,8 +66,8 @@ export class QueueApi extends runtime.BaseAPI {
     /**
      * Join the queue
      */
-    async queueJoinQueue(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.queueJoinQueueRaw(initOverrides);
+    async queueControllerJoinQueue(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.queueControllerJoinQueueRaw(initOverrides);
     }
 
 }

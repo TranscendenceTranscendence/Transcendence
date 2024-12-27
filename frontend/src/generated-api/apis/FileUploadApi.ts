@@ -14,11 +14,18 @@
 
 
 import * as runtime from '../runtime';
+import type {
+  FileUploadResponseSuccess,
+} from '../models/index';
+import {
+    FileUploadResponseSuccessFromJSON,
+    FileUploadResponseSuccessToJSON,
+} from '../models/index';
 
-export interface FileUploadUploadFileRequest {
+export interface FileUploadControllerUploadFileRequest {
     file: Blob;
-    filename: string;
-    category: string;
+    filename?: string;
+    category?: string;
 }
 
 /**
@@ -28,25 +35,11 @@ export class FileUploadApi extends runtime.BaseAPI {
 
     /**
      */
-    async fileUploadUploadFileRaw(requestParameters: FileUploadUploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async fileUploadControllerUploadFileRaw(requestParameters: FileUploadControllerUploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<FileUploadResponseSuccess>> {
         if (requestParameters['file'] == null) {
             throw new runtime.RequiredError(
                 'file',
-                'Required parameter "file" was null or undefined when calling fileUploadUploadFile().'
-            );
-        }
-
-        if (requestParameters['filename'] == null) {
-            throw new runtime.RequiredError(
-                'filename',
-                'Required parameter "filename" was null or undefined when calling fileUploadUploadFile().'
-            );
-        }
-
-        if (requestParameters['category'] == null) {
-            throw new runtime.RequiredError(
-                'category',
-                'Required parameter "category" was null or undefined when calling fileUploadUploadFile().'
+                'Required parameter "file" was null or undefined when calling fileUploadControllerUploadFile().'
             );
         }
 
@@ -90,13 +83,14 @@ export class FileUploadApi extends runtime.BaseAPI {
             body: formParams,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => FileUploadResponseSuccessFromJSON(jsonValue));
     }
 
     /**
      */
-    async fileUploadUploadFile(requestParameters: FileUploadUploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.fileUploadUploadFileRaw(requestParameters, initOverrides);
+    async fileUploadControllerUploadFile(requestParameters: FileUploadControllerUploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<FileUploadResponseSuccess> {
+        const response = await this.fileUploadControllerUploadFileRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }
