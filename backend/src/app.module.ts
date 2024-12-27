@@ -15,9 +15,16 @@ import { PassportModule } from '@nestjs/passport';
 import { QueueModule } from './queue/queue.module';
 import { ChatModule } from './websockets/chat.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { MulterModule } from '@nestjs/platform-express';
+
 
 @Module({
   imports: [
+    MulterModule.register({
+      limits: {
+        fileSize: 1024 * 1024 * 5,
+      }
+    }),
     PassportModule.register({
       session: false,
     }),
@@ -32,6 +39,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
       autoLoadEntities: true,
       synchronize: true,
       logging: true,
+      logger: 'advanced-console', // Makes the logs easier to read
     }),
     ChatModule,
     UsersModule,

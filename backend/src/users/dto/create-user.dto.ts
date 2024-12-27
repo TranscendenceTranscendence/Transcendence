@@ -7,7 +7,7 @@ import { PartialType } from '@nestjs/mapped-types';
 export class CreateUserDto extends PartialType(User)  {
     @ApiProperty({ description: 'User avatar' })
     @IsOptional()
-    avatar: Buffer;
+    avatar: string;
   
     @ApiProperty({ description: 'User nickname' })
     @IsNotEmpty()

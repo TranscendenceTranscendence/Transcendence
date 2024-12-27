@@ -50,10 +50,15 @@ export class AuthController {
     async fortyTwoCallback(@Req() req: Request, @Res() res: ExpressResponse) {
         if (req.user['twofactor'] == true) {
             const checkCookie = await this.usersService.checkToken(req.user['id']);
-            req.res.cookie('jwt', checkCookie, {path: '/', httpOnly: false, signed: true});
+            req.res.cookie('jwt', checkCookie, {path: '/', httpOnly: true, signed: true});
         }
         const token = await this.usersService.signToken(req.user['id']);
-        req.res.cookie('jwt', token, { httpOnly: false, signed: true });
+        req.res.cookie('jwt', token, {
+            httpOnly: true,
+            signed: true,
+            secure: true,         // Send only over HTTPS
+            sameSite: 'none',     // Allow cross-origin requests
+        });
 
         if (req.user['nickname'] === null || (req.user['nickname'] as string).trim().length == 0) {
             req.res.redirect(`http://localhost:3001/update`);

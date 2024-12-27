@@ -19,6 +19,6 @@ export class FileUploadService {
       throw new BadRequestException('file is too large!');
     }
 
-    return { message: 'File uploaded successfully', filePath: file.path };
+    return { message: 'File uploaded successfully', filePath: '/' + file.path };
   }
 }

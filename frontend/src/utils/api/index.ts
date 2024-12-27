@@ -1,15 +1,9 @@
 import * as generatedApi from '../../generated-api/index';
-import Cookies from 'js-cookie';
-
 
 export const useApi = () => {
-    // get the token from cookies
-    const token = Cookies.get('jwt');
     const config = new generatedApi.Configuration({
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token || 'badbadbadbadbadbadbad'}`,
-        },
+        basePath: process.env.REACT_APP_API_URL,
+        credentials: 'include'
     });
     const api = {
         Auth: new generatedApi.AuthApi(config),
@@ -22,7 +16,8 @@ export const useApi = () => {
         Friends: new generatedApi.FriendsApi(config),
         Games: new generatedApi.GamesApi(config),
         Queue: new generatedApi.QueueApi(config),
-        App: new generatedApi.AppApi(),
+        FileUpload: new generatedApi.FileUploadApi(config),
+        App: new generatedApi.AppApi(config),
     }
     return api;
 }

@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - nestjs
+    env_file:
+      - .env
     volumes:
       - ./frontend:/app
       - /app/node_modules

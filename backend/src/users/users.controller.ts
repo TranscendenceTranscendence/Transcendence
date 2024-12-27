@@ -15,7 +15,7 @@ import {
     UploadedFile,
     UseGuards
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiProperty } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,6 +24,19 @@ import { JwtService } from '@nestjs/jwt';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {User} from "./user.entity";
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
+import { PartialType } from '@nestjs/mapped-types';
+
+class MeResponseSuccess extends PartialType(User) {
+    @ApiProperty()
+    id: number;
+    @ApiProperty({ type: 'string', description: 'The url to avatar' })
+    avatar: string;
+    @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
+    nickname: string;
+    @ApiProperty({ type: 'boolean', description: 'The two factor authentication status of the user.' })
+    enable_two_factor: boolean;
+}
 
 @ApiTags('Users')
 @Controller('users')
@@ -73,11 +86,44 @@ export class UsersController {
         }
     }
 
+
+    @Get('me')
+    @ApiOperation({ summary: 'Get current user details' })
+    @ApiResponse({ status: 200, description: 'User fetched successfully.', type: MeResponseSuccess })
+    @ApiResponse({ status: 404, description: 'User not found.' })
+    @UseGuards(JwtAuthGuard)
+    async me(@Req() req: Request): Promise<MeResponseSuccess> {
+        console.log(req.user);
+
+        console.log("req.user.id", req.user.id);
+        try {
+            const userId = req.user.id;
+            if (userId === undefined) {
+                throw new HttpException('Unauthorized access', 401);
+            }
+            const data = await this.usersService.findOne(userId);
+
+            if (data === undefined) {
+                throw new NotFoundException('User not found');
+            }
+            // user to me response
+            return {
+                id: data.id,
+                avatar: data.avatar,
+                nickname: data.nickname,
+                enable_two_factor: data.enable_two_factor,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
     @Get(':id')
     @ApiOperation({ summary: 'Get a user by ID' })
     @ApiResponse({ status: 200, description: 'User fetched successfully.', type: User })
     @ApiResponse({ status: 404, description: 'User not found.' })
     async findOne(@Param('id') id: number): Promise<User> {
+        console.log("tesseeetteteteteteeeesttt")
         try {
             const data = await this.usersService.findOne(+id);
             if (data === undefined) {
@@ -94,30 +140,23 @@ export class UsersController {
 
 
     @Patch('me')
-    @UseInterceptors(FileInterceptor('avatar'))
     @ApiOperation({ summary: 'Update current user details' })
     @ApiResponse({ status: 200, description: 'User updated successfully.' })
     @ApiResponse({ status: 400, description: 'Invalid data provided.' })
     @ApiResponse({ status: 401, description: 'Unauthorized access.' })
-    async update(@UploadedFile() avatar, @Body() updateUserDto: UpdateUserDto, @Req() req: Request) {
-        const token = (req.headers['authorization'] as string).split(' ')[1] || req.signedCookies['jwt'];
+    @UseGuards(JwtAuthGuard)
+    async update(@Body() body: UpdateUserDto, @Req() req: Request) {
         try {
-            console.log("updateUserDto:", updateUserDto);
-            const userId = await this.usersService.getUserIdFromCookie(token);
-            await this.usersService.update(userId, {
-                ...updateUserDto,
-                avatar: avatar.buffer,
-                enable_two_factor: updateUserDto.enable_two_factor,
-            });
+            const userId = req.user.id;
+            if (userId === undefined) {
+                throw new HttpException('Unauthorized access', 401);
+            }
+            await this.usersService.update(userId, body);
             return {
-                success: true,
                 message: 'User Updated Successfully',
             };
         } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
+            return error;
         }
     }
 

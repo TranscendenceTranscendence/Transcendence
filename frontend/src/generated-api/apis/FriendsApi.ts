@@ -15,15 +15,15 @@
 
 import * as runtime from '../runtime';
 
-export interface FriendsCreateRequest {
+export interface FriendsControllerCreateRequest {
     body: object;
 }
 
-export interface FriendsFindOneRequest {
+export interface FriendsControllerFindOneRequest {
     id: string;
 }
 
-export interface FriendsRemoveRequest {
+export interface FriendsControllerRemoveRequest {
     id: string;
 }
 
@@ -35,11 +35,11 @@ export class FriendsApi extends runtime.BaseAPI {
     /**
      * Create a friend entry
      */
-    async friendsCreateRaw(requestParameters: FriendsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async friendsControllerCreateRaw(requestParameters: FriendsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
                 'body',
-                'Required parameter "body" was null or undefined when calling friendsCreate().'
+                'Required parameter "body" was null or undefined when calling friendsControllerCreate().'
             );
         }
 
@@ -63,14 +63,14 @@ export class FriendsApi extends runtime.BaseAPI {
     /**
      * Create a friend entry
      */
-    async friendsCreate(requestParameters: FriendsCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.friendsCreateRaw(requestParameters, initOverrides);
+    async friendsControllerCreate(requestParameters: FriendsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.friendsControllerCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Retrieve all friend entries
      */
-    async friendsFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async friendsControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -88,18 +88,18 @@ export class FriendsApi extends runtime.BaseAPI {
     /**
      * Retrieve all friend entries
      */
-    async friendsFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.friendsFindAllRaw(initOverrides);
+    async friendsControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.friendsControllerFindAllRaw(initOverrides);
     }
 
     /**
      * Retrieve a friend entry by ID
      */
-    async friendsFindOneRaw(requestParameters: FriendsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async friendsControllerFindOneRaw(requestParameters: FriendsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling friendsFindOne().'
+                'Required parameter "id" was null or undefined when calling friendsControllerFindOne().'
             );
         }
 
@@ -120,18 +120,18 @@ export class FriendsApi extends runtime.BaseAPI {
     /**
      * Retrieve a friend entry by ID
      */
-    async friendsFindOne(requestParameters: FriendsFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.friendsFindOneRaw(requestParameters, initOverrides);
+    async friendsControllerFindOne(requestParameters: FriendsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.friendsControllerFindOneRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete a friend entry by ID
      */
-    async friendsRemoveRaw(requestParameters: FriendsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async friendsControllerRemoveRaw(requestParameters: FriendsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling friendsRemove().'
+                'Required parameter "id" was null or undefined when calling friendsControllerRemove().'
             );
         }
 
@@ -152,8 +152,8 @@ export class FriendsApi extends runtime.BaseAPI {
     /**
      * Delete a friend entry by ID
      */
-    async friendsRemove(requestParameters: FriendsRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.friendsRemoveRaw(requestParameters, initOverrides);
+    async friendsControllerRemove(requestParameters: FriendsControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.friendsControllerRemoveRaw(requestParameters, initOverrides);
     }
 
 }

@@ -5,6 +5,7 @@ apis/BlockedsApi.ts
 apis/ChatMessagesApi.ts
 apis/ChatParticipantsApi.ts
 apis/ChatRoomsApi.ts
+apis/FileUploadApi.ts
 apis/FriendsApi.ts
 apis/GamesApi.ts
 apis/QueueApi.ts
@@ -23,8 +24,10 @@ models/CreateChatParticipantDto.ts
 models/CreateChatRoomDto.ts
 models/CreateGameDto.ts
 models/CreateUserDto.ts
+models/FileUploadResponseSuccess.ts
 models/Friend.ts
 models/Game.ts
+models/MeResponseSuccess.ts
 models/UpdateAchievementDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserDto.ts

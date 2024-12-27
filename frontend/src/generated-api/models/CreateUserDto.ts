@@ -21,10 +21,10 @@ import { mapValues } from '../runtime';
 export interface CreateUserDto {
     /**
      * User avatar
-     * @type {object}
+     * @type {string}
      * @memberof CreateUserDto
      */
-    avatar: object;
+    avatar: string;
     /**
      * User nickname
      * @type {string}

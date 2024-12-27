@@ -22,15 +22,15 @@ import {
     CreateGameDtoToJSON,
 } from '../models/index';
 
-export interface GamesCreateRequest {
+export interface GamesControllerCreateRequest {
     createGameDto: CreateGameDto;
 }
 
-export interface GamesFindOneRequest {
+export interface GamesControllerFindOneRequest {
     id: string;
 }
 
-export interface GamesRemoveRequest {
+export interface GamesControllerRemoveRequest {
     id: string;
 }
 
@@ -42,11 +42,11 @@ export class GamesApi extends runtime.BaseAPI {
     /**
      * Create a new game
      */
-    async gamesCreateRaw(requestParameters: GamesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async gamesControllerCreateRaw(requestParameters: GamesControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createGameDto'] == null) {
             throw new runtime.RequiredError(
                 'createGameDto',
-                'Required parameter "createGameDto" was null or undefined when calling gamesCreate().'
+                'Required parameter "createGameDto" was null or undefined when calling gamesControllerCreate().'
             );
         }
 
@@ -70,14 +70,14 @@ export class GamesApi extends runtime.BaseAPI {
     /**
      * Create a new game
      */
-    async gamesCreate(requestParameters: GamesCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.gamesCreateRaw(requestParameters, initOverrides);
+    async gamesControllerCreate(requestParameters: GamesControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.gamesControllerCreateRaw(requestParameters, initOverrides);
     }
 
     /**
      * Retrieve all games
      */
-    async gamesFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async gamesControllerFindAllRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -95,18 +95,18 @@ export class GamesApi extends runtime.BaseAPI {
     /**
      * Retrieve all games
      */
-    async gamesFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.gamesFindAllRaw(initOverrides);
+    async gamesControllerFindAll(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.gamesControllerFindAllRaw(initOverrides);
     }
 
     /**
      * Retrieve a game by ID
      */
-    async gamesFindOneRaw(requestParameters: GamesFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async gamesControllerFindOneRaw(requestParameters: GamesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling gamesFindOne().'
+                'Required parameter "id" was null or undefined when calling gamesControllerFindOne().'
             );
         }
 
@@ -127,18 +127,18 @@ export class GamesApi extends runtime.BaseAPI {
     /**
      * Retrieve a game by ID
      */
-    async gamesFindOne(requestParameters: GamesFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.gamesFindOneRaw(requestParameters, initOverrides);
+    async gamesControllerFindOne(requestParameters: GamesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.gamesControllerFindOneRaw(requestParameters, initOverrides);
     }
 
     /**
      * Delete a game by ID
      */
-    async gamesRemoveRaw(requestParameters: GamesRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async gamesControllerRemoveRaw(requestParameters: GamesControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling gamesRemove().'
+                'Required parameter "id" was null or undefined when calling gamesControllerRemove().'
             );
         }
 
@@ -159,8 +159,8 @@ export class GamesApi extends runtime.BaseAPI {
     /**
      * Delete a game by ID
      */
-    async gamesRemove(requestParameters: GamesRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.gamesRemoveRaw(requestParameters, initOverrides);
+    async gamesControllerRemove(requestParameters: GamesControllerRemoveRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.gamesControllerRemoveRaw(requestParameters, initOverrides);
     }
 
 }
