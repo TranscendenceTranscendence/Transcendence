@@ -75,22 +75,4 @@ export class UsersService {
     return token;
   }
 
-  async getUserIdFromCookie(token: any): Promise<number> {
-    console.log("token from getUserId:", token);
-    if (!token) {
-      throw new HttpException('No JWT token found', 401);
-    }
-    const decodedToken = this.jwt.decode(token);
-    if (!decodedToken || typeof decodedToken !== 'object') {
-      throw new HttpException('Invalid JWT token', 401);
-    }
-
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-    if (decodedToken.exp < currentTime) {
-      throw new HttpException('JWT token has expired', 401);
-    }
-    console.log("decodedToken:", decodedToken);
-    return decodedToken.sub;
-  }
-
 }
