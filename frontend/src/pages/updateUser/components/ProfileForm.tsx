@@ -38,6 +38,7 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
       setValue('nickname', response.nickname);
       setValue('enableTwoFactor', response.enableTwoFactor);
       setValue('avatar', response.avatar);
+      props.onSubmit(response);
     }).catch((error) => {
       console.error(error);
     });
