@@ -16,7 +16,9 @@
 import * as runtime from '../runtime';
 
 export interface FileUploadUploadFileRequest {
-    file?: Blob;
+    file: Blob;
+    filename: string;
+    category: string;
 }
 
 /**
@@ -27,6 +29,27 @@ export class FileUploadApi extends runtime.BaseAPI {
     /**
      */
     async fileUploadUploadFileRaw(requestParameters: FileUploadUploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters['file'] == null) {
+            throw new runtime.RequiredError(
+                'file',
+                'Required parameter "file" was null or undefined when calling fileUploadUploadFile().'
+            );
+        }
+
+        if (requestParameters['filename'] == null) {
+            throw new runtime.RequiredError(
+                'filename',
+                'Required parameter "filename" was null or undefined when calling fileUploadUploadFile().'
+            );
+        }
+
+        if (requestParameters['category'] == null) {
+            throw new runtime.RequiredError(
+                'category',
+                'Required parameter "category" was null or undefined when calling fileUploadUploadFile().'
+            );
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -51,6 +74,14 @@ export class FileUploadApi extends runtime.BaseAPI {
             formParams.append('file', requestParameters['file'] as any);
         }
 
+        if (requestParameters['filename'] != null) {
+            formParams.append('filename', requestParameters['filename'] as any);
+        }
+
+        if (requestParameters['category'] != null) {
+            formParams.append('category', requestParameters['category'] as any);
+        }
+
         const response = await this.request({
             path: `/file-upload/upload`,
             method: 'POST',
@@ -64,7 +95,7 @@ export class FileUploadApi extends runtime.BaseAPI {
 
     /**
      */
-    async fileUploadUploadFile(requestParameters: FileUploadUploadFileRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+    async fileUploadUploadFile(requestParameters: FileUploadUploadFileRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.fileUploadUploadFileRaw(requestParameters, initOverrides);
     }
 

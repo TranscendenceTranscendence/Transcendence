@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/AchievementsApi.ts
 apis/AppApi.ts
 apis/AuthApi.ts

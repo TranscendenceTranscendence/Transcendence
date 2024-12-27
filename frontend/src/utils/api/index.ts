@@ -6,8 +6,8 @@ export const useApi = () => {
     // get the token from cookies
     const token = Cookies.get('jwt');
     const config = new generatedApi.Configuration({
+        basePath: process.env.REACT_APP_API_URL,
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token || 'badbadbadbadbadbadbad'}`,
         },
     });
@@ -22,7 +22,8 @@ export const useApi = () => {
         Friends: new generatedApi.FriendsApi(config),
         Games: new generatedApi.GamesApi(config),
         Queue: new generatedApi.QueueApi(config),
-        App: new generatedApi.AppApi(),
+        FileUpload: new generatedApi.FileUploadApi(config),
+        App: new generatedApi.AppApi(config),
     }
     return api;
 }

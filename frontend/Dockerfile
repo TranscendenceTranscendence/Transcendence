@@ -5,16 +5,19 @@ FROM node:18.1.0-alpine3.14 AS base
 WORKDIR /app
 
 # Copy dependency files first for better caching
-COPY package.json package-lock.json ./
+COPY --chown=node:node package.json package-lock.json ./
 
 # Install dependencies
 RUN npm ci
 
 # Copy application source code
-COPY . .
+COPY --chown=node:node . .
 
 # Expose the application port
 EXPOSE 3000
+
+# Switch user to a non-root user
+USER node
 
 # Run the application
 CMD ["npm", "start"]

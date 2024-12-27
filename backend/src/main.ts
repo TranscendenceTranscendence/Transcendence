@@ -5,6 +5,9 @@ import * as cookieParser from 'cookie-parser';
 import jwtConfig from './auth/config/jwt.config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
+
 
 const httpsOptions = {
   key: fs.readFileSync('./secrets/cert-key.pem'),
@@ -22,6 +25,7 @@ const setupSwagger = (app: INestApplication) => {
 
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,
+
   });
 
   // Modify the operationId globally
@@ -40,7 +44,7 @@ const setupSwagger = (app: INestApplication) => {
 
 
 (async () => {
-  const app = await NestFactory.create(AppModule, {httpsOptions});
+  const app: NestExpressApplication = await NestFactory.create(AppModule, {httpsOptions});
 
   setupSwagger(app);
 
@@ -52,6 +56,10 @@ const setupSwagger = (app: INestApplication) => {
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+  });
+
+  app.useStaticAssets('uploads', {
+    prefix: '/uploads/',
   });
 
 
