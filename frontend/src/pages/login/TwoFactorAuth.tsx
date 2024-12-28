@@ -22,12 +22,15 @@ const TwoFactorAuth = () => {
         credentials: 'include',
         body: JSON.stringify({twoFactorAuthenticationCode: code}),
     }).then(response => {
-        if (!response.ok) {
+      if (response.status === 200 || response.status === 201) {
+        return response.json(); 
+      } else {
             throw new Error('Network response was not ok');
         }
         return response.json();
     }).then(data => {
-      if (data.success) {
+      console.log('Received data:', data);
+      if (data.msg === 'TwoFactorAuthentication turned on') {
         setSuccess('2FA verification successful!');
         setError('');
       } else {
