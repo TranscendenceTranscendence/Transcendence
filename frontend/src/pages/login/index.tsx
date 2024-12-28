@@ -1,75 +1,61 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import styled from "styled-components";
-import TwoFactorAuth from "./TwoFactorAuth";
-import Button from '@mui/joy/Button';
+import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid2';
+import AppTheme from '../../shared-theme/AppTheme.tsx';
+import { Button } from '@mui/material';
+import { Typography } from '@mui/joy';
 
-const Login = () => {
-    return (
-        // This is the login page. It will redirect to the 42 intra login page.
-        <Style>
-            <h1>Transcendence</h1>
-            <Button
-                component="a"
-                variant="solid" 
-                sx={{ 
-                    color: '#5865F2', 
-                    backgroundColor: 'white',
-                    transition: '0.3s',
-                    '&:hover': {
-                        backgroundColor: 'white',
-                        transform: 'scale(1.1)',
-                    }
-                }}
-                href="https://localhost:3000/auth/42/login"
-                size="lg"
-            >
-                Login with 42.intra
-            </Button>
-        </Style>
-    );
-};
-
-const Style = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #5865F2;
-    height: 100vh;
-    position: relative;
-    
-    h1 {
-        color: white;
-        font-family: 'Roboto', sans-serif;
-        font-size: 3rem;
-        margin-bottom: 2rem;
-    }
-    
-    .login_form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        border-radius: 10px;
-        font-family: 'Roboto', sans-serif;
-        background-color: white;
-        cursor: pointer;
-        transition: 0.3s;
-        margin: 1rem;
-        a {
-            background-color: white;
-            font-family: 'Roboto', sans-serif;
-            font-weight: bold;
-            font-size: 1.5rem;
-            color: #5865F2;
-            text-decoration: none; /* Remove underline */
-            transition: color 0.3s;
-
-            &:hover {
-                color: #F88379;
-        }
-    }
-`
-export default Login
+export default function Login(props: { disableCustomTheme?: boolean }) {
+  return (
+    <AppTheme {...props}>
+      <CssBaseline enableColorScheme />
+      <Grid
+        container
+        sx={{
+          height: {
+            xs: '100%',
+            sm: 'calc(100dvh - var(--template-frame-height, 0px))',
+          },
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: '4rem',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            background: 'linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0)',
+            backgroundSize: '200% auto',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            animation: 'gradient-animation 3s linear infinite alternate',
+            '@keyframes gradient-animation': {
+              '0%': { backgroundPosition: '0% 50%' },
+              '100%': { backgroundPosition: '100% 50%' },
+            },
+          }}
+        >
+          Transcendence
+        </Typography>
+        <Button
+          component="a"
+          variant="contained"
+          color="primary"
+          sx={{
+            transition: '0.3s',
+            '&:hover': {
+              transform: 'scale(1.1)',
+            },
+            marginBottom: '4rem',
+          }}
+          href="https://localhost:3000/auth/42/login"
+          size="large"
+        >
+          Login with 42.intra
+        </Button>
+      </Grid>
+    </AppTheme>
+  );
+}
