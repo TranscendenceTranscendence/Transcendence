@@ -21,10 +21,9 @@ export class User {
   @PrimaryColumn()
   id: number;
 
-  @ApiProperty({ type: Buffer, description: 'The avatar of the user.' })
-  @Column({ type: "bytea", nullable: false })
-  @IsOptional()
-  avatar: Buffer;
+  @ApiProperty({ type: 'string', description: 'The url to avatar' })
+  @Column({ default: "" })
+  avatar: string;
 
   @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
   @Column({ nullable: true })

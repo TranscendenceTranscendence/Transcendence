@@ -4,11 +4,11 @@
             "previewLimit": 50,
             "server": "localhost",
             "port": 5432,
-            "askForPassword": true,
             "driver": "PostgreSQL",
-            "name": "transcendence",
+            "name": "ft_transcendence",
             "database": "postgres",
-            "username": "user"
+            "username": "user",
+            "password": "user123"
         }
     ]
 }

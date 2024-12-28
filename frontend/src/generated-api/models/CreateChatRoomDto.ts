@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -42,7 +42,7 @@ export interface CreateChatRoomDto {
      * @type {string}
      * @memberof CreateChatRoomDto
      */
-    chatRoomType: string;
+    chatRoomType: CreateChatRoomDtoChatRoomTypeEnum;
     /**
      * user_id
      * @type {number}
@@ -54,8 +54,31 @@ export interface CreateChatRoomDto {
      * @type {string}
      * @memberof CreateChatRoomDto
      */
-    role: string;
+    role: CreateChatRoomDtoRoleEnum;
 }
+
+
+/**
+ * @export
+ */
+export const CreateChatRoomDtoChatRoomTypeEnum = {
+    Public: 'public',
+    Protected: 'protected',
+    Private: 'private',
+    Dm: 'Dm'
+} as const;
+export type CreateChatRoomDtoChatRoomTypeEnum = typeof CreateChatRoomDtoChatRoomTypeEnum[keyof typeof CreateChatRoomDtoChatRoomTypeEnum];
+
+/**
+ * @export
+ */
+export const CreateChatRoomDtoRoleEnum = {
+    Owner: 'owner',
+    Admin: 'admin',
+    Guest: 'guest'
+} as const;
+export type CreateChatRoomDtoRoleEnum = typeof CreateChatRoomDtoRoleEnum[keyof typeof CreateChatRoomDtoRoleEnum];
+
 
 /**
  * Check if a given object implements the CreateChatRoomDto interface.

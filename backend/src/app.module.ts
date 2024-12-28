@@ -16,9 +16,17 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { QueueModule } from './queue/queue.module';
 import { ChatModule } from './websockets/chat.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
+import { MulterModule } from '@nestjs/platform-express';
+
 
 @Module({
   imports: [
+    MulterModule.register({
+      limits: {
+        fileSize: 1024 * 1024 * 5,
+      }
+    }),
     PassportModule.register({
       session: false,
     }),
@@ -33,8 +41,8 @@ import { ChatModule } from './websockets/chat.module';
       autoLoadEntities: true,
       synchronize: true,
       logging: true,
+      logger: 'advanced-console', // Makes the logs easier to read
     }),
-    ConfigModule,
     ChatModule,
     UsersModule,
     AchievementsModule,
@@ -46,6 +54,7 @@ import { ChatModule } from './websockets/chat.module';
     GamesModule,
     QueueModule,
     AuthModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

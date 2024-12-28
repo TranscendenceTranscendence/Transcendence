@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Auth
- * The NestJS Auth API description
+ * Transcendence backend
+ * The Transcendence API description
  *
  * The version of the OpenAPI document: 1.0
  * 
@@ -18,11 +18,11 @@ import * as runtime from '../runtime';
 /**
  * 
  */
-export class DefaultApi extends runtime.BaseAPI {
+export class AppApi extends runtime.BaseAPI {
 
     /**
      */
-    async appControllerGetHelloRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async appControllerGetHelloRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -34,13 +34,14 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      */
-    async appControllerGetHello(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.appControllerGetHelloRaw(initOverrides);
+    async appControllerGetHello(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.appControllerGetHelloRaw(initOverrides);
+        return await response.value();
     }
 
 }
