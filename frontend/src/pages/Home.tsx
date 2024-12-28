@@ -6,7 +6,7 @@ const Home = () => {
     useEffect(() => {
         console.log("Home page");
         document.title = "Pong Game";
-        api.App.appGetHello().then((response) => {
+        api.App.appControllerGetHello().then((response) => {
             console.log(response);
         }).catch((error) => {
             console.error(error);
