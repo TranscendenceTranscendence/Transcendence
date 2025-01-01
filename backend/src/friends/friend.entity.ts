@@ -1,22 +1,34 @@
-import { Entity, ManyToOne, JoinColumn, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, OneToOne, JoinColumn, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { User } from '../users/user.entity';
 
-@Entity('FRIENDS')
+export enum FriendStatus {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+}
+
+@Entity('friends')
 export class Friend {
   @PrimaryGeneratedColumn()
-  id: number
+  id: number;
 
-  @PrimaryColumn()
-  person1_user_id: number;
+  @Column()
+  sender_id: number;
 
-  @PrimaryColumn()
-  person2_user_id: number;
+  @Column()
+  receiver_id: number;
 
-  @ManyToOne(() => User, (user) => user.friends1)
-  @JoinColumn({ name: 'person1_user_id' })
-  person1User: User;
+  @Column({ type: 'enum', enum: FriendStatus, default: FriendStatus.PENDING })
+  status: FriendStatus;
 
-  @ManyToOne(() => User, (user) => user.friends2)
-  @JoinColumn({ name: 'person2_user_id' })
-  person2User: User;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @OneToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'sender_id' })
+  sender: User;
+
+  @OneToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'receiver_id' })
+  receiver: User;
 }

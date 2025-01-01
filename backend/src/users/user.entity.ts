@@ -15,7 +15,7 @@ export enum user_status {
 	Playing = "playing"
 }
 
-@Entity('USER')
+@Entity('user')
 export class User {
   @ApiProperty({ type: 'number', description: 'The ID of the user.' })
   @PrimaryColumn()
@@ -79,11 +79,11 @@ export class User {
   @OneToMany(() => ChatParticipant, participant => participant.user)
   chatParticipants: ChatParticipant[];
 
-  @OneToMany(() => Friend, friend => friend.person1User)
-  friends1: Friend[];
+  @OneToMany(() => Friend, (friend) => friend.sender)
+  sentFriendRequests: Friend[];
 
-  @OneToMany(() => Friend, friend => friend.person2User)
-  friends2: Friend[];
+  @OneToMany(() => Friend, (friend) => friend.receiver)
+  receivedFriendRequests: Friend[];
 
   @OneToMany(() => Game, game => game.player1User)
   players1: Game[];
