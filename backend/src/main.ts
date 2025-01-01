@@ -2,19 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 import * as cookieParser from 'cookie-parser';
-import jwtConfig from './auth/config/jwt.config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
-import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-
-async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('./secrets/cert-key.pem'),
-    cert: fs.readFileSync('./secrets/cert.pem'),
-  };
-  const app = await NestFactory.create(AppModule, {httpsOptions});
 
 const setupSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -37,6 +28,10 @@ const setupSwagger = (app: INestApplication) => {
 
 
 (async () => {
+  const httpsOptions = {
+    key: fs.readFileSync('./secrets/cert-key.pem'),
+    cert: fs.readFileSync('./secrets/cert.pem')
+  }
   const app: NestExpressApplication = await NestFactory.create(AppModule, {httpsOptions});
 
   setupSwagger(app);

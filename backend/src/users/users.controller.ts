@@ -111,7 +111,7 @@ export class UsersController {
                 id: data.id,
                 avatar: data.avatar,
                 nickname: data.nickname,
-                enable_two_factor: data.enable_two_factor,
+                enable_two_factor: data.two_factor_enabled,
             };
         } catch (error) {
             throw new InternalServerErrorException(error.message);
