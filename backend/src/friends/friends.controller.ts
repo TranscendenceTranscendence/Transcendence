@@ -5,107 +5,34 @@ import {
     Post,
     Body,
     Param,
-    Delete,
+    Delete, UseGuards, Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-friend.dto';
 import { FriendsService } from './friends.service';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
 
 @ApiTags('Friends') // Groups the endpoints under "Friends" in Swagger
 @Controller('friends')
 export class FriendsController {
     constructor(private readonly friendsService: FriendsService) {}
 
-    @Post()
-    @ApiOperation({ summary: 'Create a friend entry' })
-    @ApiResponse({
-        status: 201,
-        description: 'Friend created successfully.',
-    })
-    @ApiResponse({
-        status: 400,
-        description: 'Bad Request.',
-    })
-    async create(@Body() createFriendDto: CreateFriendDto) {
-        try {
-            await this.friendsService.create(createFriendDto);
-            return {
-                success: true,
-                message: 'Friend Created Successfully',
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
-        }
-    }
-
-    @Get()
-    @ApiOperation({ summary: 'Retrieve all friend entries' })
-    @ApiResponse({
-        status: 200,
-        description: 'Friends fetched successfully.',
-    })
-    @ApiResponse({
-        status: 500,
-        description: 'Internal server error.',
-    })
-    async findAll() {
-        try {
-            const data = await this.friendsService.findAll();
-            return {
-                success: true,
-                data,
-                message: 'Friends Fetched Successfully',
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
-        }
-    }
-
-    @Get(':id')
-    @ApiOperation({ summary: 'Retrieve a friend entry by ID' })
-    @ApiResponse({
-        status: 200,
-        description: 'Friend fetched successfully.',
-    })
-    @ApiResponse({
-        status: 404,
-        description: 'Friend not found.',
-    })
-    async findOne(@Param('id') id: string) {
-        try {
-            const data = await this.friendsService.findByPersonUserId(+id);
-            return {
-                success: true,
-                data,
-                message: 'Friend Fetched Successfully',
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
-        }
-    }
-
-    @Delete(':id')
+    @Post('/send/:id')
     @ApiOperation({ summary: 'Delete a friend entry by ID' })
     @ApiResponse({
         status: 200,
-        description: 'Friend deleted successfully.',
+        description: 'Friend request sent successfully.',
     })
     @ApiResponse({
         status: 404,
-        description: 'Friend not found.',
+        description: 'User not found.',
     })
-    async remove(@Param('id') id: string) {
+    @UseGuards(JwtAuthGuard)
+    async remove(@Param('id') id: string, @Req() req: Request) {
         try {
+            const userId = req.user.id;
             await this.friendsService.remove(+id);
             return {
                 success: true,

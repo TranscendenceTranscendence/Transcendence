@@ -4,6 +4,16 @@ import { Repository } from 'typeorm';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { UpdateFriendDto } from './dto/update-friend.dto';
 import { Friend } from './friend.entity';
+import { ApiProperty } from '@nestjs/swagger';
+
+class SendFriendRequestDto {
+  @ApiProperty()
+  senderId: number
+
+  @ApiProperty()
+  sendeeId: number
+
+}
 
 @Injectable()
 export class FriendsService {
@@ -11,6 +21,14 @@ export class FriendsService {
     @InjectRepository(Friend)
     private readonly friendsRepository: Repository<Friend>,
   ) {}
+
+  async sendFriendRequest(
+    request: SendFriendRequestDto
+  ) {
+    const sendee = await this.friendsRepository.findOneBy(
+      {id: request.sendeeId}
+    )
+  }
 
   async create(
     createFriendDto: CreateFriendDto,): Promise<Friend> {

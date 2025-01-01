@@ -1,8 +1,10 @@
-import { Entity, ManyToOne, JoinColumn, PrimaryColumn} from 'typeorm';
+import { Entity, ManyToOne, JoinColumn, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 
 @Entity('FRIENDS')
 export class Friend {
+  @PrimaryGeneratedColumn()
+  id: number
 
   @PrimaryColumn()
   person1_user_id: number;
