@@ -8,7 +8,7 @@ import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 import { IsOptional } from 'class-validator';
 import {ApiProperty} from "@nestjs/swagger";
 
-export enum user_status {
+export enum UserStatus {
 	Offline = "offline",
 	Online = "online",
 	Waiting = "waiting",
@@ -57,11 +57,11 @@ export class User {
   @ApiProperty({ type: 'string', description: 'The status of the user.' })
   @Column({
 	type: "enum",
-	enum: user_status,
+	enum: UserStatus,
 	default: 'offline',
   })
   @IsOptional()
-  user_status: user_status;
+  user_status: UserStatus;
 
   // Relationships
   @OneToMany(() => Achievement, achievement => achievement.user,)
