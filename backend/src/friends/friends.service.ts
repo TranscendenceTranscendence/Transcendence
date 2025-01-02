@@ -1,18 +1,21 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateFriendDto } from './dto/create-friend.dto';
-import { UpdateFriendDto } from './dto/update-friend.dto';
 import { Friend } from './friend.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../users/user.entity';
 
 class SendFriendRequestDto {
   @ApiProperty()
-  senderId: number
+  senderId: number;
 
   @ApiProperty()
-  sendeeId: number
+  recieverId: number;
+}
 
+class GetFriendRequestsDto {
+  @ApiProperty()
+  recieverId: number;
 }
 
 @Injectable()
@@ -20,60 +23,70 @@ export class FriendsService {
   constructor(
     @InjectRepository(Friend)
     private readonly friendsRepository: Repository<Friend>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
-  async sendFriendRequest(
-    request: SendFriendRequestDto
-  ) {
-    const sendee = await this.friendsRepository.findOneBy(
-      {id: request.sendeeId}
-    )
+  async sendFriendRequest(request: SendFriendRequestDto) {
+    if (request.senderId === request.recieverId) {
+      throw new HttpException('Sender and receiver cannot be the same user.', HttpStatus.BAD_REQUEST);
+    }
+
+    const [receiver, sender] = await Promise.all([
+      this.usersRepository.findOneBy({ id: request.recieverId }),
+      this.usersRepository.findOneBy({ id: request.senderId }),
+    ]);
+
+    if (!receiver) {
+      throw new HttpException('Receiver not found.', HttpStatus.NOT_FOUND);
+    }
+
+    if (!sender) {
+      throw new HttpException('Sender not found.', HttpStatus.NOT_FOUND);
+    }
+
+    const existingRequest = await this.friendsRepository.findOneBy({
+      sender: sender,
+      receiver: receiver,
+    });
+
+    if (existingRequest) {
+      throw new HttpException('Friend request already exists.', HttpStatus.CONFLICT);
+    }
+
+    const newFriend = this.friendsRepository.create({
+      receiver,
+      sender,
+    });
+
+    try {
+      await this.friendsRepository.save(newFriend);
+      return { message: 'Friend request sent successfully.' };
+    } catch {
+      throw new HttpException('Failed to send friend request.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  async create(
-    createFriendDto: CreateFriendDto,): Promise<Friend> {
-        const friendData =
-            await this.friendsRepository.create(
-                createFriendDto,
-            );
-    return this.friendsRepository.save(friendData);
-  }
+  async getFriendRequests(request: GetFriendRequestsDto, page: number = 1, limit: number = 10) {
+    page = Math.max(1, page);
+    limit = Math.max(1, limit);
 
-  async findAll(): Promise<Friend[]> {
-    return await this.friendsRepository.find();
-  }
+    try {
+      const [friendRequests, total] = await this.friendsRepository.findAndCount({
+        where: { receiver_id: request.recieverId },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
 
-  async findByPersonUserId(id: number): Promise<Friend[]> {
-    const friendData =
-        await this.friendsRepository.find({ 
-          where: [
-            { person1User: { id }},
-            { person2User: { id }}
-          ]
-        });
-    if (!friendData)
-        throw new HttpException(
-            'Friend Not Found',
-            404,
-        );
-        return friendData;
-  }
-
-  // async update(
-  //   id: number,
-  //   UpdateFriendDto: UpdateFriendDto,): Promise<Friend[]> {
-  //   const existingFriend = await this.findByPersonUserId(id);
-  //   const friendData = this.friendsRepository.merge(
-  //       existingFriend,
-  //       UpdateFriendDto,
-  //   );
-  //   return await this.friendsRepository.save(
-  //       friendData,
-  //   );
-  // }
-
-  async remove(id: number): Promise<Friend[]> {
-    const existingFriend = await this.findByPersonUserId(id);
-    return await this.friendsRepository.remove(existingFriend,);
+      return {
+        data: friendRequests,
+        total,
+        page,
+        pageSize: limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    } catch {
+      throw new HttpException('Failed to fetch friend requests.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
