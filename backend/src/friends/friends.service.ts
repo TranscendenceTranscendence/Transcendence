@@ -10,12 +10,12 @@ class SendFriendRequestDto {
   senderId: number;
 
   @ApiProperty()
-  recieverId: number;
+  receiverId: number;
 }
 
 class GetFriendRequestsDto {
   @ApiProperty()
-  recieverId: number;
+  receiverId: number;
 }
 
 @Injectable()
@@ -28,13 +28,20 @@ export class FriendsService {
   ) {}
 
   async sendFriendRequest(request: SendFriendRequestDto) {
-    if (request.senderId === request.recieverId) {
-      throw new HttpException('Sender and receiver cannot be the same user.', HttpStatus.BAD_REQUEST);
+    const { senderId, receiverId } = request;
+
+    // Prevent self-friendship
+    if (senderId === receiverId) {
+      throw new HttpException(
+        'Sender and receiver cannot be the same user.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
+    // Validate sender and receiver existence
     const [receiver, sender] = await Promise.all([
-      this.usersRepository.findOneBy({ id: request.recieverId }),
-      this.usersRepository.findOneBy({ id: request.senderId }),
+      this.usersRepository.findOneBy({ id: receiverId }),
+      this.usersRepository.findOneBy({ id: senderId }),
     ]);
 
     if (!receiver) {
@@ -45,37 +52,50 @@ export class FriendsService {
       throw new HttpException('Sender not found.', HttpStatus.NOT_FOUND);
     }
 
-    const existingRequest = await this.friendsRepository.findOneBy({
-      sender: sender,
-      receiver: receiver,
+    // Check for existing friend request
+    const existingRequest = await this.friendsRepository.findOne({
+      where: { sender, receiver },
     });
 
     if (existingRequest) {
-      throw new HttpException('Friend request already exists.', HttpStatus.CONFLICT);
+      throw new HttpException(
+        'Friend request already exists.',
+        HttpStatus.CONFLICT,
+      );
     }
 
-    const newFriend = this.friendsRepository.create({
-      receiver,
-      sender,
-    });
+    // Create and save friend request
+    const newFriendRequest = this.friendsRepository.create({ receiver, sender });
 
     try {
-      await this.friendsRepository.save(newFriend);
+      await this.friendsRepository.save(newFriendRequest);
       return { message: 'Friend request sent successfully.' };
     } catch {
-      throw new HttpException('Failed to send friend request.', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to send friend request.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async getFriendRequests(request: GetFriendRequestsDto, page: number = 1, limit: number = 10) {
+  async getFriendRequests(
+    request: GetFriendRequestsDto,
+    page = 1,
+    limit = 10,
+  ) {
+    const { receiverId } = request;
+
+    // Ensure page and limit are positive integers
     page = Math.max(1, page);
     limit = Math.max(1, limit);
 
     try {
+      // Fetch friend requests with pagination
       const [friendRequests, total] = await this.friendsRepository.findAndCount({
-        where: { receiver_id: request.recieverId },
+        where: { receiver: { id: receiverId } }, // Ensure proper relation mapping
         skip: (page - 1) * limit,
         take: limit,
+        relations: ['sender'], // Include sender details
       });
 
       return {
@@ -86,7 +106,10 @@ export class FriendsService {
         totalPages: Math.ceil(total / limit),
       };
     } catch {
-      throw new HttpException('Failed to fetch friend requests.', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to fetch friend requests.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

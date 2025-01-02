@@ -1,18 +1,19 @@
-// Friends Controller
 import {
   Controller,
   Get,
   Post,
   Param,
   UseGuards,
-  Req
+  Req,
+  ParseIntPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
-import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
 import { GetFriendRequestsDto } from './dto/get-friend-requests.dto';
-
+import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
 
 @ApiTags('Friends') // Groups the endpoints under "Friends" in Swagger
 @Controller('friends')
@@ -30,29 +31,24 @@ export class FriendsController {
     description: 'User not found.',
   })
   @UseGuards(JwtAuthGuard)
-  async sendFriendRequest(@Param('id') recieverId: number, @Req() req: Request) {
-    try {
-      const senderId = req.user.id;
-      await this.friendsService.sendFriendRequest({
-        recieverId,
-        senderId
-      })
-      return {
-        success: true,
-        message: 'Friend Request send Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+  async sendFriendRequest(
+    @Param('id', ParseIntPipe) receiverId: number,
+    @Req() req: Request,
+  ) {
+    const senderId = req.user?.id; // Type safety assumed for `req.user`
+    if (!senderId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
+
+    await this.friendsService.sendFriendRequest({ receiverId, senderId });
+    return {
+      success: true,
+      message: 'Friend request sent successfully.',
+    };
   }
 
-
-
-  @Get('requests/')
-  @ApiOperation({ summary: "Get all open requests for current user" })
+  @Get('/requests')
+  @ApiOperation({ summary: 'Get all open requests for current user' })
   @ApiResponse({
     status: 200,
     description: 'Successfully fetched friend requests.',
@@ -60,10 +56,19 @@ export class FriendsController {
   })
   @UseGuards(JwtAuthGuard)
   async getFriendRequests(@Req() req: Request) {
-    return this.friendsService.getFriendRequests({
-      recieverId: req.user.id
-    })
+    const receiverId = req.user?.id; // Ensure type safety for `req.user`
+    console.log(receiverId);
+    if (!receiverId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    const friendRequests = await this.friendsService.getFriendRequests({
+      receiverId,
+    });
+
+    return {
+      success: true,
+      data: friendRequests,
+    };
   }
-
-
 }
