@@ -1,7 +1,7 @@
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsEmail, IsBoolean
  } from 'class-validator';
-import { User, user_status } from '../user.entity';
+import { User, UserStatus } from '../user.entity';
 import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateUserDto extends PartialType(User)  {
@@ -44,6 +44,6 @@ export class CreateUserDto extends PartialType(User)  {
   
     @ApiProperty({ description: 'User status' })
     @IsOptional()
-    @IsEnum(user_status)
-    user_status: user_status;
+    @IsEnum(UserStatus)
+    user_status: UserStatus;
 }
