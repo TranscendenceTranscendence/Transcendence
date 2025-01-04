@@ -5,6 +5,7 @@ import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
 import { Chat } from "./chat/Chat.jsx"
 import TwoFactorAuth from './pages/login/TwoFactorAuth';
+import Profile from './pages/user/Profile';
 // import './App.css';
 
 function App() {
