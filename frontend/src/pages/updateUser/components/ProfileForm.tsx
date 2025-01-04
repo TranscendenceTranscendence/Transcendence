@@ -8,6 +8,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { styled } from '@mui/system';
 import { Button, Snackbar, Alert, CircularProgress } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../../utils/api';
 import type { UpdateUserDto } from '../../../generated-api';
 import { Typography } from '@mui/joy';
@@ -23,6 +24,7 @@ interface ProfileFormProps {
 
 const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
   const api = useApi();
+  const navigate = useNavigate();
   const { control, register, handleSubmit, setValue, getValues } = useForm<UpdateUserDto>({
     defaultValues: {
       nickname: '',
@@ -55,6 +57,11 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
     getValues,
   }));
 
+  const handleCheckboxChange = (event) => {
+    if (event.target.checked) {
+      navigate('/2fa');
+    }
+  };
   const onSubmit = useCallback(async (data: UpdateUserDto) => {
     setIsSaving(true);
     try {
@@ -143,7 +150,7 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
             control={control}
             render={({ field }) => (
               <FormControlLabel
-                control={<Checkbox {...field} checked={field.value} />}
+                control={<Checkbox {...field} checked={field.value} onChange={(e) => { field.onChange(e); handleCheckboxChange(e); }}/>}
                 label="Enable Two-Factor Authentication"
               />
             )}

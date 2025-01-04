@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const TwoFactorAuth = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ const TwoFactorAuth = () => {
       console.log('Received data:', data);
       if (data.msg === 'TwoFactorAuthentication turned on') {
         setSuccess('2FA verification successful!');
+        navigate('/update');
         setError('');
       } else {
         setError('Invalid 2FA code. Please try again.');
