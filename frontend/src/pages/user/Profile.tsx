@@ -60,6 +60,7 @@ export default function Profile() {
     //   .catch(error => {
     //     console.error('Failed to fetch user data:', error);
     //   });
+    
   }, [ id]);
 
   if (error) {
