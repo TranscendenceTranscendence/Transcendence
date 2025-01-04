@@ -6,6 +6,7 @@ import UpdateUser from "./pages/updateUser/updateUser.tsx";
 import { Chat } from "./chat/Chat.jsx"
 import TwoFactorAuth from './pages/login/TwoFactorAuth';
 // import './App.css';
+import Profile from "./pages/user/Profile.tsx";
 
 function App() {
   return (

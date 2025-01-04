@@ -13,10 +13,10 @@ export default function MatchMaking() {
                 setMessage("Player ID can't be empty!");
                 return;
             }
-            const response = await axios.post('http://localhost:3000/queue/join', { playerId });
+            const response = await axios.post('https://localhost:3000/queue/join', { playerId });
             if (response.data !== "") {
                 console.log("You matched with an opponent!");
-                const gameResponse = await axios.post('http://localhost:3000/games', {
+                const gameResponse = await axios.post('https://localhost:3000/games', {
                     player1_user_id: 1,
                     player2_user_id: 2,
                     winner_user_id: 2,
