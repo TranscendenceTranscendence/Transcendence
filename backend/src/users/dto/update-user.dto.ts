@@ -8,7 +8,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ type: 'string', description: 'The avatar of the user.' })
   avatar: string;
   @ApiProperty({ type: 'boolean', description: 'The two factor authentication status of the user.' })
-  enable_two_factor: boolean;
+  two_factor_enabled: boolean;
 
 
 }

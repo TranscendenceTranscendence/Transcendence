@@ -1,9 +1,15 @@
-// src/config/config.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigService } from "./config.service";
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from '../auth.module';
+import { UsersModule } from '../../users/users.module';
 
 @Module({
-    providers: [ConfigService],
-    exports: [ConfigService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Make ConfigModule globally available
+    }),
+    AuthModule,
+    UsersModule,
+  ],
 })
-export class ConfigModule {}
+export class AppModule {}

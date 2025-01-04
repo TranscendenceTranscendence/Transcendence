@@ -2,17 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 import * as cookieParser from 'cookie-parser';
-import jwtConfig from './auth/config/jwt.config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
-import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
-
-
-const httpsOptions = {
-  key: fs.readFileSync('./secrets/cert-key.pem'),
-  cert: fs.readFileSync('./secrets/cert.pem'),
-};
 
 
 const setupSwagger = (app: INestApplication) => {
@@ -36,6 +28,10 @@ const setupSwagger = (app: INestApplication) => {
 
 
 (async () => {
+  const httpsOptions = {
+    key: fs.readFileSync('./secrets/cert-key.pem'),
+    cert: fs.readFileSync('./secrets/cert.pem')
+  }
   const app: NestExpressApplication = await NestFactory.create(AppModule, {httpsOptions});
 
   setupSwagger(app);
@@ -44,7 +40,7 @@ const setupSwagger = (app: INestApplication) => {
 
   app.enableCors({
     origin: [
-      process.env.FRONTEND_URL || 'http://localhost:3001',
+      'http://localhost:3001',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
@@ -55,6 +51,7 @@ const setupSwagger = (app: INestApplication) => {
   });
 
   await app.listen(3000);
+
   console.info(`Swagger documentation available at https://localhost:3000/api-docs`);
   console.log(`listening on ${process.env.FRONTEND_URL || 'http://localhost:3001'}`);
 })();

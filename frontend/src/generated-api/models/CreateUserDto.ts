@@ -109,7 +109,7 @@ export function CreateUserDtoFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'avatar': json['avatar'],
         'nickname': json['nickname'],
-        'enableTwoFactor': json['enable_two_factor'],
+        'enableTwoFactor': json['two_factor_enabled'],
         'isSecondAuthDone': json['is_second_auth_done'],
         'secondAuthCode': json['second_auth_code'],
         'email': json['email'],
@@ -131,7 +131,7 @@ export function CreateUserDtoToJSONTyped(value?: CreateUserDto | null, ignoreDis
         
         'avatar': value['avatar'],
         'nickname': value['nickname'],
-        'enable_two_factor': value['enableTwoFactor'],
+        'two_factor_enabled': value['enableTwoFactor'],
         'is_second_auth_done': value['isSecondAuthDone'],
         'second_auth_code': value['secondAuthCode'],
         'email': value['email'],

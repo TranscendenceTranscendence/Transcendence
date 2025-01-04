@@ -42,9 +42,9 @@ const addStyle = ( value : boolean ) => {
 }
 
 export const ChatBox = ({ socket, chatRoomId, userId }) => {
-  const url = `http://localhost:3000/chatMessages/${chatRoomId}`;
+  const url = `https://localhost:3000/chatMessages/${chatRoomId}`;
   const { data: fetchedMessages, error, loading } = useFetchRequest<oldMessage[]>(url);
-  const { data: activeParticipants, error2, loading2 } = useFetchRequestMount<Participants[]>(`http://localhost:3000/chatParticipants/${chatRoomId}/find/`)
+  const { data: activeParticipants, error2, loading2 } = useFetchRequestMount<Participants[]>(`https://localhost:3000/chatParticipants/${chatRoomId}/find/`)
   const localParticipant = activeParticipants?.find((participant) => participant.user_id?.toString() == userId.toString());
   const [messages, setMessages] = useState<oldMessage[]>(fetchedMessages || []); 
   const [input, setInput] = useState('');
@@ -86,7 +86,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
       if (input.trim()) {
         const newMessage = { content: input, user_id: userId.userId };
         socket.emit('sendMessage', newMessage);
-        handleSubmitMessages('http://localhost:3000/chatMessages', input, userId, chatRoomId);
+        handleSubmitMessages('https://localhost:3000/chatMessages', input, userId, chatRoomId);
         setInput('');
       }
     };

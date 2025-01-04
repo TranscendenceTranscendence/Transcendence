@@ -1,7 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
 import { Inject, Injectable } from '@nestjs/common';
-import FortyTwoOauthConfig from '../config/ft-oauth.config';
+import FortyTwoOauthConfig from '../../config/ft-oauth.config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { UsersService } from '../../users/users.service';
@@ -40,7 +40,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
       user.is_second_auth_done = false;
       user.email = profile.emails[0].value;
       user.ladder_level = 0;
-      user.second_auth_code = null;
       user.nickname = '';
 
       user = await this.usersService.create(user);

@@ -61,7 +61,7 @@ export function UpdateUserDtoFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'nickname': json['nickname'],
         'avatar': json['avatar'],
-        'enableTwoFactor': json['enable_two_factor'],
+        'enableTwoFactor': json['two_factor_enabled'],
     };
 }
 
@@ -78,7 +78,7 @@ export function UpdateUserDtoToJSONTyped(value?: UpdateUserDto | null, ignoreDis
         
         'nickname': value['nickname'],
         'avatar': value['avatar'],
-        'enable_two_factor': value['enableTwoFactor'],
+        'two_factor_enabled': value['enableTwoFactor'],
     };
 }
 

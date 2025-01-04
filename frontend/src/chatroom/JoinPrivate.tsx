@@ -29,7 +29,7 @@ export const JoinPrivate: React.FC<JoinPrivateProps> = ({ chatRooms, onChatRoomC
     const [roomName, setRoomName] = useState('');
     const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
     const [refetch, setRefetch] = useState<boolean>(false);
-    const url = 'http://localhost:3000/chatroom';
+    const url = 'https://localhost:3000/chatroom';
     const { data: fetched, error, loading } = useFetchRequestDep<ChatRoom[]>(url, refetch);
 
     const HandleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

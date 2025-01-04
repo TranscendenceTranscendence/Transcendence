@@ -18,7 +18,7 @@ export const PromoteUser = async (chatRoomId, id) => {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
-      const response = await axios.put(`http://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
+      const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -30,7 +30,7 @@ export const MuteUser = async (chatRoomId, id) => {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
-      const response = await axios.put(`http://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
+      const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -42,7 +42,7 @@ export const BlockUser = async (chatRoomId, id) => {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
-      const response = await axios.put(`http://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
+      const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);
