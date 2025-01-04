@@ -48,8 +48,8 @@ This README provides an overview of the project setup and guidelines for develop
    This builds and starts the application.
 
 4. Access the application:
-   - Frontend: `http://localhost:3000`
-   - Backend API: `https://localhost:3001`
+   - Frontend: `http://localhost:3001`
+   - Backend API: `https://localhost:3000`
 
 5. Stop the application:
    ```bash

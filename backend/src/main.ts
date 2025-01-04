@@ -51,6 +51,7 @@ const setupSwagger = (app: INestApplication) => {
   });
 
   await app.listen(3000);
+
   console.info(`Swagger documentation available at https://localhost:3000/api-docs`);
   console.log(`listening on ${process.env.FRONTEND_URL || 'http://localhost:3001'}`);
 })();
