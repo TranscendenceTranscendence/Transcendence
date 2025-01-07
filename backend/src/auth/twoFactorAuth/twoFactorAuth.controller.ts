@@ -16,7 +16,6 @@ import { JwtAccessAuthGuard } from "../guards/jwt-access.guard";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import { UsersService } from "../../users/users.service";
 import { AuthService } from "../auth.service";
-import { Request } from 'express';
 import { toFileStream } from "qrcode";
 import { PassThrough } from 'stream';
 
@@ -29,12 +28,15 @@ export class TwoFactorAuthController {
     private readonly authService: AuthService
   ) {}
 
-  @Get('generate') // TODO add guard, check if user has already 2fa enabled
-  async register(@Req() request: Request) {
+  @Get('generate')
+  @UseGuards(JwtAccessAuthGuard)
+  async register(@Req() req: RequestWithUser) {
     console.log("generate");
-    const token = request.signedCookies['jwt'];
-    const userId = await this.usersService.getUserIdFromCookie(token);
-    const user = await this.usersService.findOne(userId);
+
+    const user = req.user;
+    if (user.two_factor_enabled)
+      return { msg: "TwoFactorAuthentication already turned on" };
+
     const { otpAuthUrl } = await this.twoFactorAuthService.generateTwoFactorAuthenticationSecret(user);
     
     const qrStream = new PassThrough();
@@ -43,16 +45,15 @@ export class TwoFactorAuthController {
   }
 
   @Post('turn-on')
+  @UseGuards(JwtAccessAuthGuard)
   async turnOnTwoFactorAuthentication(
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
-    console.log("turn-on");
-    console.log(twoFactorAuthenticationCode);
+    const user = req.user;
 
-    const token = req.signedCookies['jwt'];
-    const userId = await this.usersService.getUserIdFromCookie(token);
-    const user = await this.usersService.findOne(userId);
+    if (user.two_factor_enabled)
+      return { msg: "TwoFactorAuthentication already turned on" };
 
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
       twoFactorAuthenticationCode, user
@@ -61,6 +62,15 @@ export class TwoFactorAuthController {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
     await this.usersService.turnOnTwoFactorAuthentication(user.id);
+
+    const accessToken = await this.authService.generateAccessToken(req.user, true);
+    
+    req.res.cookie('access_token', accessToken, {
+      httpOnly: true,
+      signed: true,
+      secure: true,         // Send only over HTTPS
+      sameSite: 'none',     // Allow cross-origin requests
+    });
 
     return {
       msg: "TwoFactorAuthentication turned on"
@@ -89,14 +99,16 @@ export class TwoFactorAuthController {
   @Post('authenticate')
   @UseGuards(JwtAccessAuthGuard)
   async authenticate(
-    @Req() req: any,
+    @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
+    const user = req.user;
+
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, user
     );
 
-    if (!req.user.twoFactorAuthEnabled) {
+    if (!user.two_factor_enabled) {
       throw new ForbiddenException('Two-Factor Authentication is not enabled');
     }
 
@@ -104,15 +116,17 @@ export class TwoFactorAuthController {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
     
-    req.user.isSecondFactorAuthenticated = true;
+    req.user.is_second_auth_done = true; // TODO Why store in the database?
 
-    const accessToken = await this.authService.generateAccessToken(req.user, true);
+    const accessToken = await this.authService.generateAccessToken(user, true);
     
-    req.res.cookie('2fa_token', accessToken, {
+    req.res.cookie('access_token', accessToken, {
       httpOnly: true,
-      path: '/',
+      signed: true,
+      secure: true,         // Send only over HTTPS
+      sameSite: 'none',     // Allow cross-origin requests
     });
 
-    return req.user;
+    return user;
   }
 }

@@ -50,12 +50,11 @@ export class AuthController {
     })
     @UseGuards(FortyTwoAuthGuard)
     async fortyTwoCallback(@Req() req: Request, @Res() res: ExpressResponse) {
-        if (req.user['twofactor'] == true) {
-            const checkCookie = await this.usersService.checkToken(req.user['id']);
-            req.res.cookie('jwt', checkCookie, {path: '/', httpOnly: true, signed: true});
-        }
-        const token = await this.usersService.signToken(req.user['id']);
-        req.res.cookie('jwt', token, {
+        const userId = req.user['id'];
+        const user = await this.usersService.findOne(userId);
+        const accessToken = await this.authService.generateAccessToken(user, false);
+        
+        req.res.cookie('access_token', accessToken, {
             httpOnly: true,
             signed: true,
             secure: true,         // Send only over HTTPS
@@ -65,7 +64,10 @@ export class AuthController {
         if (req.user['nickname'] === null || (req.user['nickname'] as string).trim().length == 0) {
             req.res.redirect(`http://localhost:3001/update`);
         } else {
-            req.res.redirect('http://localhost:3001');
+            if (user.two_factor_enabled == true)
+                req.res.redirect('http://localhost:3001/2fa/authenticate');
+            else
+                req.res.redirect('http://localhost:3001');
         }
         return;
     }
@@ -82,7 +84,7 @@ export class AuthController {
     })
     @UseGuards(AuthGuard('jwt'))
     async fortyTwoLogout(@Req() req: Request, @Res() res: ExpressResponse) {
-        res.clearCookie('jwt');
+        res.clearCookie('access_token');
         res.status(HttpStatus.OK).send();
         req.res.redirect('http://localhost:3001/login');
     }

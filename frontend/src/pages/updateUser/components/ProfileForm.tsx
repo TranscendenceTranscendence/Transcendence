@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../../utils/api';
 import type { UpdateUserDto } from '../../../generated-api';
 import { Typography } from '@mui/joy';
+import axios from 'axios';
 
 const FormGrid = styled(Grid)(() => ({
   display: 'flex',
@@ -57,10 +58,14 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
     getValues,
   }));
 
-  const handleCheckboxChange = (event) => {
-    if (event.target.checked) {
-      navigate('/2fa');
-    }
+  const handleCheckboxChange = async (event) => {
+    // const isChecked = event.target.checked;
+    // if (!isChecked) {
+    //   navigate('/2fa/turn-off');
+    // }
+    // else {
+      navigate('/2fa/turn-on');
+    // }
   };
   const onSubmit = useCallback(async (data: UpdateUserDto) => {
     setIsSaving(true);

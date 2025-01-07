@@ -5,6 +5,7 @@ import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
 import { Chat } from "./chat/Chat.jsx"
 import TwoFactorAuth from './pages/login/TwoFactorAuth';
+import DisableTwoFactorAuth from './pages/login/DisableTwoFactorAuth';
 import Profile from './pages/user/Profile';
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
       <Route path="/update" element={<UpdateUser />} />
       <Route path='/chat' element={<Chat />}/>
       <Route path="/profile/:id" element={<Profile />} />
-      <Route path='/2fa' element={<TwoFactorAuth />} />
+      <Route path='/2fa/turn-on' element={<TwoFactorAuth />} />
+      <Route path='/2fa/turn-off' element={<DisableTwoFactorAuth />} />
     </Routes>
   );
 }
