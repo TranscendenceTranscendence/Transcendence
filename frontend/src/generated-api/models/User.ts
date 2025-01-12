@@ -85,7 +85,7 @@ export interface User {
      * @type {boolean}
      * @memberof User
      */
-    enableTwoFactor: boolean;
+    twoFactorEnabled: boolean;
     /**
      * The two factor authentication status of the user.
      * @type {boolean}
@@ -93,11 +93,11 @@ export interface User {
      */
     isSecondAuthDone: boolean;
     /**
-     * The two factor authentication status of the user.
-     * @type {number}
+     * The two factor authentication secret of the user.
+     * @type {string}
      * @memberof User
      */
-    secondAuthCode: number;
+    twoFactorAuthSecret: string;
     /**
      * The email of the user.
      * @type {string}
@@ -198,9 +198,9 @@ export function instanceOfUser(value: object): value is User {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('avatar' in value) || value['avatar'] === undefined) return false;
     if (!('nickname' in value) || value['nickname'] === undefined) return false;
-    if (!('enableTwoFactor' in value) || value['enableTwoFactor'] === undefined) return false;
+    if (!('twoFactorEnabled' in value) || value['twoFactorEnabled'] === undefined) return false;
     if (!('isSecondAuthDone' in value) || value['isSecondAuthDone'] === undefined) return false;
-    if (!('secondAuthCode' in value) || value['secondAuthCode'] === undefined) return false;
+    if (!('twoFactorAuthSecret' in value) || value['twoFactorAuthSecret'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('ladderLevel' in value) || value['ladderLevel'] === undefined) return false;
     if (!('userStatus' in value) || value['userStatus'] === undefined) return false;
@@ -226,25 +226,26 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         return json;
     }
     return {
-        'id': json['id'] !== undefined ? json['id'] : null,
-        'avatar': json['avatar'] !== undefined ? json['avatar'] : '',
-        'nickname': json['nickname'] !== undefined ? json['nickname'] : '',
-        'enableTwoFactor': json['enable_two_factor'] !== undefined ? json['enable_two_factor'] : false,
-        'isSecondAuthDone': json['is_second_auth_done'] !== undefined ? json['is_second_auth_done'] : false,
-        'secondAuthCode': json['second_auth_code'] !== undefined ? json['second_auth_code'] : '',
-        'email': json['email'] !== undefined ? json['email'] : '',
-        'ladderLevel': json['ladder_level'] !== undefined ? json['ladder_level'] : 0,
-        'userStatus': json['user_status'] !== undefined ? json['user_status'] : '',
-        'achievements': Array.isArray(json['achievements']) ? json['achievements'].map(AchievementFromJSON) : [],
-        'blockedUsers': Array.isArray(json['blockedUsers']) ? json['blockedUsers'].map(BlockedFromJSON) : [],
-        'users': Array.isArray(json['users']) ? json['users'].map(BlockedFromJSON) : [],
-        'chatMessages': Array.isArray(json['chatMessages']) ? json['chatMessages'].map(ChatMessageFromJSON) : [],
-        'chatParticipants': Array.isArray(json['chatParticipants']) ? json['chatParticipants'].map(ChatParticipantFromJSON) : [],
-        'friends1': Array.isArray(json['friends1']) ? json['friends1'].map(FriendFromJSON) : [],
-        'friends2': Array.isArray(json['friends2']) ? json['friends2'].map(FriendFromJSON) : [],
-        'players1': Array.isArray(json['players1']) ? json['players1'].map(GameFromJSON) : [],
-        'players2': Array.isArray(json['players2']) ? json['players2'].map(GameFromJSON) : [],
-        'winners': Array.isArray(json['winners']) ? json['winners'].map(GameFromJSON) : [],
+        
+        'id': json['id'],
+        'avatar': json['avatar'],
+        'nickname': json['nickname'],
+        'twoFactorEnabled': json['two_factor_enabled'],
+        'isSecondAuthDone': json['is_second_auth_done'],
+        'twoFactorAuthSecret': json['two_factor_auth_secret'],
+        'email': json['email'],
+        'ladderLevel': json['ladder_level'],
+        'userStatus': json['user_status'],
+        'achievements': ((json['achievements'] as Array<any>).map(AchievementFromJSON)),
+        'blockedUsers': ((json['blockedUsers'] as Array<any>).map(BlockedFromJSON)),
+        'users': ((json['users'] as Array<any>).map(BlockedFromJSON)),
+        'chatMessages': ((json['chatMessages'] as Array<any>).map(ChatMessageFromJSON)),
+        'chatParticipants': ((json['chatParticipants'] as Array<any>).map(ChatParticipantFromJSON)),
+        'friends1': ((json['friends1'] as Array<any>).map(FriendFromJSON)),
+        'friends2': ((json['friends2'] as Array<any>).map(FriendFromJSON)),
+        'players1': ((json['players1'] as Array<any>).map(GameFromJSON)),
+        'players2': ((json['players2'] as Array<any>).map(GameFromJSON)),
+        'winners': ((json['winners'] as Array<any>).map(GameFromJSON)),
     };
 }
 
@@ -262,9 +263,9 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
         'id': value['id'],
         'avatar': value['avatar'],
         'nickname': value['nickname'],
-        'two_factor_enabled': value['enableTwoFactor'],
+        'two_factor_enabled': value['twoFactorEnabled'],
         'is_second_auth_done': value['isSecondAuthDone'],
-        'second_auth_code': value['secondAuthCode'],
+        'two_factor_auth_secret': value['twoFactorAuthSecret'],
         'email': value['email'],
         'ladder_level': value['ladderLevel'],
         'user_status': value['userStatus'],

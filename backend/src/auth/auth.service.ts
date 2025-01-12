@@ -7,12 +7,16 @@ import { Payload } from './payload/payload.interface';
 export class AuthService {
     constructor(private readonly jwtService: JwtService) {}
 
-    async generateAccessToken(user: User, isSecondFactorAuthenticated = false): Promise<string> {
-        const payload: Payload = {
-          id: user.id,
-          email: user.email,
-          isSecondFactorAuthenticated: isSecondFactorAuthenticated,
-        }
-        return this.jwtService.signAsync(payload);
-      }
+    // async generateAccessToken(user: User, isSecondFactorAuthenticated = false): Promise<string> {
+    //     const payload: Payload = {
+    //       id: user.id,
+    //       email: user.email,
+    //       isSecondFactorAuthenticated: isSecondFactorAuthenticated,
+    //     }
+    //     return this.jwtService.signAsync(payload);
+    //   }
+    async generateAccessToken(user: User, isTwoFactorAuthenticated: boolean): Promise<string> {
+      const payload = { sub: user.id, email: user.email, isSecondFactorAuthenticated: isTwoFactorAuthenticated };
+      return this.jwtService.signAsync(payload);
+    }
 }

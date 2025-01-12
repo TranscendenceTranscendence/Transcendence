@@ -3,6 +3,8 @@ import { useApi } from "../utils/api";
 
 const Home = () => {
     const api = useApi();
+
+
     useEffect(() => {
         console.log("Home page");
         document.title = "Pong Game";
@@ -20,3 +22,4 @@ const Home = () => {
 }
 
 export default Home
+

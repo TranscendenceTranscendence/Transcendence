@@ -53,22 +53,27 @@ export class AuthController {
         const userId = req.user['id'];
         const user = await this.usersService.findOne(userId);
         const accessToken = await this.authService.generateAccessToken(user, false);
+
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
         
-        req.res.cookie('access_token', accessToken, {
-            httpOnly: true,
-            signed: true,
-            secure: true,         // Send only over HTTPS
-            sameSite: 'none',     // Allow cross-origin requests
-        });
+        // req.res.cookie('access_token', accessToken, {
+        //     httpOnly: true,
+        //     signed: true,
+        //     secure: true,         // Send only over HTTPS
+        //     sameSite: 'none',     // Allow cross-origin requests
+        // });
+
+        let redirectUrl = null;
 
         if (req.user['nickname'] === null || (req.user['nickname'] as string).trim().length == 0) {
-            req.res.redirect(`http://localhost:3001/update`);
-        } else {
-            if (user.two_factor_enabled == true)
-                req.res.redirect('http://localhost:3001/2fa/authenticate');
-            else
-                req.res.redirect('http://localhost:3001');
-        }
+            redirectUrl = "/update";
+        } else if (user.two_factor_enabled == true)
+            redirectUrl = "/2fa/authenticate";
+        
+        if (redirectUrl) 
+            req.res.redirect(`http://localhost:3001?access_token=${accessToken}&redirect=${redirectUrl}`);
+        else
+            req.res.redirect(`http://localhost:3001?access_token=${accessToken}`);
         return;
     }
 

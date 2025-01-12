@@ -1,56 +1,85 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useApi } from '../../utils/api';
+import axios from 'axios';
 
 const TwoFactorAuth = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [qr, setQr] = useState('');
   const navigate = useNavigate();
+  const api = useApi();
+
+  const generateBase64FromStream = async (readableStream) => {
+    const response = new Response(readableStream);
+    const buffer = await response.arrayBuffer(); // Convert the stream to ArrayBuffer
+    return arrayBufferToBase64(buffer);
+  };
+  
+  const arrayBufferToBase64 = (buffer) => {
+    const binary = String.fromCharCode(...new Uint8Array(buffer));
+    return btoa(binary); // Convert to Base64
+  };
+  
+  useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const response = await api.TwoFactorAuthentication.twoFactorAuthControllerGenerateRaw();
+        console.log('2FA QR code generated:', response);
+  
+        // Convert stream to Base64 and set QR code
+        const base64 = await generateBase64FromStream(response.raw.body);
+        setQr(`data:image/png;base64,${base64}`);
+      } catch (error) {
+        console.error('Failed to generate 2FA QR code:', error);
+      }
+    };
+  
+    generateQRCode();
+  }, []);
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log('code:', code);
-    var fd = new FormData();
-    fd.append("twoFactorAuthenticationCode", code);
-
-    fetch(`https://localhost:3000/2fa/turn-on`, {
+  
+    try {
+      const response = await axios.post('https://localhost:3000/2fa/turn-on', {
+        twoFactorAuthenticationCode: code,
+      }, {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify({twoFactorAuthenticationCode: code}),
-    }).then(response => {
+      });
+  
       if (response.status === 200 || response.status === 201) {
-        return response.json(); 
-      } else {
-            throw new Error('Network response was not ok');
+        const data = response.data;
+        console.log('Received data:', data);
+        if (data.msg === 'TwoFactorAuthentication turned on') {
+          setSuccess('2FA verification successful!');
+          navigate('/update');
+          setError('');
+        } else {
+          setError('Invalid 2FA code. Please try again.');
+          setSuccess('');
         }
-        return response.json();
-    }).then(data => {
-      console.log('Received data:', data);
-      if (data.msg === 'TwoFactorAuthentication turned on') {
-        setSuccess('2FA verification successful!');
-        navigate('/update');
-        setError('');
       } else {
-        setError('Invalid 2FA code. Please try again.');
-        setSuccess('');
+        throw new Error('Network response was not ok');
       }
-    }).catch(error => {
+    } catch (error) {
+      console.error('Error verifying 2FA code:', error);
       setError('An error occurred. Please try again.');
       setSuccess('');
-    });
+    }
   };
 
   return (
     <Container>
       <h1>Google 2-Factor Authentication</h1>
       <form onSubmit={handleSubmit}>
-        <img src="https://localhost:3000/2fa/generate" alt="2FA QR Code" />
+        <img src={qr} alt="2FA QR Code" />
         <input
           type="text"
           name="twoFactorAuthenticationCode"

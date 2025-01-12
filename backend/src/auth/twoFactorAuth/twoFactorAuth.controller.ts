@@ -18,7 +18,9 @@ import { UsersService } from "../../users/users.service";
 import { AuthService } from "../auth.service";
 import { toFileStream } from "qrcode";
 import { PassThrough } from 'stream';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Two-Factor Authentication')
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthController {
@@ -30,7 +32,7 @@ export class TwoFactorAuthController {
 
   @Get('generate')
   @UseGuards(JwtAccessAuthGuard)
-  async register(@Req() req: RequestWithUser) {
+  async generate(@Req() req: RequestWithUser) {
     console.log("generate");
 
     const user = req.user;
@@ -46,6 +48,10 @@ export class TwoFactorAuthController {
 
   @Post('turn-on')
   @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Turn on two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'TwoFactorAuthentication turned on' })
+  @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
+  @ApiBearerAuth()
   async turnOnTwoFactorAuthentication(
     @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
@@ -63,22 +69,28 @@ export class TwoFactorAuthController {
     }
     await this.usersService.turnOnTwoFactorAuthentication(user.id);
 
-    const accessToken = await this.authService.generateAccessToken(req.user, true);
+    // const accessToken = await this.authService.generateAccessToken(req.user, true);
     
-    req.res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      signed: true,
-      secure: true,         // Send only over HTTPS
-      sameSite: 'none',     // Allow cross-origin requests
-    });
+    // req.res.cookie('access_token', accessToken, {
+    //   httpOnly: true,
+    //   signed: true,
+    //   secure: true,         // Send only over HTTPS
+    //   sameSite: 'none',     // Allow cross-origin requests
+    // });
 
+    const accessToken = await this.authService.generateAccessToken(user, true);
     return {
-      msg: "TwoFactorAuthentication turned on"
-    }
+      msg: "TwoFactorAuthentication turned on",
+      accessToken,
+    };
   }
 
   @Post('turn-off')
   @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Turn off two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'TwoFactorAuthentication turned off' })
+  @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
+  @ApiBearerAuth()
   async turnOffTwoFactorAuthentication(
     @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
@@ -98,6 +110,10 @@ export class TwoFactorAuthController {
 
   @Post('authenticate')
   @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Authenticate with two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'Authenticated successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
+  @ApiBearerAuth()
   async authenticate(
     @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
@@ -120,13 +136,17 @@ export class TwoFactorAuthController {
 
     const accessToken = await this.authService.generateAccessToken(user, true);
     
-    req.res.cookie('access_token', accessToken, {
-      httpOnly: true,
-      signed: true,
-      secure: true,         // Send only over HTTPS
-      sameSite: 'none',     // Allow cross-origin requests
-    });
+    // req.res.cookie('access_token', accessToken, {
+    //   httpOnly: true,
+    //   signed: true,
+    //   secure: true,         // Send only over HTTPS
+    //   sameSite: 'none',     // Allow cross-origin requests
+    // });
 
-    return user;
+    // return user;
+    return {
+      msg: 'Authenticated successfully',
+      accessToken,
+    };
   }
 }

@@ -7,8 +7,28 @@ import { Chat } from "./chat/Chat.jsx"
 import TwoFactorAuth from './pages/login/TwoFactorAuth';
 import DisableTwoFactorAuth from './pages/login/DisableTwoFactorAuth';
 import Profile from './pages/user/Profile';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
 
 function App() {
+  const params = new URLSearchParams(window.location.search);
+  const navigate = useNavigate(); // Hook to navigate
+
+
+  if (params.has('access_token')) {
+    localStorage.setItem('access_token', params.get('access_token'));
+    params.delete('access_token');
+  }
+
+
+  useEffect(() => {
+    if (params.has('redirect')) {
+      navigate(params.get('redirect'));
+    }
+  }, [params, navigate]);
+    
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />

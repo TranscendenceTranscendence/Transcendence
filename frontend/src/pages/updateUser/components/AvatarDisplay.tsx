@@ -10,6 +10,9 @@ interface AvatarProps {
 
 export default function AvatarDisplay({ avatarUrl }: AvatarProps) {
   const config = useConfig()
+  console.log('AvatarDisplay config:', config.backendUrl);
+  console.log('AvatarDisplay avatarUrl:', avatarUrl);
+  console.log(config.backendUrl + avatarUrl);
   return (
     <React.Fragment>
       <Avatar

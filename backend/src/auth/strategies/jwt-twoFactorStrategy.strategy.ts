@@ -15,8 +15,14 @@ export class JwtTwoFactorStrategy extends PassportStrategy(
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
-        return req?.cookies?.two_fa_token;
-      } ]),
+      //   return req?.cookies?.two_fa_token;
+      // } ]),
+      const authHeader = req.headers?.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return undefined;
+        }
+        return authHeader.split(' ')[1];
+      }]),
       secretOrKey: process.env.JWT_ACCESS_SECRET
     });
   }

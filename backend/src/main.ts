@@ -36,7 +36,7 @@ const setupSwagger = (app: INestApplication) => {
 
   setupSwagger(app);
 
-  app.use(cookieParser("secret"));
+  // app.use(cookieParser("secret"));
 
   app.enableCors({
     origin: [
