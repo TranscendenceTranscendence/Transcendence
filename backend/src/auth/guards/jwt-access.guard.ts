@@ -25,7 +25,7 @@ export class JwtAccessAuthGuard implements CanActivate {
           return false;
       }
 
-      const userId = decodedToken.id;
+      const userId = decodedToken.sub;
       console.log('Decoded user id: ' + userId);
       const user = await this.userService.findOne(userId);
 
@@ -36,6 +36,7 @@ export class JwtAccessAuthGuard implements CanActivate {
 
       const twoFactorAuthenticated = decodedToken.isSecondFactorAuthenticated;
 
+      
       if (user.two_factor_enabled && !twoFactorAuthenticated) {
         // User might be doing the authentication, so let it pass.
         if (request.url !== '/2fa/authenticate') {

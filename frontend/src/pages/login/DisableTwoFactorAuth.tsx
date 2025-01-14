@@ -30,37 +30,35 @@ const DisableTwoFactorAuth = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    var fd = new FormData();
-    fd.append("twoFactorAuthenticationCode", code);
+    try {
+      const response = await axios.post('https://localhost:3000/2fa/turn-off', {
+        twoFactorAuthenticationCode: code,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
 
-    fetch(`https://localhost:3000/2fa/turn-off`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify({twoFactorAuthenticationCode: code}),
-    }).then(response => {
       if (response.status === 200 || response.status === 201) {
-        return response.json(); 
-      } else {
-            throw new Error('Network response was not ok');
+        const data = response.data;
+        console.log('Received data:', data);
+        if (data.msg === 'TwoFactorAuthentication turned off') {
+          setSuccess('2FA has been turned off successfully!');
+          navigate('/update');
+          setError('');
+        } else {
+          setError('Invalid 2FA code. Please try again.');
+          setSuccess('');
         }
-        return response.json();
-    }).then(data => {
-      console.log('Received data:', data);
-      if (data.msg === 'TwoFactorAuthentication turned off') {
-        setSuccess('2FA successfully turned off!');
-        navigate('/update');
-        setError('');
       } else {
-        setError('Invalid 2FA code. Please try again.');
-        setSuccess('');
+        throw new Error('Network response was not ok');
       }
-    }).catch(error => {
+    } catch (error) {
+      console.error('Error turning off 2FA:', error);
       setError('An error occurred. Please try again.');
       setSuccess('');
-    });
+    }
   };
 
   return (

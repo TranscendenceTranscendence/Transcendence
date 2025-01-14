@@ -32,6 +32,7 @@ export class TwoFactorAuthController {
 
   @Get('generate')
   @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
   async generate(@Req() req: RequestWithUser) {
     console.log("generate");
 
@@ -45,6 +46,7 @@ export class TwoFactorAuthController {
     await toFileStream(qrStream, otpAuthUrl);
     return new StreamableFile(qrStream);
   }
+
 
   @Post('turn-on')
   @UseGuards(JwtAccessAuthGuard)
@@ -95,17 +97,19 @@ export class TwoFactorAuthController {
     @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
+    const user = req.user;
+    
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, user
     );
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
-    await this.usersService.turnOffTwoFactorAuthentication(req.user.id);
+    await this.usersService.turnOffTwoFactorAuthentication(user.id);
 
     return {
-      msg: "TwoFactorAuthentication turned off"
-    }
+      msg: "TwoFactorAuthentication turned off",
+    };
   }
 
   @Post('authenticate')

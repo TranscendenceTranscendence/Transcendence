@@ -4,8 +4,9 @@ import Home from "./pages/Home";
 import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
 import { Chat } from "./chat/Chat.jsx"
-import TwoFactorAuth from './pages/login/TwoFactorAuth';
+import EnableTwoFactorAuth from './pages/login/EnableTwoFactorAuth.tsx';
 import DisableTwoFactorAuth from './pages/login/DisableTwoFactorAuth';
+import TwoFactorAuth from './pages/login/TwoFactorAuth';
 import Profile from './pages/user/Profile';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -36,8 +37,9 @@ function App() {
       <Route path="/update" element={<UpdateUser />} />
       <Route path='/chat' element={<Chat />}/>
       <Route path="/profile/:id" element={<Profile />} />
-      <Route path='/2fa/turn-on' element={<TwoFactorAuth />} />
+      <Route path='/2fa/turn-on' element={<EnableTwoFactorAuth />} />
       <Route path='/2fa/turn-off' element={<DisableTwoFactorAuth />} />
+      <Route path='/2fa/authenticate' element={<TwoFactorAuth />} />
     </Routes>
   );
 }
