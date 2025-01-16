@@ -59,13 +59,13 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
   }));
 
   const handleCheckboxChange = async (event) => {
-    // const isChecked = event.target.checked;
-    // if (!isChecked) {
-    //   navigate('/2fa/turn-off');
-    // }
-    // else {
+    const isChecked = event.target.checked;
+    if (!isChecked) {
+      navigate('/2fa/turn-off');
+    }
+    else {
       navigate('/2fa/turn-on');
-    // }
+    }
   };
   const onSubmit = useCallback(async (data: UpdateUserDto) => {
     setIsSaving(true);
