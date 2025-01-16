@@ -107,7 +107,14 @@ export class TwoFactorAuthController {
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
-    await this.usersService.turnOffTwoFactorAuthentication(user.id);
+    // await this.usersService.turnOffTwoFactorAuthentication(user.id);
+
+    await this.usersService.update(user.id, { 
+        nickname: user.nickname,
+        avatar: user.avatar,
+        two_factor_enabled: false,
+        two_factor_auth_secret: null,
+      });
 
     return {
       msg: "TwoFactorAuthentication turned off",
