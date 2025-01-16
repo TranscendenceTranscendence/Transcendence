@@ -23,23 +23,6 @@ const TwoFactorAuth = () => {
     return btoa(binary); // Convert to Base64
   };
   
-  // useEffect(() => {
-  //   const generateQRCode = async () => {
-  //     try {
-  //       const response = await api.TwoFactorAuthentication.twoFactorAuthControllerGenerateRaw();
-  //       console.log('2FA QR code generated:', response);
-  
-  //       // Convert stream to Base64 and set QR code
-  //       const base64 = await generateBase64FromStream(response.raw.body);
-  //       setQr(`data:image/png;base64,${base64}`);
-  //     } catch (error) {
-  //       console.error('Failed to generate 2FA QR code:', error);
-  //     }
-  //   };
-  
-  //   generateQRCode();
-  // }, []);
-
   useEffect(() => {
     const generateQRCode = async () => {
       try {
@@ -47,13 +30,16 @@ const TwoFactorAuth = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
-          responseType: 'stream',
+          responseType: 'blob',
         });
         console.log('2FA QR code generated:', response);
-  
-        // Convert stream to Base64 and set QR code
-        const base64 = await generateBase64FromStream(response.data);
-        setQr(`data:image/png;base64,${base64}`);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          setQr(reader.result as string);
+        };
+        reader.readAsDataURL(response.data);
+
       } catch (error) {
         console.error('Failed to generate 2FA QR code:', error);
         setError('Failed to generate 2FA QR code');
