@@ -1,17 +1,28 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear local storage
-    localStorage.removeItem('access_token');
-    // localStorage.removeItem('refreshToken'); // If you have a refresh token
-    // Add any other items you need to clear from local storage
+  const handleLogout = async () => {
 
-    // Redirect to login page
-    navigate('/login');
+    try {
+        await axios.post('https://localhost:3000/auth/logout', {}, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        });
+        // Clear local storage
+        localStorage.removeItem('access_token');
+        // localStorage.removeItem('refreshToken'); // If you have a refresh token
+        // Add any other items you need to clear from local storage
+    
+        // Redirect to login page
+        navigate('/login');
+    } catch (error) {
+        console.error('Error logging out:', error);
+    }
   };
 
   return (

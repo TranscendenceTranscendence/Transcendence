@@ -5,6 +5,7 @@ import {
     Post, 
     Get, 
     Req,
+    Res,
     Body,
     UseGuards, 
     UseInterceptors,
@@ -12,6 +13,7 @@ import {
     ForbiddenException,
     StreamableFile
 } from "@nestjs/common";
+import { Request, Response as ExpressResponse } from 'express';
 import { JwtAccessAuthGuard } from "../guards/jwt-access.guard";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import { UsersService } from "../../users/users.service";
@@ -135,19 +137,9 @@ export class TwoFactorAuthController {
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
-    
-    req.user.is_second_auth_done = true; // TODO Why store in the database?
 
     const accessToken = await this.authService.generateAccessToken(user, true);
-    
-    // req.res.cookie('access_token', accessToken, {
-    //   httpOnly: true,
-    //   signed: true,
-    //   secure: true,         // Send only over HTTPS
-    //   sameSite: 'none',     // Allow cross-origin requests
-    // });
 
-    // return user;
     return {
       msg: 'Authenticated successfully',
       accessToken,

@@ -40,12 +40,16 @@ const TwoFactorAuthForm = () => {
         },
       });
 
+      console.log('Response:', response);
       if (response.status === 200 || response.status === 201) {
         const data = response.data;
-        console.log('Received data:', data);
         if (data.msg === 'Authenticated successfully') {
+
+          // Save new access token with 2FA enabled to local storage
+          localStorage.setItem('access_token', data.accessToken);
           setSuccess('2FA authentication successful!');
-          navigate('/'); // Redirect to home page or any other page
+
+          navigate('/'); // Redirect to home page
           setError('');
         } else {
           setError('Invalid 2FA code. Please try again.');

@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, ForbiddenException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../../users/users.service";
 
@@ -14,15 +14,16 @@ export class JwtAccessAuthGuard implements CanActivate {
       const request = context.switchToHttp().getRequest();
       const authHeader = request.headers['authorization'];
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          console.log('Invalid authorization header');
-          return false;
+          console.log('Invalid authorization header' + authHeader);
+          console.log(JSON.stringify(request.headers));
+          throw new UnauthorizedException('Invalid authorization header');
       }
       const accessToken = authHeader.split(' ')[1];
       const decodedToken = await this.jwtService.verifyAsync(accessToken, { secret: process.env.JWT_SECRET });
 
       if (!decodedToken) {
           console.log('Invalid access token');
-          return false;
+          throw new UnauthorizedException('Invalid access token');
       }
 
       const userId = decodedToken.sub;
@@ -31,7 +32,7 @@ export class JwtAccessAuthGuard implements CanActivate {
 
       if (!user) {
         console.log('User not found');
-        return false;
+        throw new UnauthorizedException('User not found');
       }
 
       const twoFactorAuthenticated = decodedToken.isSecondFactorAuthenticated;
@@ -41,7 +42,7 @@ export class JwtAccessAuthGuard implements CanActivate {
         // User might be doing the authentication, so let it pass.
         if (request.url !== '/2fa/authenticate') {
           console.log('2FA is enabled but not authenticated, tried to access url ' + request.url);
-          return false;
+          throw new ForbiddenException('2FA is enabled but not authenticated');
         }
         console.log('Authenticating 2FA');
       }
@@ -51,7 +52,7 @@ export class JwtAccessAuthGuard implements CanActivate {
       return true; // Sucess authentication
       } catch (err) {
         console.log(err);
-        return false; // failed
+        throw new UnauthorizedException('Authentication failed'); // failed
       }
     }
 //     try {

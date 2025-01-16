@@ -2,19 +2,22 @@
 import {
     Controller,
     Get,
+    Post,
     HttpStatus,
     Req,
     Res,
     Delete,
     UseGuards
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Request, Response as ExpressResponse } from 'express';
 import { FortyTwoAuthGuard } from './guards/ft-auth/ft-auth.guard';
 import { UsersService } from "../users/users.service";
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { JwtAccessAuthGuard } from './guards/jwt-access.guard';
+import RequestWithUser from "./interfaces/requestWithUser.interface";
 
 @ApiTags('Auth') // Grouping for Swagger
 @Controller('auth')
@@ -77,21 +80,38 @@ export class AuthController {
         return;
     }
 
-    @Delete('42/logout')
-    @ApiOperation({ summary: 'Logout from 42 OAuth' })
-    @ApiResponse({
-        status: 200,
-        description: 'Logout successful and JWT cookie cleared.',
-    })
-    @ApiResponse({
-        status: 401,
-        description: 'Unauthorized.',
-    })
-    @UseGuards(AuthGuard('jwt'))
-    async fortyTwoLogout(@Req() req: Request, @Res() res: ExpressResponse) {
-        res.clearCookie('access_token');
-        res.status(HttpStatus.OK).send();
-        req.res.redirect('http://localhost:3001/login');
-    }
+    // @Delete('42/logout')
+    // @ApiOperation({ summary: 'Logout from 42 OAuth' })
+    // @ApiResponse({
+    //     status: 200,
+    //     description: 'Logout successful and JWT cookie cleared.',
+    // })
+    // @ApiResponse({
+    //     status: 401,
+    //     description: 'Unauthorized.',
+    // })
+    // @UseGuards(AuthGuard('jwt'))
+    // @ApiBearerAuth()
+    // async fortyTwoLogout(@Req() req: Request, @Res() res: ExpressResponse) {
+    //     res.clearCookie('access_token');
+    //     res.status(HttpStatus.OK).send();
+    //     req.res.redirect('http://localhost:3001/login');
+    // }
+
+    @Post('logout')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiResponse({ status: 200, description: 'User logged out successfully' })
+  @ApiBearerAuth()
+  async logout(@Req() req: RequestWithUser) {
+    const user = req.user;
+    await this.usersService.update(user.id, { 
+        nickname: user.nickname,
+        avatar: user.avatar,
+        two_factor_enabled: user.two_factor_enabled,
+        is_second_auth_done: false 
+      });
+    return { msg: 'User logged out successfully' };
+  }
 }
 
