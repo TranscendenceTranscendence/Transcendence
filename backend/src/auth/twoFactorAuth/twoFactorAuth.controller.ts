@@ -5,6 +5,7 @@ import {
     Post, 
     Get, 
     Req,
+    Res,
     Body,
     UseGuards, 
     UseInterceptors,
@@ -12,14 +13,16 @@ import {
     ForbiddenException,
     StreamableFile
 } from "@nestjs/common";
+import { Request, Response as ExpressResponse } from 'express';
 import { JwtAccessAuthGuard } from "../guards/jwt-access.guard";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import { UsersService } from "../../users/users.service";
 import { AuthService } from "../auth.service";
-import { Request } from 'express';
 import { toFileStream } from "qrcode";
 import { PassThrough } from 'stream';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Two-Factor Authentication')
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthController {
@@ -29,12 +32,16 @@ export class TwoFactorAuthController {
     private readonly authService: AuthService
   ) {}
 
-  @Get('generate') // TODO add guard, check if user has already 2fa enabled
-  async register(@Req() request: Request) {
+  @Get('generate')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async generate(@Req() req: RequestWithUser) {
     console.log("generate");
-    const token = request.signedCookies['jwt'];
-    const userId = await this.usersService.getUserIdFromCookie(token);
-    const user = await this.usersService.findOne(userId);
+
+    const user = req.user;
+    if (user.two_factor_enabled)
+      return { msg: "TwoFactorAuthentication already turned on" };
+
     const { otpAuthUrl } = await this.twoFactorAuthService.generateTwoFactorAuthenticationSecret(user);
     
     const qrStream = new PassThrough();
@@ -42,17 +49,21 @@ export class TwoFactorAuthController {
     return new StreamableFile(qrStream);
   }
 
+
   @Post('turn-on')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Turn on two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'TwoFactorAuthentication turned on' })
+  @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
+  @ApiBearerAuth()
   async turnOnTwoFactorAuthentication(
-    @Req() req: Request,
+    @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
-    console.log("turn-on");
-    console.log(twoFactorAuthenticationCode);
+    const user = req.user;
 
-    const token = req.signedCookies['jwt'];
-    const userId = await this.usersService.getUserIdFromCookie(token);
-    const user = await this.usersService.findOne(userId);
+    if (user.two_factor_enabled)
+      return { msg: "TwoFactorAuthentication already turned on" };
 
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
       twoFactorAuthenticationCode, user
@@ -62,57 +73,83 @@ export class TwoFactorAuthController {
     }
     await this.usersService.turnOnTwoFactorAuthentication(user.id);
 
+    // const accessToken = await this.authService.generateAccessToken(req.user, true);
+    
+    // req.res.cookie('access_token', accessToken, {
+    //   httpOnly: true,
+    //   signed: true,
+    //   secure: true,         // Send only over HTTPS
+    //   sameSite: 'none',     // Allow cross-origin requests
+    // });
+
+    const accessToken = await this.authService.generateAccessToken(user, true);
     return {
-      msg: "TwoFactorAuthentication turned on"
-    }
+      msg: "TwoFactorAuthentication turned on",
+      accessToken,
+    };
   }
 
   @Post('turn-off')
   @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Turn off two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'TwoFactorAuthentication turned off' })
+  @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
+  @ApiBearerAuth()
   async turnOffTwoFactorAuthentication(
     @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
+    const user = req.user;
+    
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, user
     );
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
-    await this.usersService.turnOffTwoFactorAuthentication(req.user.id);
+    // await this.usersService.turnOffTwoFactorAuthentication(user.id);
+
+    await this.usersService.update(user.id, { 
+        nickname: user.nickname,
+        avatar: user.avatar,
+        two_factor_enabled: false,
+        two_factor_auth_secret: null,
+      });
 
     return {
-      msg: "TwoFactorAuthentication turned off"
-    }
+      msg: "TwoFactorAuthentication turned off",
+    };
   }
 
   @Post('authenticate')
   @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Authenticate with two-factor authentication' })
+  @ApiResponse({ status: 200, description: 'Authenticated successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
+  @ApiBearerAuth()
   async authenticate(
-    @Req() req: any,
+    @Req() req: RequestWithUser,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string
   ) {
+    const user = req.user;
+
     const isCodeValidated = await this.twoFactorAuthService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthenticationCode, req.user
+      twoFactorAuthenticationCode, user
     );
 
-    if (!req.user.twoFactorAuthEnabled) {
+    if (!user.two_factor_enabled) {
       throw new ForbiddenException('Two-Factor Authentication is not enabled');
     }
 
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
-    
-    req.user.isSecondFactorAuthenticated = true;
 
-    const accessToken = await this.authService.generateAccessToken(req.user, true);
-    
-    req.res.cookie('2fa_token', accessToken, {
-      httpOnly: true,
-      path: '/',
-    });
+    const accessToken = await this.authService.generateAccessToken(user, true);
 
-    return req.user;
+    return {
+      msg: 'Authenticated successfully',
+      accessToken,
+    };
   }
 }

@@ -21,7 +21,7 @@ const SuccessMessage = styled.div`
   margin-top: 10px;
 `;
 
-const TwoFactorAuthForm = () => {
+const DisableTwoFactorAuth = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -31,7 +31,7 @@ const TwoFactorAuthForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://localhost:3000/2fa/authenticate', {
+      const response = await axios.post('https://localhost:3000/2fa/turn-off', {
         twoFactorAuthenticationCode: code,
       }, {
         headers: {
@@ -40,16 +40,12 @@ const TwoFactorAuthForm = () => {
         },
       });
 
-      console.log('Response:', response);
       if (response.status === 200 || response.status === 201) {
         const data = response.data;
-        if (data.msg === 'Authenticated successfully') {
-
-          // Save new access token with 2FA enabled to local storage
-          localStorage.setItem('access_token', data.accessToken);
-          setSuccess('2FA authentication successful!');
-
-          navigate('/'); // Redirect to home page
+        console.log('Received data:', data);
+        if (data.msg === 'TwoFactorAuthentication turned off') {
+          setSuccess('2FA has been turned off successfully!');
+          navigate('/update');
           setError('');
         } else {
           setError('Invalid 2FA code. Please try again.');
@@ -59,7 +55,7 @@ const TwoFactorAuthForm = () => {
         throw new Error('Network response was not ok');
       }
     } catch (error) {
-      console.error('Error authenticating 2FA code:', error);
+      console.error('Error turning off 2FA:', error);
       setError('An error occurred. Please try again.');
       setSuccess('');
     }
@@ -67,7 +63,7 @@ const TwoFactorAuthForm = () => {
 
   return (
     <Container>
-      <h1>Two-Factor Authentication</h1>
+      <h1>Disable Two-Factor Authentication</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -77,7 +73,7 @@ const TwoFactorAuthForm = () => {
           placeholder="Enter 2FA code"
           required
         />
-        <button type="submit">Authenticate</button>
+        <button type="submit">Disable 2FA</button>
       </form>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {success && <SuccessMessage>{success}</SuccessMessage>}
@@ -85,4 +81,4 @@ const TwoFactorAuthForm = () => {
   );
 };
 
-export default TwoFactorAuthForm;
+export default DisableTwoFactorAuth;

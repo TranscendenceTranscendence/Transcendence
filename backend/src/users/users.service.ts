@@ -106,7 +106,6 @@ export class UsersService {
 
   async turnOffTwoFactorAuthentication(userId: number): Promise<UpdateResult> {
     return await this.usersRepository.update(userId, {
-      // 유저가 2fa 활성화 여부를 끄게 되면 시크릿값또한 null로 수정하여 준다.
       two_factor_auth_secret: null,
       two_factor_enabled: false,
     })
