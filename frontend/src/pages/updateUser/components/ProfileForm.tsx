@@ -67,6 +67,7 @@ const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
       navigate('/2fa/turn-on');
     }
   };
+  
   const onSubmit = useCallback(async (data: UpdateUserDto) => {
     setIsSaving(true);
     try {

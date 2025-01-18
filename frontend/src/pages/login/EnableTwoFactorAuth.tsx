@@ -68,8 +68,10 @@ const TwoFactorAuth = () => {
         console.log('Received data:', data);
         if (data.msg === 'TwoFactorAuthentication turned on') {
           setSuccess('2FA verification successful!');
-          navigate('/update');
+           // Save new access token with 2FA enabled to local storage
+          localStorage.setItem('access_token', data.accessToken);
           setError('');
+          navigate('/update');
         } else {
           setError('Invalid 2FA code. Please try again.');
           setSuccess('');
