@@ -10,6 +10,7 @@ export class JwtAuthGuard implements CanActivate {
     private readonly userService: UsersService,
   ) {}
 
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       const request = context.switchToHttp().getRequest<Request>();
@@ -45,7 +46,6 @@ export class JwtAuthGuard implements CanActivate {
         }
         console.log('Authenticating 2FA');
       }
-
       return true; // Allow the request to proceed
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
