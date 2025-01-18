@@ -8,14 +8,14 @@ import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 import { IsOptional } from 'class-validator';
 import {ApiProperty} from "@nestjs/swagger";
 
-export enum user_status {
+export enum UserStatus {
 	Offline = "offline",
 	Online = "online",
 	Waiting = "waiting",
 	Playing = "playing"
 }
 
-@Entity('USER')
+@Entity('user')
 export class User {
   @ApiProperty({ type: 'number', description: 'The ID of the user.' })
   @PrimaryColumn()
@@ -57,11 +57,11 @@ export class User {
   @ApiProperty({ type: 'string', description: 'The status of the user.' })
   @Column({
 	type: "enum",
-	enum: user_status,
+	enum: UserStatus,
 	default: 'offline',
   })
   @IsOptional()
-  user_status: user_status;
+  user_status: UserStatus;
 
   // Relationships
   @OneToMany(() => Achievement, achievement => achievement.user,)
@@ -79,11 +79,11 @@ export class User {
   @OneToMany(() => ChatParticipant, participant => participant.user)
   chatParticipants: ChatParticipant[];
 
-  @OneToMany(() => Friend, friend => friend.person1User)
-  friends1: Friend[];
+  @OneToMany(() => Friend, (friend) => friend.sender)
+  sentFriendRequests: Friend[];
 
-  @OneToMany(() => Friend, friend => friend.person2User)
-  friends2: Friend[];
+  @OneToMany(() => Friend, (friend) => friend.receiver)
+  receivedFriendRequests: Friend[];
 
   @OneToMany(() => Game, game => game.player1User)
   players1: Game[];

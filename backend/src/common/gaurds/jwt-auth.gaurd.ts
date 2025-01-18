@@ -12,23 +12,22 @@ export class JwtAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-    const request = context.switchToHttp().getRequest<Request>();
-    const authorizationHeader = request.headers['Authorization'] as string;
+      const request = context.switchToHttp().getRequest<Request>();
+      const authorizationHeader = request.headers['Authorization'] as string;
 
-    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('No Bearer token found in Authorization header');
-    }
+      if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+        throw new UnauthorizedException('No Bearer token found in Authorization header');
+      }
 
-    const accessToken = authorizationHeader.split(' ')[1];
-    const decodedToken = await this.jwtService.verifyAsync(accessToken, { secret: process.env.JWT_SECRET });
+      const accessToken = authorizationHeader.split(' ')[1];
+      const decodedToken = await this.jwtService.verifyAsync(accessToken, { secret: process.env.JWT_SECRET });
 
-    if (!decodedToken) {
-      console.log('Invalid access token');
-      throw new UnauthorizedException('Invalid access token');
-    }
+      if (!decodedToken) {
+        console.log('Invalid access token');
+        throw new UnauthorizedException('Invalid access token');
+      }
 
-    const userId = decodedToken.sub; // Use 'sub' to get the user ID
-      console.log('Decoded user id: ' + userId);
+      const userId = decodedToken.sub; // Use 'sub' to get the user ID
       const user = await this.userService.findOne(userId);
 
       if (!user) {
@@ -47,34 +46,9 @@ export class JwtAuthGuard implements CanActivate {
         console.log('Authenticating 2FA');
       }
 
-    // try {
-    //   // Verify the token and attach the payload to the request
-    //   const payload = this.jwtService.verify(token, {
-    //     secret: process.env.JWT_SECRET, // Ensure your secret is configured
-    //   });
-      request.user = user; // Attach the decoded payload to req.user
       return true; // Allow the request to proceed
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired token');
     }
   }
-  // canActivate(context: ExecutionContext): boolean {
-  //   const request = context.switchToHttp().getRequest<Request>();
-  //   const token = request.signedCookies?.jwt ?? request.cookies?.jwt; // Extract JWT from the cookie
-  //   if (!token) {
-  //     throw new UnauthorizedException('No JWT found in cookies');
-  //   }
-  //   console.log("teeeeeeeestttttttttteeeeeeee")
-  //   try {
-  //     // Verify the token and attach the payload to the request
-  //     const payload = this.jwtService.verify(token, {
-  //       secret: process.env.JWT_SECRET, // Ensure your secret is configured
-  //     });
-  //     console.log("payload", payload);
-  //     request.user = { id: payload.sub }; // Attach the decoded payload to req.user
-  //     return true; // Allow the request to proceed
-  //   } catch (e) {
-  //     throw new UnauthorizedException('Invalid or expired token');
-  //   }
-  // }
 }

@@ -5,7 +5,7 @@ import FortyTwoOauthConfig from '../../config/ft-oauth.config';
 import { ConfigType } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { UsersService } from '../../users/users.service';
-import { User, user_status } from '../../users/user.entity';
+import { User, UserStatus } from '../../users/user.entity';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
@@ -30,14 +30,13 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile, cb: any) {
-    console.log("validate TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
     let user = await this.usersService.findOne(profile.id);
 
     if (user == null) {
       user = new User();
       user.id = profile.id;
       user.avatar = this.defaultAvatar; // Set default avatar if profile image is not available
-      user.user_status = user_status.Offline;
+      user.user_status = UserStatus.Offline;
       user.is_second_auth_done = false;
       user.email = profile.emails[0].value;
       user.ladder_level = 0;
