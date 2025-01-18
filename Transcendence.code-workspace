@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "./frontend"
+		},
+		{
+			"path": "./backend"
+		},
+	],
+	"settings": {
+		"tailwindCSS.includeLanguages": {
+			"javascript": "html",
+			"javascriptreact": "html",
+			"typescript": "html",
+			"typescriptreact": "html"
+		}
+	}
+}
