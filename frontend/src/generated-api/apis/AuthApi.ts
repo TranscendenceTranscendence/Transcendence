@@ -71,16 +71,16 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Logout from 42 OAuth
+     * Logout user
      */
-    async authControllerFortyTwoLogoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async authControllerLogoutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/auth/42/logout`,
-            method: 'DELETE',
+            path: `/auth/logout`,
+            method: 'POST',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
@@ -89,10 +89,10 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Logout from 42 OAuth
+     * Logout user
      */
-    async authControllerFortyTwoLogout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.authControllerFortyTwoLogoutRaw(initOverrides);
+    async authControllerLogout(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authControllerLogoutRaw(initOverrides);
     }
 
 }

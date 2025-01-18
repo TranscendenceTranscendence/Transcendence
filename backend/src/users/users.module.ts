@@ -4,9 +4,9 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import {JwtService} from "@nestjs/jwt";
-import JwtConfig from "../auth/config/jwt.config";
+import JwtConfig from "../config/jwt.config";
 import {ConfigModule} from "@nestjs/config";
-import FortyTwoOauthConfig from "../auth/config/ft-oauth.config";
+import FortyTwoOauthConfig from "../config/ft-oauth.config";
 
 @Module({
   imports: [

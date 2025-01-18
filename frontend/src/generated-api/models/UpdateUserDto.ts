@@ -36,7 +36,7 @@ export interface UpdateUserDto {
      * @type {boolean}
      * @memberof UpdateUserDto
      */
-    enableTwoFactor: boolean;
+    twoFactorEnabled: boolean;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface UpdateUserDto {
 export function instanceOfUpdateUserDto(value: object): value is UpdateUserDto {
     if (!('nickname' in value) || value['nickname'] === undefined) return false;
     if (!('avatar' in value) || value['avatar'] === undefined) return false;
-    if (!('enableTwoFactor' in value) || value['enableTwoFactor'] === undefined) return false;
+    if (!('twoFactorEnabled' in value) || value['twoFactorEnabled'] === undefined) return false;
     return true;
 }
 
@@ -61,7 +61,7 @@ export function UpdateUserDtoFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'nickname': json['nickname'],
         'avatar': json['avatar'],
-        'enableTwoFactor': json['enable_two_factor'],
+        'twoFactorEnabled': json['two_factor_enabled'],
     };
 }
 
@@ -78,7 +78,7 @@ export function UpdateUserDtoToJSONTyped(value?: UpdateUserDto | null, ignoreDis
         
         'nickname': value['nickname'],
         'avatar': value['avatar'],
-        'enable_two_factor': value['enableTwoFactor'],
+        'two_factor_enabled': value['twoFactorEnabled'],
     };
 }
 

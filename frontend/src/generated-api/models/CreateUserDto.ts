@@ -36,19 +36,19 @@ export interface CreateUserDto {
      * @type {boolean}
      * @memberof CreateUserDto
      */
-    enableTwoFactor: boolean;
+    twoFactorEnabled: boolean;
     /**
-     * Second authentication check
+     * Second authentication status
      * @type {boolean}
      * @memberof CreateUserDto
      */
     isSecondAuthDone: boolean;
     /**
-     * Second authentication code
-     * @type {number}
+     * Two factor authentication secret
+     * @type {string}
      * @memberof CreateUserDto
      */
-    secondAuthCode: number;
+    twoFactorAuthSecret: string;
     /**
      * email address
      * @type {string}
@@ -88,9 +88,9 @@ export type CreateUserDtoUserStatusEnum = typeof CreateUserDtoUserStatusEnum[key
 export function instanceOfCreateUserDto(value: object): value is CreateUserDto {
     if (!('avatar' in value) || value['avatar'] === undefined) return false;
     if (!('nickname' in value) || value['nickname'] === undefined) return false;
-    if (!('enableTwoFactor' in value) || value['enableTwoFactor'] === undefined) return false;
+    if (!('twoFactorEnabled' in value) || value['twoFactorEnabled'] === undefined) return false;
     if (!('isSecondAuthDone' in value) || value['isSecondAuthDone'] === undefined) return false;
-    if (!('secondAuthCode' in value) || value['secondAuthCode'] === undefined) return false;
+    if (!('twoFactorAuthSecret' in value) || value['twoFactorAuthSecret'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('ladderLevel' in value) || value['ladderLevel'] === undefined) return false;
     if (!('userStatus' in value) || value['userStatus'] === undefined) return false;
@@ -109,9 +109,9 @@ export function CreateUserDtoFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'avatar': json['avatar'],
         'nickname': json['nickname'],
-        'enableTwoFactor': json['enable_two_factor'],
+        'twoFactorEnabled': json['two_factor_enabled'],
         'isSecondAuthDone': json['is_second_auth_done'],
-        'secondAuthCode': json['second_auth_code'],
+        'twoFactorAuthSecret': json['two_factor_auth_secret'],
         'email': json['email'],
         'ladderLevel': json['ladder_level'],
         'userStatus': json['user_status'],
@@ -131,9 +131,9 @@ export function CreateUserDtoToJSONTyped(value?: CreateUserDto | null, ignoreDis
         
         'avatar': value['avatar'],
         'nickname': value['nickname'],
-        'enable_two_factor': value['enableTwoFactor'],
+        'two_factor_enabled': value['twoFactorEnabled'],
         'is_second_auth_done': value['isSecondAuthDone'],
-        'second_auth_code': value['secondAuthCode'],
+        'two_factor_auth_secret': value['twoFactorAuthSecret'],
         'email': value['email'],
         'ladder_level': value['ladderLevel'],
         'user_status': value['userStatus'],

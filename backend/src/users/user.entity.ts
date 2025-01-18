@@ -31,15 +31,15 @@ export class User {
 
   @ApiProperty({ type: 'boolean', description: 'The two factor authentication status of the user.' })
   @Column({ default: false })
-  enable_two_factor: boolean;
+  two_factor_enabled: boolean;
 
   @ApiProperty({ type: 'boolean', description: 'The two factor authentication status of the user.' })
   @Column({ default: false })
   is_second_auth_done: boolean;
 
-  @ApiProperty({ type: 'number', description: 'The two factor authentication status of the user.' })
-  @Column({ type: "smallint", nullable: true })
-  second_auth_code: number;
+  @ApiProperty({ type: 'string', description: 'The two factor authentication secret of the user.' })
+  @Column({ nullable: true })
+  two_factor_auth_secret: string;
 
   @ApiProperty({ type: 'string', description: 'The email of the user.' })
   @Column({ nullable: false, })

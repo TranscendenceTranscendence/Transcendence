@@ -24,8 +24,9 @@ import { JwtService } from '@nestjs/jwt';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {User} from "./user.entity";
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
+import { JwtAccessAuthGuard } from "../auth/guards/jwt-access.guard";
 import { PartialType } from '@nestjs/mapped-types';
+import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
 
 class MeResponseSuccess extends PartialType(User) {
     @ApiProperty()
@@ -91,27 +92,18 @@ export class UsersController {
     @ApiOperation({ summary: 'Get current user details' })
     @ApiResponse({ status: 200, description: 'User fetched successfully.', type: MeResponseSuccess })
     @ApiResponse({ status: 404, description: 'User not found.' })
-    @UseGuards(JwtAuthGuard)
-    async me(@Req() req: Request): Promise<MeResponseSuccess> {
-        console.log(req.user);
-
+    @UseGuards(JwtAccessAuthGuard)
+    async me(@Req() req: RequestWithUser): Promise<MeResponseSuccess> {
         console.log("req.user.id", req.user.id);
         try {
-            const userId = req.user.id;
-            if (userId === undefined) {
-                throw new HttpException('Unauthorized access', 401);
-            }
-            const data = await this.usersService.findOne(userId);
+            const user = req.user;
 
-            if (data === undefined) {
-                throw new NotFoundException('User not found');
-            }
             // user to me response
             return {
-                id: data.id,
-                avatar: data.avatar,
-                nickname: data.nickname,
-                enable_two_factor: data.enable_two_factor,
+                id: user.id,
+                avatar: user.avatar,
+                nickname: user.nickname,
+                enable_two_factor: user.two_factor_enabled,
             };
         } catch (error) {
             throw new InternalServerErrorException(error.message);
@@ -144,14 +136,10 @@ export class UsersController {
     @ApiResponse({ status: 200, description: 'User updated successfully.' })
     @ApiResponse({ status: 400, description: 'Invalid data provided.' })
     @ApiResponse({ status: 401, description: 'Unauthorized access.' })
-    @UseGuards(JwtAuthGuard)
-    async update(@Body() body: UpdateUserDto, @Req() req: Request) {
+    @UseGuards(JwtAccessAuthGuard)
+    async update(@Body() body: UpdateUserDto, @Req() req: RequestWithUser) {
         try {
-            const userId = req.user.id;
-            if (userId === undefined) {
-                throw new HttpException('Unauthorized access', 401);
-            }
-            await this.usersService.update(userId, body);
+            await this.usersService.update(req.user.id, body);
             return {
                 message: 'User Updated Successfully',
             };

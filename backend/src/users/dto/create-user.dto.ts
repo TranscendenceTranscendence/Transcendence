@@ -18,20 +18,18 @@ export class CreateUserDto extends PartialType(User)  {
     @IsOptional()
     // @IsNotEmpty() // for test do not forget to have isnotempty when going further
     @IsBoolean()
-    enable_two_factor: boolean;
-  
+    two_factor_enabled: boolean;
 
-    @ApiProperty({ description: 'Second authentication check' })
+    @ApiProperty({ description: 'Second authentication status' })
     @IsOptional()
-    // @IsNotEmpty() // for test do not forget to have isnotempty when going further
     @IsBoolean()
     is_second_auth_done: boolean;
-  
-    @ApiProperty({ description: 'Second authentication code' })
+
+    @ApiProperty({ description: 'Two factor authentication secret' })
     @IsOptional()
-    @IsNumber()
-    second_auth_code: number;
-  
+    @IsString()
+    two_factor_auth_secret: string;
+
     @ApiProperty({ description: 'email address' })
     @IsNotEmpty()
     @IsEmail()
@@ -41,7 +39,7 @@ export class CreateUserDto extends PartialType(User)  {
     @IsOptional()
     @IsNumber()
     ladder_level: number;
-  
+
     @ApiProperty({ description: 'User status' })
     @IsOptional()
     @IsEnum(UserStatus)

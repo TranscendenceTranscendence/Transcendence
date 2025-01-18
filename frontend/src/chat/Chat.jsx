@@ -5,9 +5,9 @@ import { ChatRoomContainer } from '../chatroom/ChatRoomContainer.tsx';
 import { useState, useEffect } from 'react';
 
 export const Chat = () => {
-    const urlMessages = 'http://localhost:3000/chatMessages';
-    // const urlChatRoom = 'http://localhost:3000/chatroom';
-    const urlUser = 'http://localhost:3000/users';
+    const urlMessages = 'https://localhost:3000/chatMessages';
+    // const urlChatRoom = 'https://localhost:3000/chatroom';
+    const urlUser = 'https://localhost:3000/users';
     const [localUserId, setLocalUserId] = useState(() => {
         const savedValue = localStorage.getItem("userId");
         return savedValue !== null ? JSON.parse(savedValue) : 1;

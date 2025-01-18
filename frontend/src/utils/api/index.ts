@@ -3,8 +3,11 @@ import * as generatedApi from '../../generated-api/index';
 export const useApi = () => {
     const config = new generatedApi.Configuration({
         basePath: process.env.REACT_APP_API_URL,
-        credentials: 'include'
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
     });
+
     const api = {
         Auth: new generatedApi.AuthApi(config),
         Users: new generatedApi.UsersApi(config),
@@ -18,6 +21,8 @@ export const useApi = () => {
         Queue: new generatedApi.QueueApi(config),
         FileUpload: new generatedApi.FileUploadApi(config),
         App: new generatedApi.AppApi(config),
+        TwoFactorAuthentication: new generatedApi.TwoFactorAuthenticationApi(config),
+
     }
     return api;
 }

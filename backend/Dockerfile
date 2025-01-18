@@ -10,6 +10,9 @@ COPY package*.json ./
 # Use `npm ci` to install dependencies
 RUN npm ci
 
+# install nest cli globally
+RUN npm install -g @nestjs/cli
+
 # Copy the rest of the application code
 COPY . .
 

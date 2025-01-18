@@ -32,7 +32,7 @@ interface ChatRoomListProps {
 }
 
 export const ChatRoomList: React.FC<ChatRoomListProps> = ({chatRooms ,  chatRoomId, onChatRoomChange, userId, askPassword, setAskPassword }) => {
-    // const url = 'http://localhost:3000/chatroom/includeParticipant';
+    // const url = 'https://localhost:3000/chatroom/includeParticipant';
     // const { data: chatRooms, error, loading } = useFetchRequest<ChatRoom[]>(url);
     const [selectedChatRoom, setSelectedChatRoom] = useState<ChatRoom | null>(null);
     const [newIdScope, setNewIdScope] = useState<number | null>(null);
