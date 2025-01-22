@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "../../components/ui/input-otp"
+import { Button } from "../../components/ui/button"
+
 
 const Container = styled.div`
   display: flex;
@@ -65,15 +73,20 @@ const DisableTwoFactorAuth = () => {
     <Container>
       <h1>Disable Two-Factor Authentication</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="twoFactorAuthenticationCode"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Enter 2FA code"
-          required
-        />
-        <button type="submit">Disable 2FA</button>
+      <InputOTP maxLength={6}>
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+        </InputOTPGroup>
+        <InputOTPSeparator />
+        <InputOTPGroup>
+          <InputOTPSlot index={3} />
+          <InputOTPSlot index={4} />
+          <InputOTPSlot index={5} />
+        </InputOTPGroup>
+      </InputOTP>
+        <Button>Disable 2FA</Button>
       </form>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {success && <SuccessMessage>{success}</SuccessMessage>}

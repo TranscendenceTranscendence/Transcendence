@@ -1,8 +1,0 @@
-    
-    position: 'absolute',
-    top: selectedMessage.y,
-    left: selectedMessage.x,
-    background: 'white',
-    border: '1px solid black',
-    padding: '10px',
-    zIndex: 1000,

@@ -18,7 +18,7 @@ import FortyTwoOauthConfig from "../config/ft-oauth.config";
       UsersService,
       JwtService,
   ],
-  exports: [UsersService],
+  exports: [UsersService, TypeOrmModule],
   controllers: [UsersController],
 })
 export class UsersModule {}
