@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    
+    "baseUrl": "./",
     "target": "es5",
     // "target": "es2015",
     "allowImportingTsExtensions": true,
@@ -23,10 +23,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
-
   },
-
-  "include": ["**/*"]
+  "include": [
+    "**/*"
+  ]
 }

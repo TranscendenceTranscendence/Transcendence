@@ -22,7 +22,7 @@ const GoogleAuthenticator: React.FC = () => {
     <div>
       <h1>Register Google Authenticator</h1>
       <p>Scan the QR code below with your Google Authenticator app:</p>
-      {qrCodeUrl && <img src={qrCodeUrl} alt="Google Authenticator QR Code" />}
+      {qrCodeUrl ? <img src={qrCodeUrl} alt="Google Authenticator QR Code" /> : 'Loading QR code...'}
     </div>
   );
 };
