@@ -13,13 +13,13 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "../../components/ui/form"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
+  InputOTPSeparator,
 } from "../../components/ui/input-otp"
 
 const Container = styled.div`
@@ -28,6 +28,21 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
+
+    h1 {
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+    form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
 `;
 
 const ErrorMessage = styled.div`
@@ -41,10 +56,11 @@ const SuccessMessage = styled.div`
 `;
 
 const FormSchema = z.object({
-  pin: z.string().min(6, {
-    message: "Your one-time password must be 6 characters.",
-  }),
-})
+  pin: z
+    .string()
+    .length(6, { message: "Your one-time password must be 6 digits." })
+    .regex(/^\d{6}$/, { message: "Your one-time password must contain only digits." }),
+});
 
 const TwoFactorAuthForm = () => {
   const [code, setCode] = useState('');
@@ -96,21 +112,23 @@ const TwoFactorAuthForm = () => {
 
   return (
     <Container>
-      <h1>Two-Factor Authentication</h1>
+      <h1>Google Two-Factor Authentication</h1>
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} >
         <FormField
           control={form.control}
           name="pin"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>One-Time Password</FormLabel>
+            <FormItem className="flex flex-col items-center">
               <FormControl>
                 <InputOTP maxLength={6} {...field}>
                   <InputOTPGroup>
                     <InputOTPSlot index={0} />
                     <InputOTPSlot index={1} />
                     <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
                     <InputOTPSlot index={3} />
                     <InputOTPSlot index={4} />
                     <InputOTPSlot index={5} />
@@ -118,14 +136,14 @@ const TwoFactorAuthForm = () => {
                 </InputOTP>
               </FormControl>
               <FormDescription>
-                Please enter the one-time password sent to your phone.
+                Please enter the one-time password in your google authenricator app.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
- 
-        <Button type="submit">Submit</Button>
+        <br />
+            <Button type="submit">Submit</Button>
       </form>
     </Form>
   

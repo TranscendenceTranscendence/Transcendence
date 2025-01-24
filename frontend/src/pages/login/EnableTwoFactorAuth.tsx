@@ -3,6 +3,54 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../utils/api';
 import axios from 'axios';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { Button } from "@/components/ui/button";
+
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  h1 {
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  margin-top: 1rem;
+`;
+
+const SuccessMessage = styled.div`
+  color: green;
+  margin-top: 1rem;
+`;
 
 const TwoFactorAuth = () => {
   const [code, setCode] = useState('');
@@ -88,18 +136,24 @@ const TwoFactorAuth = () => {
 
   return (
     <Container>
-      <h1>Google 2-Factor Authentication</h1>
+      <h1>Google Two Factor Authentication</h1>
+      <img src={qr} alt="2FA QR Code" />
       <form onSubmit={handleSubmit}>
-        <img src={qr} alt="2FA QR Code" />
-        <input
-          type="text"
-          name="twoFactorAuthenticationCode"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Enter 2FA code"
-          required
-        />
-        <button type="submit">Verify</button>
+        <InputOTP maxLength={6} pattern="[0-9]{6}" >
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+        </InputOTPGroup>
+        <InputOTPSeparator />
+        <InputOTPGroup>
+          <InputOTPSlot index={3} />
+          <InputOTPSlot index={4} />
+          <InputOTPSlot index={5} />
+        </InputOTPGroup>
+      </InputOTP>
+      <br />
+        <Button type="submit">Register</Button>
       </form>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {success && <SuccessMessage>{success}</SuccessMessage>}
@@ -107,61 +161,5 @@ const TwoFactorAuth = () => {
   );
 };
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #f2f2f2;
-  height: 100vh;
-  padding: 2rem;
-  box-sizing: border-box;
-
-  h1 {
-    color: #333;
-    font-family: 'Roboto', sans-serif;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    input {
-      padding: 0.5rem;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      color: white;
-      background-color: #5865f2;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: #4752c4;
-      }
-    }
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: red;
-  margin-top: 1rem;
-`;
-
-const SuccessMessage = styled.div`
-  color: green;
-  margin-top: 1rem;
-`;
 
 export default TwoFactorAuth;
