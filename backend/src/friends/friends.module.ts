@@ -5,11 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Friend } from './friend.entity';
 import { User } from '../users/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Friend, User])],
+  imports: [
+    TypeOrmModule.forFeature([Friend, User]),
+    UsersModule,
+  ],
   providers: [FriendsService, JwtService],
   controllers: [FriendsController],
-
 })
 export class FriendsModule {}

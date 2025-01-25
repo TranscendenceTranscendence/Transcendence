@@ -112,7 +112,7 @@
     ]
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.15.3",
+    "@openapitools/openapi-generator-cli": "^2.16.2",
     "@types/axios": "^0.14.4",
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.3.12",

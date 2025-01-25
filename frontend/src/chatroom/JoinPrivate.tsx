@@ -34,7 +34,6 @@ export const JoinPrivate: React.FC<JoinPrivateProps> = ({ chatRooms, onChatRoomC
 
     const HandleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(roomName);
         const selectedChatRoom = fetched?.find((room) => room.title === roomName);
 
         if (selectedChatRoom) {

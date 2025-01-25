@@ -36,11 +36,9 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({chatRooms ,  chatRoom
     // const { data: chatRooms, error, loading } = useFetchRequest<ChatRoom[]>(url);
     const [selectedChatRoom, setSelectedChatRoom] = useState<ChatRoom | null>(null);
     const [newIdScope, setNewIdScope] = useState<number | null>(null);
-    console.log(userId, chatRooms);
     const [activeRooms, setActiveRooms] = useState<ChatRoom[]>(
         chatRooms?.filter((room) => room.chatParticipants.some((participant) => participant.user_id.toString() === userId.toString())) || []
     );
-      console.log("activeRoom --> ", activeRooms);
     const CheckIfActive = (chatParticipants: Participant[] | undefined): boolean => {
         return chatParticipants?.some((participant) => {
             console.error("Participant user_id:", participant.user_id);
@@ -51,11 +49,9 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({chatRooms ,  chatRoom
 
     const changeChatRoom = (newId: number) => {
         const chatRoom = chatRooms?.find((room) => room.id === newId) ?? null;
-        console.log("chatRoom -->", chatRoom);
         setNewIdScope(newId);
         setSelectedChatRoom(chatRoom);
         const value = CheckIfActive(chatRoom?.chatParticipants);
-        console.log("value -->", value);
 
         if (chatRoom?.chat_room_type === chat_room_types.Protected && value === false) {
             setAskPassword(true);
@@ -74,9 +70,7 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({chatRooms ,  chatRoom
 
     const handlePasswordSubmit = async (password: string) => {
         const chatRoom = chatRooms?.find((room) => room.id === newIdScope) ?? null;  // Use the newIdScope state to find the chat room
-        console.log("chatroom -->", newIdScope);
 
-        console.log(password + " real password ---> " + selectedChatRoom?.password);
         const isValid = await validatePassword(password);
         if (isValid) {
             onChatRoomChange(chatRoom);

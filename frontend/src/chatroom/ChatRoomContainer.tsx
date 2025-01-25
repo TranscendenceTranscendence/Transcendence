@@ -61,12 +61,11 @@ export const ChatRoomContainer = ({ userId }: { userId: number }) => {
 
     const handleChatRoomChange = (newChatRoom: ChatRoom) => {
         const temp = newChatRoom?.id;
-        console.log("handleChatRoomChange", newChatRoom);
+        // console.log("handleChatRoomChange", newChatRoom);
         if (newChatRoom != null)
         {
             localStorage.setItem('chatRoomId', JSON.stringify(newChatRoom.id));
             setChatRoomId(newChatRoom?.id);
-            console.log("addParticipant");
             addParticipant(userId, newChatRoom.id);
         }
         else 

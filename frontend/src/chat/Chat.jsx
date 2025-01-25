@@ -39,9 +39,9 @@ export const Chat = () => {
             <form onSubmit={changeUserId}>
                 <input
                     type="text"
-                    name="userId" // Name to identify the input field
+                    name="userId"
                     value={localUserId}
-                    onChange={(e) => setLocalUserId(e.target.value)} // Update the local state
+                    onChange={(e) => setLocalUserId(e.target.value)}
                     placeholder="Enter new user ID"
                     required
                 />

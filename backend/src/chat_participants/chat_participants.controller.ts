@@ -13,6 +13,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateChatParticipantDto } from './dto/create-chat_participant.dto';
 import { UpdateChatParticipantDto } from './dto/update-chat_participant.dto';
 import { ChatParticipantsService } from './chat_participants.service';
+import { ChatParticipant } from './chat_participant.entity';
 
 @ApiTags('ChatParticipants')
 @Controller('chatParticipants')
@@ -113,14 +114,18 @@ export class ChatParticipantsController {
         }
     }
 
+    // interface Participants {
+
     @Get(':chatRoomId/find')
-    @ApiOperation({ summary: 'Fetch participants by chat room ID' })
+    @ApiOperation({ summary: 'Fetch participants by chat room ID'})
     @ApiResponse({ status: 200, description: 'Participants fetched successfully.' })
     @ApiResponse({ status: 404, description: 'Chat room not found.' })
     async findParticipantByChatRoom(
         @Param('chatRoomId') chatRoomId: number,
         @Body() body: { user_id: number; chat_room_id: number },
-    ) {
+    ): 
+    Promise<{ success: boolean; data?: ChatParticipant[]; message: string}>
+    {
         try {
             const data = await this.chatParticipantsService.findByChatRoomId(+chatRoomId);
             return {

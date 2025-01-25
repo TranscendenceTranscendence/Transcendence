@@ -31,8 +31,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('sendMessage')
-  handleMessage(client: any, payload: { message: string, user_id: number }) {
-    
+  handleMessage(client: any, payload: any) {
+    console.log('Received message:', payload);
     this.server.emit('receiveMessage', payload);
   }
 }

@@ -2,7 +2,6 @@ import React from "react";
 import '../css/ChatDot.css'
 
 export const OnlineDot = ({ status }: { status: boolean }) => {
-    console.log("deze --> " + status);
     if (status)
     {
         return(
