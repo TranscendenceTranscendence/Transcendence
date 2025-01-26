@@ -35,6 +35,10 @@ class MeResponseSuccess extends PartialType(User) {
     avatar: string;
     @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
     nickname: string;
+    @ApiProperty({ type: 'string', description: 'The email of the user.' })
+    email: string;
+    @ApiProperty({ type: 'number', description: 'The ladder level of the user.' })
+    ladder_level: number;
     @ApiProperty({ type: 'boolean', description: 'The two factor authentication status of the user.' })
     enable_two_factor: boolean;
 }
@@ -102,7 +106,9 @@ export class UsersController {
             return {
                 id: user.id,
                 avatar: user.avatar,
+                email: user.email,
                 nickname: user.nickname,
+                ladder_level: user.ladder_level,
                 enable_two_factor: user.two_factor_enabled,
             };
         } catch (error) {

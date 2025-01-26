@@ -38,6 +38,18 @@ export interface MeResponseSuccess {
      */
     nickname: string;
     /**
+     * The email of the user.
+     * @type {string}
+     * @memberof MeResponseSuccess
+     */
+    email: string;
+    /**
+     * The ladder level of the user.
+     * @type {number}
+     * @memberof MeResponseSuccess
+     */
+    ladderLevel: number;
+    /**
      * The two factor authentication status of the user.
      * @type {boolean}
      * @memberof MeResponseSuccess
@@ -52,6 +64,8 @@ export function instanceOfMeResponseSuccess(value: object): value is MeResponseS
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('avatar' in value) || value['avatar'] === undefined) return false;
     if (!('nickname' in value) || value['nickname'] === undefined) return false;
+    if (!('email' in value) || value['email'] === undefined) return false;
+    if (!('ladderLevel' in value) || value['ladderLevel'] === undefined) return false;
     if (!('enableTwoFactor' in value) || value['enableTwoFactor'] === undefined) return false;
     return true;
 }
@@ -69,6 +83,8 @@ export function MeResponseSuccessFromJSONTyped(json: any, ignoreDiscriminator: b
         'id': json['id'],
         'avatar': json['avatar'],
         'nickname': json['nickname'],
+        'email': json['email'],
+        'ladderLevel': json['ladder_level'],
         'enableTwoFactor': json['enable_two_factor'],
     };
 }
@@ -87,6 +103,8 @@ export function MeResponseSuccessToJSONTyped(value?: MeResponseSuccess | null, i
         'id': value['id'],
         'avatar': value['avatar'],
         'nickname': value['nickname'],
+        'email': value['email'],
+        'ladder_level': value['ladderLevel'],
         'enable_two_factor': value['enableTwoFactor'],
     };
 }

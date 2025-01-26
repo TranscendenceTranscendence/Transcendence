@@ -32,35 +32,68 @@ export interface Friend {
      * @type {number}
      * @memberof Friend
      */
-    person1UserId: number;
+    id: number;
     /**
      * 
      * @type {number}
      * @memberof Friend
      */
-    person2UserId: number;
+    senderId: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Friend
+     */
+    receiverId: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Friend
+     */
+    status: FriendStatusEnum;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Friend
+     */
+    createdAt: Date;
     /**
      * 
      * @type {User}
      * @memberof Friend
      */
-    person1User: User;
+    sender: User;
     /**
      * 
      * @type {User}
      * @memberof Friend
      */
-    person2User: User;
+    receiver: User;
 }
+
+
+/**
+ * @export
+ */
+export const FriendStatusEnum = {
+    Pending: 'pending',
+    Accepted: 'accepted',
+    Rejected: 'rejected'
+} as const;
+export type FriendStatusEnum = typeof FriendStatusEnum[keyof typeof FriendStatusEnum];
+
 
 /**
  * Check if a given object implements the Friend interface.
  */
 export function instanceOfFriend(value: object): value is Friend {
-    if (!('person1UserId' in value) || value['person1UserId'] === undefined) return false;
-    if (!('person2UserId' in value) || value['person2UserId'] === undefined) return false;
-    if (!('person1User' in value) || value['person1User'] === undefined) return false;
-    if (!('person2User' in value) || value['person2User'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('senderId' in value) || value['senderId'] === undefined) return false;
+    if (!('receiverId' in value) || value['receiverId'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
+    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
+    if (!('sender' in value) || value['sender'] === undefined) return false;
+    if (!('receiver' in value) || value['receiver'] === undefined) return false;
     return true;
 }
 
@@ -74,10 +107,13 @@ export function FriendFromJSONTyped(json: any, ignoreDiscriminator: boolean): Fr
     }
     return {
         
-        'person1UserId': json['person1_user_id'],
-        'person2UserId': json['person2_user_id'],
-        'person1User': UserFromJSON(json['person1User']),
-        'person2User': UserFromJSON(json['person2User']),
+        'id': json['id'],
+        'senderId': json['sender_id'],
+        'receiverId': json['receiver_id'],
+        'status': json['status'],
+        'createdAt': (new Date(json['created_at'])),
+        'sender': UserFromJSON(json['sender']),
+        'receiver': UserFromJSON(json['receiver']),
     };
 }
 
@@ -92,10 +128,13 @@ export function FriendToJSONTyped(value?: Friend | null, ignoreDiscriminator: bo
 
     return {
         
-        'person1_user_id': value['person1UserId'],
-        'person2_user_id': value['person2UserId'],
-        'person1User': UserToJSON(value['person1User']),
-        'person2User': UserToJSON(value['person2User']),
+        'id': value['id'],
+        'sender_id': value['senderId'],
+        'receiver_id': value['receiverId'],
+        'status': value['status'],
+        'created_at': ((value['createdAt']).toISOString()),
+        'sender': UserToJSON(value['sender']),
+        'receiver': UserToJSON(value['receiver']),
     };
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useApi } from '@/utils/api';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
