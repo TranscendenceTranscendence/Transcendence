@@ -1,27 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useApi } from '@/utils/api';
-import {
-  UsersApi
-} from "../generated-api";
-import {
-  AppleIcon,
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { Button } from "@/components/ui/button"
+import { ChevronRight, SettingsIcon } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -35,17 +16,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 
-/**
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  avatar: string;
-  ladder_level: number;
-  nickname: string;
-  enable_two_factor: boolean;
-}
- */
+
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: User;
 }
@@ -96,15 +67,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarContent>
-        <Avatar className="aspect-ratio-box">
-          <AvatarImage src="https://github.com/shadcn.png" alt="@avatar" />
-          <AvatarFallback>User Avatar</AvatarFallback>
-        </Avatar>
-        <NavUser user={user} />
+    <Sidebar>
+      <SidebarContent className="flex flex-col items-center">
+        <Avatar className="w-60 h-60 p-4">
+            <AvatarImage src={user.avatar} alt={user.nickname} />
+            <AvatarFallback>{user.nickname}</AvatarFallback>
+          </Avatar>
+        <div className="flex flex-col items-center gap-4">
+          <p className="font-bold text-3xl">{user.nickname}</p>
+          <p className="font-bold text-lg">Level {user.ladder_level}</p>
+        </div>
+        <br />
+        <div className="flex flex-col gap-2">
+          <Button className="p-4 rounded-xl w-48">Profile</Button>
+          <Button className="p-4 rounded-xl w-48">Share Profile</Button>
+          <div className="flex items-center gap-2">
+            <Button className="p-4 rounded-xl">Logout</Button>
+            <Button className="p-4 rounded-xl">
+              <SettingsIcon /> Settings
+            </Button>
+          </div>
+        </div>
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   )
 }
