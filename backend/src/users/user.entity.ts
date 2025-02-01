@@ -65,32 +65,32 @@ export class User {
 
   // Relationships
   @OneToMany(() => Achievement, achievement => achievement.user,)
-  achievements: Achievement[];
+  achievements: Achievement[] | [];
 
   @OneToMany(() => Blocked, blocked => blocked.user)
-  blockedUsers: Blocked[];
+  blockedUsers: Blocked[] | [];;
 
   @OneToMany(() => Blocked, blocked => blocked.blockedUser)
-  users: Blocked[];
+  users: Blocked[] | [];;
 
   @OneToMany(() => ChatMessage, message => message.user)
-  chatMessages: ChatMessage[];
+  chatMessages: ChatMessage[] | [];;
 
   @OneToMany(() => ChatParticipant, participant => participant.user)
-  chatParticipants: ChatParticipant[];
+  chatParticipants: ChatParticipant[] | [];;
 
   @OneToMany(() => Friend, (friend) => friend.sender)
-  sentFriendRequests: Friend[];
+  sentFriendRequests: Friend[] | [];;
 
   @OneToMany(() => Friend, (friend) => friend.receiver)
-  receivedFriendRequests: Friend[];
+  receivedFriendRequests: Friend[] | [];;
 
   @OneToMany(() => Game, game => game.player1User)
-  players1: Game[];
+  players1: Game[] | [];;
 
   @OneToMany(() => Game, game => game.player2User)
-  players2: Game[];
+  players2: Game[] | [];;
 
   @OneToMany(() => Game, game => game.player2User)
-  winners: Game[];
+  winners: Game[] | [];;
 }

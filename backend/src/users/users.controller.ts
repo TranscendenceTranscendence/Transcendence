@@ -15,7 +15,7 @@ import {
     UploadedFile,
     UseGuards
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiProperty } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -27,6 +27,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessAuthGuard } from "../auth/guards/jwt-access.guard";
 import { PartialType } from '@nestjs/mapped-types';
 import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
+import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
+
 
 class MeResponseSuccess extends PartialType(User) {
     @ApiProperty()
@@ -90,11 +92,11 @@ export class UsersController {
 
     @Get('me')
     @ApiOperation({ summary: 'Get current user details' })
-    @ApiResponse({ status: 200, description: 'User fetched successfully.', type: MeResponseSuccess })
+    @ApiResponse({ status: 200, description: 'User fetched successfully.', type: User })
     @ApiResponse({ status: 404, description: 'User not found.' })
     @UseGuards(JwtAccessAuthGuard)
-    async me(@Req() req: RequestWithUser): Promise<MeResponseSuccess> {
-        console.log("req.user.id", req.user.id);
+    async me(@Req() req: RequestWithUser): Promise<User> {
+        console.log("inside /users/me, req.user.id", req.user.id);
         try {
             const user = req.user;
 
@@ -103,7 +105,22 @@ export class UsersController {
                 id: user.id,
                 avatar: user.avatar,
                 nickname: user.nickname,
-                enable_two_factor: user.two_factor_enabled,
+                email: user.email,
+                user_status: user.user_status,
+                two_factor_enabled: user.two_factor_enabled,
+                two_factor_auth_secret: user.two_factor_auth_secret,
+                ladder_level: user.ladder_level,
+                is_second_auth_done: user.is_second_auth_done,
+                achievements: user.achievements,
+                blockedUsers: user.blockedUsers,
+                users: user.users,
+                chatMessages: user.chatMessages,
+                chatParticipants: user.chatParticipants,
+                sentFriendRequests: user.sentFriendRequests,
+                receivedFriendRequests: user.receivedFriendRequests,
+                players1: user.players1,
+                players2: user.players2,
+                winners: user.winners,
             };
         } catch (error) {
             throw new InternalServerErrorException(error.message);

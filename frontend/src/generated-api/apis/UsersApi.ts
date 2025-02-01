@@ -16,15 +16,12 @@
 import * as runtime from '../runtime';
 import type {
   CreateUserDto,
-  MeResponseSuccess,
   UpdateUserDto,
   User,
 } from '../models/index';
 import {
     CreateUserDtoFromJSON,
     CreateUserDtoToJSON,
-    MeResponseSuccessFromJSON,
-    MeResponseSuccessToJSON,
     UpdateUserDtoFromJSON,
     UpdateUserDtoToJSON,
     UserFromJSON,
@@ -148,7 +145,7 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Get current user details
      */
-    async usersControllerMeRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<MeResponseSuccess>> {
+    async usersControllerMeRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<User>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -160,13 +157,13 @@ export class UsersApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => MeResponseSuccessFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserFromJSON(jsonValue));
     }
 
     /**
      * Get current user details
      */
-    async usersControllerMe(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<MeResponseSuccess> {
+    async usersControllerMe(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User> {
         const response = await this.usersControllerMeRaw(initOverrides);
         return await response.value();
     }

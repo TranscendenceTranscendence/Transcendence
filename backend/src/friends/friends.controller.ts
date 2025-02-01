@@ -13,7 +13,7 @@ import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { GetFriendRequestsDto } from './dto/get-friend-requests.dto';
-import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
+import { JwtAccessAuthGuard } from "../auth/guards/jwt-access.guard";
 
 @ApiTags('Friends') // Groups the endpoints under "Friends" in Swagger
 @Controller('friends')
@@ -30,12 +30,19 @@ export class FriendsController {
     status: 404,
     description: 'User not found.',
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAccessAuthGuard)
   async sendFriendRequest(
     @Param('id', ParseIntPipe) receiverId: number,
     @Req() req: Request,
   ) {
-    const senderId = req.user?.id; // Type safety assumed for `req.user`
+    const senderId = req.user?.id; // Type sa
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 
+    // fety assumed for `req.user`
     if (!senderId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
@@ -54,7 +61,7 @@ export class FriendsController {
     description: 'Successfully fetched friend requests.',
     type: GetFriendRequestsDto,
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAccessAuthGuard)
   async getFriendRequests(@Req() req: Request) {
     const receiverId = req.user?.id; // Ensure type safety for `req.user`
     console.log(receiverId);

@@ -8,9 +8,11 @@ import { Chat } from "./chat/Chat.jsx";
 import EnableTwoFactorAuth from "./pages/login/EnableTwoFactorAuth.tsx";
 import DisableTwoFactorAuth from "./pages/login/DisableTwoFactorAuth";
 import TwoFactorAuth from "./pages/login/TwoFactorAuth";
-import Profile from "./pages/user/Profile";
+import Profile from "./pages/profile/VisitingProfile.tsx";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import UserProfile from "./pages/profile/UserProfile.tsx";
+import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
 
 function App() {
   const params = new URLSearchParams(window.location.search);
@@ -39,7 +41,8 @@ function App() {
       <Route path="logout" element={<Logout />} />
       <Route path="/update" element={<UpdateUser />} />
       <Route path="/chat" element={<Chat />} />
-      <Route path="/profile/:id" element={<Profile />} />
+      <Route path="/profile" element={<UserProfile />} />
+      <Route path="/profile/:id" element={<VisitingProfile />} />
       <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
       <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
       <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
