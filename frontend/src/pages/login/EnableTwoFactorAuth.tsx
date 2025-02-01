@@ -153,7 +153,7 @@ const TwoFactorAuth = () => {
         </InputOTPGroup>
       </InputOTP>
       <br />
-        <Button type="submit">Register</Button>
+        <Button className="p-4 rounded-xl w-32" type="submit">Register</Button>
       </form>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {success && <SuccessMessage>{success}</SuccessMessage>}

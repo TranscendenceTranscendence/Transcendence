@@ -109,7 +109,7 @@ const DisableTwoFactorAuth = () => {
         </InputOTPGroup>
       </InputOTP>
       <br />
-        <Button type="submit">Disable 2FA</Button>
+        <Button className="p-4 rounded-xl w-32" type="submit">Disable 2FA</Button>
       </form>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       {success && <SuccessMessage>{success}</SuccessMessage>}

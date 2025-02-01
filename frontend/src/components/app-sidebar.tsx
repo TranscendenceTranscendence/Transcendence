@@ -41,25 +41,25 @@ class User {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   {
-      const navigate = useNavigate();
+    const navigate = useNavigate();
+    
+    const handleLogout = async () => {
+      try {
+          await axios.post('https://localhost:3000/auth/logout', {}, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            },
+          });
+          // Clear local storage
+          localStorage.removeItem('access_token');
+          // localStorage.removeItem('refreshToken'); // If you have a refresh token
       
-      const handleLogout = async () => {
-        try {
-            await axios.post('https://localhost:3000/auth/logout', {}, {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-              },
-            });
-            // Clear local storage
-            localStorage.removeItem('access_token');
-            // localStorage.removeItem('refreshToken'); // If you have a refresh token
-        
-            // Redirect to login page
-            navigate('/login');
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
-      };
+          // Redirect to login page
+          navigate('/login');
+      } catch (error) {
+          console.error('Error logging out:', error);
+      }
+    };
     const api = useApi();
     const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
