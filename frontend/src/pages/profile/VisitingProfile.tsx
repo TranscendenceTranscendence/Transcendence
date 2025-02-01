@@ -7,6 +7,7 @@ import { useApi } from "@/utils/api";
 import UserAvatar from "./components/UserAvatar";
 import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
+import InviteToGame from "./components/InviteToGame";
 export default function VisitingProfile() {
   const {id} = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -64,6 +65,7 @@ export default function VisitingProfile() {
       <UserAvatar user={visitingUser} />
       <UserDetails user={visitingUser} />
       <FriendRequest user={visitingUser} />
+      <InviteToGame user={visitingUser} />
     </div>
   );
 }

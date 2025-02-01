@@ -37,9 +37,9 @@ describe('FriendsService', () => {
         id: 1,
         avatar: '',
         nickname: 'John',
-        enable_two_factor: false,
+        two_factor_enabled: false,
         is_second_auth_done: false,
-        second_auth_code: null,
+        two_factor_auth_secret: null,
         email: 'john@example.com',
         ladder_level: 0,
         user_status: UserStatus.Online,
@@ -59,9 +59,9 @@ describe('FriendsService', () => {
         id: 2,
         avatar: '',
         nickname: 'Doe',
-        enable_two_factor: false,
+        two_factor_enabled: false,
         is_second_auth_done: false,
-        second_auth_code: null,
+        two_factor_auth_secret: null,
         email: 'doe@example.com',
         ladder_level: 0,
         user_status: UserStatus.Online,
@@ -93,7 +93,7 @@ describe('FriendsService', () => {
 
       jest.spyOn(friendsRepository, 'findAndCount').mockResolvedValueOnce([mockFriendRequests, mockTotal]);
 
-      const result = await service.getFriendRequests({ recieverId: 2 }, 1, 10);
+      const result = await service.getFriendRequests({ receiverId: 2 }, 1, 10);
 
       expect(result).toEqual({
         data: mockFriendRequests,
@@ -107,13 +107,13 @@ describe('FriendsService', () => {
     it('should handle repository errors gracefully', async () => {
       jest.spyOn(friendsRepository, 'findAndCount').mockRejectedValueOnce(new Error('Database error'));
 
-      await expect(service.getFriendRequests({ recieverId: 2 }, 1, 10)).rejects.toThrow(HttpException);
+      await expect(service.getFriendRequests({ receiverId: 2 }, 1, 10)).rejects.toThrow(HttpException);
     });
 
     it('should return no data if there are no friend requests', async () => {
       jest.spyOn(friendsRepository, 'findAndCount').mockResolvedValueOnce([[], 0]);
 
-      const result = await service.getFriendRequests({ recieverId: 2 }, 1, 10);
+      const result = await service.getFriendRequests({ receiverId: 2 }, 1, 10);
 
       expect(result).toEqual({
         data: [],

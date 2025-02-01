@@ -1,4 +1,4 @@
-import { Entity, OneToOne, JoinColumn, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { User } from '../users/user.entity';
 
 export enum FriendStatus {
@@ -24,11 +24,11 @@ export class Friend {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
-  @OneToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'sender_id' })
   sender: User;
 
-  @OneToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'receiver_id' })
   receiver: User;
 }
