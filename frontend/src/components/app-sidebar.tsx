@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useApi } from '@/utils/api';
 import { Button } from "@/components/ui/button"
@@ -23,12 +24,14 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 // This is sample data.
 class User {
+  id: number;
   nickname: string;
   email: string;
   ladder_level: number;
   avatar: string;
 
-  constructor({ nickname, email, ladder_level, avatar }: { nickname: string; email: string; ladder_level: number; avatar: string }) {
+  constructor({id, nickname, email, ladder_level, avatar }: {id: number; nickname: string; email: string; ladder_level: number; avatar: string }) {
+    this.id = id;
     this.nickname = nickname;
     this.email = email;
     this.ladder_level = ladder_level;
@@ -47,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const fetchCurrentUser = async () => {
       try {
         const response = await api.Users.usersControllerMe();
-        const me = new User({ nickname: response.nickname, email: response.email, ladder_level: response.ladderLevel, avatar: response.avatar });
+        const me = new User({id: response.id, nickname: response.nickname, email: response.email, ladder_level: response.ladderLevel, avatar: response.avatar });
         setUser(me);
       } catch (error) {
         console.error('Failed to fetch current user:', error);
@@ -79,12 +82,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
         <br />
         <div className="flex flex-col gap-2">
-          <Button className="p-4 rounded-xl w-48">Profile</Button>
-          <Button className="p-4 rounded-xl w-48">Share Profile</Button>
+          <Button className="p-4 rounded-xl w-48" asChild>
+            <Link to={`/profile/${user.id}`}>Profile</Link>
+            </Button>
+          <Button className="p-4 rounded-xl w-48" asChild>
+            <Link to={`/profile/${user.id}`}>Share Profile</Link>
+            </Button>
           <div className="flex items-center gap-2">
-            <Button className="p-4 rounded-xl">Logout</Button>
-            <Button className="p-4 rounded-xl">
-              <SettingsIcon /> Settings
+            <Button className="p-4 rounded-xl" asChild>
+              <Link to="/logout">Logout</Link>
+              </Button>
+            <Button className="p-4 rounded-xl" asChild>
+              <Link to="/update"><SettingsIcon /> Settings</Link>
             </Button>
           </div>
         </div>
