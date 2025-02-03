@@ -52,7 +52,7 @@ const SuccessMessage = styled.div`
   margin-top: 1rem;
 `;
 
-const TwoFactorAuth = () => {
+const EnableTwoFactorAuth = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -99,6 +99,7 @@ const TwoFactorAuth = () => {
   
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log(e);
     e.preventDefault();
   
     try {
@@ -111,7 +112,7 @@ const TwoFactorAuth = () => {
         },
       });
   
-      if (response.status === 200 || response.status === 201) {
+      if (response.status === 200 || response.status === 401) {
         const data = response.data;
         console.log('Received data:', data);
         if (data.msg === 'TwoFactorAuthentication turned on') {
@@ -139,20 +140,20 @@ const TwoFactorAuth = () => {
       <h1>Google Two Factor Authentication</h1>
       <img src={qr} alt="2FA QR Code" />
       <form onSubmit={handleSubmit}>
-        <InputOTP maxLength={6} pattern="[0-9]{6}" >
-        <InputOTPGroup>
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
-        </InputOTPGroup>
-        <InputOTPSeparator />
-        <InputOTPGroup>
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
-        </InputOTPGroup>
-      </InputOTP>
-      <br />
+        <InputOTP onChange={setCode} maxLength={6}>
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+          </InputOTPGroup>
+          <InputOTPSeparator />
+          <InputOTPGroup>
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
+        <br />
         <Button className="p-4 rounded-xl w-32" type="submit">Register</Button>
       </form>
       {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -162,4 +163,4 @@ const TwoFactorAuth = () => {
 };
 
 
-export default TwoFactorAuth;
+export default EnableTwoFactorAuth;

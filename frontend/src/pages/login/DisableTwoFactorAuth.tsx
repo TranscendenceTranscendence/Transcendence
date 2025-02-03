@@ -95,7 +95,7 @@ const DisableTwoFactorAuth = () => {
     <Container>
       <h1>Disable Two-Factor Authentication</h1> <br />
       <form onSubmit={handleSubmit}>
-      <InputOTP maxLength={6} pattern="[0-9]{6}" >
+      <InputOTP onChange={setCode} maxLength={6} >
         <InputOTPGroup>
           <InputOTPSlot index={0} />
           <InputOTPSlot index={1} />
