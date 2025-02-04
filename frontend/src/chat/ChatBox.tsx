@@ -242,6 +242,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
     </div>
     );
   };
-  
+};
   
   
