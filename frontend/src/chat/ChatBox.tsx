@@ -57,12 +57,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
   console.log(localParticipant);
   console.log(userId)
   useEffect(() => {
-<<<<<<< HEAD
-    if (fetchedMessages) {
-      setMessages(fetchedMessages);
-      }
-    }, [fetchedMessages]);
-=======
     api.ChatParticipants.chatParticipantsControllerFindParticipantByChatRoom({
       chatRoomId: chatRoomId,api
     }).then((response) => {
@@ -125,7 +119,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
     //   MuteUser(userId);
     // else if (action == 'Block')
     //   BlockUser(userId);
->>>>>>> 1d63b9a1 (Reset to a working version)
     
     useEffect(() => {
       socket.on('connect', () => {
