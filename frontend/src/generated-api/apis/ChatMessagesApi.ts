@@ -182,33 +182,45 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     /**
      * Retrieve chat messages by chat room ID
      */
-    async chatMessagesControllerFindOneRaw(requestParameters: ChatMessagesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatMessagesControllerFindOneRaw(
+        requestParameters: ChatMessagesControllerFindOneRequest,
+        initOverrides?: RequestInit | runtime.InitOverrideFunction
+    ): Promise<any> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
                 'Required parameter "id" was null or undefined when calling chatMessagesControllerFindOne().'
             );
         }
-
+    
         const queryParameters: any = {};
-
         const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/chatMessages/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
+    
+        const response = await this.request(
+            {
+                path: `/chatMessages/${encodeURIComponent(String(requestParameters['id']))}`,
+                method: 'GET',
+                headers: headerParameters,
+                query: queryParameters,
+            },
+            initOverrides
+        );
+    
+        if (!response.ok) {
+            throw new Error(`Error fetching messages: ${response.statusText}`);
+        }
+    
+        const responseData = await response.json();
+        return responseData;
     }
 
     /**
      * Retrieve chat messages by chat room ID
      */
-    async chatMessagesControllerFindOne(requestParameters: ChatMessagesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatMessagesControllerFindOneRaw(requestParameters, initOverrides);
+    async chatMessagesControllerFindOne(requestParameters: ChatMessagesControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.chatMessagesControllerFindOneRaw(requestParameters, initOverrides);
+        console.log("chatMessagesControllerFindOne response", response);
+        return response; 
     }
 
     /**

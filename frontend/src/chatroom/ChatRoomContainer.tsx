@@ -34,6 +34,7 @@ enum chat_participant_roles {
 export const ChatRoomContainer = ({ userId }: { userId: number }) => {
     const [askPassword, setAskPassword] = useState<boolean>(false);
     const url = 'https://localhost:3000/chatroom/includeParticipant';
+    //vervangen
     const { data: chatRooms, error, loading } = useFetchRequest<ChatRoom[]>(url);
     const [chatRoomId, setChatRoomId] = useState(() => {
         try {

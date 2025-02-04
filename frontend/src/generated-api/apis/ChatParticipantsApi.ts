@@ -165,35 +165,46 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Fetch a chat participant by ID
      */
-    async chatParticipantsControllerFindOneRaw(requestParameters: ChatParticipantsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsControllerFindOneRaw(
+        requestParameters: ChatParticipantsControllerFindOneRequest,
+        initOverrides?: RequestInit | runtime.InitOverrideFunction
+    ): Promise<any> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
                 'Required parameter "id" was null or undefined when calling chatParticipantsControllerFindOne().'
             );
         }
-
+    
         const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/chatParticipants/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
+        const headerParameters: runtime.HTTPHeaders = {};    
+        const response = await this.request(
+            {
+                path: `/chatParticipants/${encodeURIComponent(String(requestParameters['id']))}`,
+                method: 'GET',
+                headers: headerParameters,
+                query: queryParameters,
+            },
+            initOverrides
+        );    
+        if (!response.ok) {
+            throw new Error(`Error fetching participant: ${response.statusText}`);
+        }    
+        const responseData = await response.json();
+        return responseData;
     }
-
+    
     /**
-     * Fetch a chat participant by ID
+     * Retrieve chat participant by chat room ID
      */
-    async chatParticipantsControllerFindOne(requestParameters: ChatParticipantsControllerFindOneRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindOneRaw(requestParameters, initOverrides);
+    async chatParticipantsControllerFindOne(
+        requestParameters: ChatParticipantsControllerFindOneRequest,
+        initOverrides?: RequestInit | runtime.InitOverrideFunction
+    ): Promise<any> {
+        const response = await this.chatParticipantsControllerFindOneRaw(requestParameters, initOverrides);
+        return response;
     }
-
+    
     /**
      * Fetch participants by chat room ID
      */

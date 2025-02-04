@@ -13,36 +13,39 @@ export const KickUser = (chatRoomId, userId) => {
     deleteItem(chatRoomId, userId);
 }
 
-export const PromoteUser = async (chatRoomId, id) => {
+export const PromoteUser = async ({ api, chatRoomId, id}) => {
   const updateDto = {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
-      const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
+      const response = await api.chatParticipants.chatParticipantsControllerUpdateParticipant({ id: chatRoomId, chatParticipantId: id, chatParticipant: updateDto });
+      //vervangen
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);
     }
 }
 
-export const MuteUser = async (chatRoomId, id) => {
+export const MuteUser = async (api, chatRoomId, id) => {
   const updateDto = {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
       const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
+      //vervangen
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);
     }
 }
 
-export const BlockUser = async (chatRoomId, id) => {
+export const BlockUser = async (api, chatRoomId, id) => {
   const updateDto = {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
       const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
+      //vervangen
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);

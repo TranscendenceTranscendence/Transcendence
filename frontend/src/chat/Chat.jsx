@@ -31,8 +31,6 @@ export const Chat = () => {
 
 
             <h1>Post a Message from the contact/guest</h1>
-            <PostMessage url={urlMessages} userId={localUserId} chatRoomId={1} /> {}
-
             <h1>Post a User to the server</h1>
             <PostUser url={urlUser}/>
             

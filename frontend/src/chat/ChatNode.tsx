@@ -31,8 +31,7 @@ export const ChatNode = (props: {
   if (loading) {
     return <li>Loading user data...</li>;
   }
-  // console.table(message);
-  if (!message.user) {
+  if (!message.user_id) {
     return (
       <li>User not found</li>
     )

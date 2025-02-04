@@ -1,0 +1,10 @@
+Swagger calls
+Direct messages
+Channel Owner leaved chatroom verwijderen
+Channel Owner kan wachtwoord Toevoegen, veranderen en verwijderen
+    - Van protected naar public
+    - Van public/private naar protected
+    - Wachtwoord veranderen van protected
+
+
+provider gebruiken voor alle data van chatbox

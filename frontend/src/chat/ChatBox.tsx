@@ -23,16 +23,71 @@ interface Participants {
   chat_participant_role: chat_participant_roles;
 }
 
+
+
 const addStyle = (value: boolean) => {
   return value ? 'chatUser' : 'chatContact';
 };
 
+export const useChatMessages = (api, chatRoomId) => {
+  const [messages, setMessages] = useState<oldMessage[]>([]);
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      setLoading(true);
+      try {
+        const response = await api.ChatMessages.chatMessagesControllerFindOne({ id: chatRoomId });
+        console.log("Fetched Messages:", response.data);
+        setMessages(response.data || []);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (chatRoomId) {
+      fetchMessages();
+    }
+  }, [chatRoomId]);
+  console.log("MessagesUseEffect:", messages);
+  return { messages, loading, error };
+};
+
+export const useParticipants = (api, chatRoomId) => {
+  const [Participants, setParticipants] = useState<Participants[]>([]);
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      setLoading(true);
+      try {
+        const response = await api.ChatParticipants.chatParticipantsControllerFindOne({ id: chatRoomId });
+        console.log("Fetched Participants:", response.data);
+        setParticipants(response.data || []);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (chatRoomId) {
+      fetchParticipants();
+    }
+  }, [chatRoomId]);
+  console.log("MessagesUseEffect:", Participants);
+  return { Participants, loading, error };
+};
+
 export const ChatBox = ({ socket, chatRoomId, userId }) => {
   const api = useApi();
-  const url = `https://localhost:3000/chatMessages/${chatRoomId}`;
-  const { data: fetchedMessages, error, loading } = useFetchRequest<oldMessage[]>(url);
+  const { messages: fetchedMessages, loading, error } = useChatMessages(api, chatRoomId);
   const [chatParticipants, setChatParticipants] = useState<Participants[]>([]);
-  const { data: activeParticipants, error2, loading2 } = useFetchRequestMount<Participants[]>(`https://localhost:3000/chatParticipants/${chatRoomId}/find/`);
+  const { Participants: activeParticipants, loading : error2, error : loading2 } = useParticipants(api, chatRoomId)
   const localParticipant = activeParticipants?.find((participant) => participant.user_id?.toString() === userId.toString());
   const [messages, setMessages] = useState<oldMessage[]>(fetchedMessages || []);
   const [input, setInput] = useState('');
@@ -47,7 +102,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
       chatRoomId: chatRoomId,
     }).then((response) => {
       console.log('Chat Participants:', response);
-      // setChatParticipants(response.data);
     })
     if (fetchedMessages) {
       setMessages(fetchedMessages);
@@ -97,6 +151,20 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
     });
   };
 
+  const handleAction = (action: string, id: number) => {
+    if (action == 'Kick')
+      KickUser(chatRoomId, id);
+    else if (action == 'Promote')
+      PromoteUser({api, chatRoomId, id});
+    // else if (action == 'Mute')
+    //   MuteUser(userId);
+    // else if (action == 'Block')
+    //   BlockUser(userId);
+    
+    console.log(`${action} user with ID: ${id}`);
+    setSelectedMessage(null);
+  };
+
   const handleOutsideClick = () => {
     setSelectedMessage(null);
   };
@@ -123,9 +191,13 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
           messages.map((message, index) => {
             const user = activeParticipants?.find((participant) => participant.user_id === message.user_id);
             // console.log(`Message user_id: ${message.user_id}, Found user:`, user);
-            console.log("fetched", message)
+            console.log("fetched", message);
             return (
-              <div key={index} className={addStyle(message.user_id?.toString() === userId.toString())} onClick={(e) => handleMessageClick(e, message.user_id)}>
+              <div
+                key={index}
+                className={addStyle(message.user_id?.toString() === userId.toString())}
+                onClick={(e) => handleMessageClick(e, message.user_id)}
+              >
                 <ChatNode key={index} message={message} user={user} loading={loading2} userId={userId} />
               </div>
             );
@@ -138,12 +210,39 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
         <input
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSendMessage()}
           placeholder="Type a message"
         />
         <button onClick={handleSendMessage}>Send</button>
+  
+        {selectedMessage && (
+          <div
+            className="messagePrompt"
+            style={{
+              position: 'absolute',
+              top: selectedMessage.y,
+              left: selectedMessage.x,
+              background: 'white',
+              border: '1px solid black',
+              padding: '10px',
+              zIndex: 1000,
+            }}
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
+          >
+            <p>Actions for User {selectedMessage.userId}:</p>
+            {(localParticipant?.chat_participant_role === chat_participant_roles.Owner || localParticipant?.chat_participant_role === chat_participant_roles.Admin) && (
+              <>
+                <button onClick={() => handleAction('Kick', selectedMessage.userId)}>Kick</button>
+                <button onClick={() => handleAction('Promote', selectedMessage.userId)}>Promote</button>
+                <button onClick={() => handleAction('Mute', selectedMessage.userId)}>Mute</button>
+              </>
+            )}
+            <button onClick={() => handleAction('Block', selectedMessage.userId)}>Block</button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+    
