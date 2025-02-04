@@ -13,18 +13,19 @@ export const KickUser = (chatRoomId, userId) => {
     deleteItem(chatRoomId, userId);
 }
 
-export const PromoteUser = async ({ api, chatRoomId, id}) => {
+export const PromoteUser = async (chatRoomId, id) => {
   const updateDto = {
     chat_participant_role : chat_participant_roles.Admin,
   };
     try {
-      const response = await api.chatParticipants.chatParticipantsControllerUpdateParticipant({ id: chatRoomId, chatParticipantId: id, chatParticipant: updateDto });
-      //vervangen
+      const response = await axios.put(`https://localhost:3000/chatParticipants/${chatRoomId}/update/${id}`, updateDto);
       console.log('Update Successful:', response.data);
     } catch (error) {
       console.error('Error updating user:', error);
     }
 }
+
+
 
 export const MuteUser = async (api, chatRoomId, id) => {
   const updateDto = {

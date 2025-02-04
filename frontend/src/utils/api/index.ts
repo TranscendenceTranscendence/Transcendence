@@ -1,6 +1,7 @@
 import * as generatedApi from '../../generated-api/index';
+import { ApiInterface } from "./apiTypes";
 
-export const useApi = () => {
+export const useApi = (): ApiInterface => {
     const config = new generatedApi.Configuration({
         basePath: process.env.REACT_APP_API_URL,
         headers: {
@@ -8,7 +9,7 @@ export const useApi = () => {
         },
     });
 
-    const api = {
+    const api: ApiInterface = {
         Auth: new generatedApi.AuthApi(config),
         Users: new generatedApi.UsersApi(config),
         Achievements: new generatedApi.AchievementsApi(config),
@@ -21,9 +22,8 @@ export const useApi = () => {
         Queue: new generatedApi.QueueApi(config),
         FileUpload: new generatedApi.FileUploadApi(config),
         App: new generatedApi.AppApi(config),
-        TwoFactorAuthentication: new generatedApi.TwoFactorAuthenticationApi(config),
+        TwoFactorAuthentication: new generatedApi.TwoFactorAuthenticationApi(),
+    };
 
-    }
     return api;
-}
-
+};

@@ -99,7 +99,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
 
   useEffect(() => {
     api.ChatParticipants.chatParticipantsControllerFindParticipantByChatRoom({
-      chatRoomId: chatRoomId,
+      chatRoomId: chatRoomId,api
     }).then((response) => {
       console.log('Chat Participants:', response);
     })
@@ -155,7 +155,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
     if (action == 'Kick')
       KickUser(chatRoomId, id);
     else if (action == 'Promote')
-      PromoteUser({api, chatRoomId, id});
+      PromoteUser(chatRoomId, id);
     // else if (action == 'Mute')
     //   MuteUser(userId);
     // else if (action == 'Block')
