@@ -57,10 +57,75 @@ export const ChatBox = ({ socket, chatRoomId, userId }) => {
   console.log(localParticipant);
   console.log(userId)
   useEffect(() => {
+<<<<<<< HEAD
     if (fetchedMessages) {
       setMessages(fetchedMessages);
       }
     }, [fetchedMessages]);
+=======
+    api.ChatParticipants.chatParticipantsControllerFindParticipantByChatRoom({
+      chatRoomId: chatRoomId,api
+    }).then((response) => {
+      console.log('Chat Participants:', response);
+    })
+    if (fetchedMessages) {
+      setMessages(fetchedMessages);
+    }
+  }, [fetchedMessages]);
+
+  useEffect(() => {
+    console.log("Active Participants:", activeParticipants);
+  }, [activeParticipants]);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('WebSocket connected');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
+    });
+
+    const handleReceiveMessage = (message) => {
+      console.log('Messages -->', messages);
+      console.log('Received message:', message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
+
+    socket.on('receiveMessage', handleReceiveMessage);
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, [socket]);
+
+  const handleSendMessage = () => {
+    if (input.trim()) {
+      const newMessage = { content: input, user_id: userId, user: localParticipant };
+      socket.emit('sendMessage', newMessage);
+      handleSubmitMessages('https://localhost:3000/chatMessages', input, userId, chatRoomId);
+      setInput('');
+    }
+  };
+
+  const handleMessageClick = (e: React.MouseEvent, user_id: number) => {
+    e.stopPropagation();
+    setSelectedMessage({
+      userId: user_id,
+      x: e.clientX,
+      y: e.clientY,
+    });
+  };
+
+  const handleAction = (action: string, id: number) => {
+    if (action == 'Kick')
+      KickUser(chatRoomId, id);
+    else if (action == 'Promote')
+      PromoteUser(chatRoomId, id);
+    // else if (action == 'Mute')
+    //   MuteUser(userId);
+    // else if (action == 'Block')
+    //   BlockUser(userId);
+>>>>>>> 1d63b9a1 (Reset to a working version)
     
     useEffect(() => {
       socket.on('connect', () => {

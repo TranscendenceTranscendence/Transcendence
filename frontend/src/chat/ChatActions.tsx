@@ -25,7 +25,13 @@ export const PromoteUser = async (chatRoomId, id) => {
     }
 }
 
+<<<<<<< HEAD
 export const MuteUser = async (chatRoomId, id) => {
+=======
+
+
+export const MuteUser = async (api, chatRoomId, id) => {
+>>>>>>> 1d63b9a1 (Reset to a working version)
   const updateDto = {
     chat_participant_role : chat_participant_roles.Admin,
   };
