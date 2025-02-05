@@ -64,7 +64,7 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
         <div>
             <Button 
                 onClick={handleSendRequest} 
-                disabled={isLoading || buttonText === 'Friend Request Sent'}
+                disabled={isLoading || buttonText === 'Friend Request Sent' || buttonText === 'Already Friends'}
             >
                 {buttonText}
             </Button>
