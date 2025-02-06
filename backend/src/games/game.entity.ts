@@ -1,6 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from '../users/user.entity';
-
 
 export enum GameStatus {
   PENDING = 'pending',
