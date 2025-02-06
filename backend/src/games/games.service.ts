@@ -29,9 +29,8 @@ export class GamesService {
     const gameData =
         await this.gamesRepository.find({ 
           where: [
-            { player1User: { id }},
-            { player2User: { id }},
-            { winner: { id } }
+            { player1: id },
+            { player2: id }
           ]
         });
     if (!gameData)
