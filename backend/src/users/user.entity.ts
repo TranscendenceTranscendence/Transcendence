@@ -85,12 +85,12 @@ export class User {
   @OneToMany(() => Friend, (friend) => friend.receiver)
   receivedFriendRequests: Friend[];
 
-  @OneToMany(() => Game, game => game.player1)
-  players1: Game[];
+  @OneToMany(() => Game, game => game.player1_user_id)
+  gamesAsPlayer1: Game[];
 
-  @OneToMany(() => Game, game => game.player1)
-  players2: Game[];
+  @OneToMany(() => Game, game => game.player2_user_id)
+  gamesAsPlayer2: Game[];
 
-  @OneToMany(() => Game, game => game.player1)
-  winners: Game[];
+  @OneToMany(() => Game, game => game.winner_user_id)
+  gamesWon: Game[];
 }

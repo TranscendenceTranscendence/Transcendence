@@ -23,10 +23,13 @@ export class Game {
   status: GameStatus;
 
   @Column()
-  player1: number;
+  player1_user_id: number;
 
   @Column({ nullable: true })
-  player2: number;
+  player2_user_id: number;
+
+  @Column({ nullable: true })
+  winner_user_id: number;
 
   @Column('int', { array: true, default: [0, 0] })
   score: number[];

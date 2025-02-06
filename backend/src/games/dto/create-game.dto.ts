@@ -13,12 +13,17 @@ export class CreateGameDto {
 
     @ApiProperty({ description: 'Player 1 ID' })
     @IsNumber()
-    player1: number;
+    player1_user_id: number;
 
     @ApiProperty({ description: 'Player 2 ID' })
     @IsNumber()
     @IsOptional()
-    player2: number;
+    player2_user_id: number;
+
+    @ApiProperty({ description: 'Winner ID' })
+    @IsNumber()
+    @IsOptional()
+    winner_user_id: number;
 
     @ApiProperty({ description: 'Game score', type: [Number] })
     @IsArray()
