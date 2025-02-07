@@ -1,30 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsNotEmpty } from 'class-validator';
-import { DeepPartial } from 'typeorm';
-import { User } from '../../users/user.entity';
-import { PartialType } from '@nestjs/mapped-types';
-import { Game } from '../../games/game.entity';
+import { IsEnum, IsString, IsNumber, IsArray, IsDate, IsOptional } from 'class-validator';
+import { GameStatus } from '../game.entity';
 
+export class CreateGameDto {
+    @ApiProperty({ description: 'Room identifier' })
+    @IsString()
+    room_identifier: string;
 
-export class CreateGameDto extends PartialType(Game) {
+    @ApiProperty({ description: 'Game status', enum: GameStatus })
+    @IsEnum(GameStatus)
+    status: GameStatus;
 
-    @ApiProperty({ description: 'Player 1 user ID' })
-    @IsNotEmpty()
+    @ApiProperty({ description: 'Player 1 ID' })
     @IsNumber()
     player1_user_id: number;
 
-    @ApiProperty({ description: 'Player 2 user ID' })
-    @IsNotEmpty()
+    @ApiProperty({ description: 'Player 2 ID' })
     @IsNumber()
+    @IsOptional()
     player2_user_id: number;
 
-    @ApiProperty({ description: 'Winner user ID' })
-    @IsNotEmpty()
+    @ApiProperty({ description: 'Winner ID' })
     @IsNumber()
+    @IsOptional()
     winner_user_id: number;
 
-    @ApiProperty({ description: 'Is it a ladder game?' })
-    @IsBoolean()
-    is_ladder_game: boolean;
+    @ApiProperty({ description: 'Game score', type: [Number] })
+    @IsArray()
+    score: number[];
 
+    @ApiProperty({ description: 'Game end time' })
+    @IsDate()
+    @IsOptional()
+    ended_at: Date;
+
+    @ApiProperty({ description: 'Game creation time' })
+    @IsDate()
+    created_at: Date;
 }

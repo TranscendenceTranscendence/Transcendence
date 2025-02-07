@@ -1,35 +1,42 @@
-import { Entity, ManyToOne, JoinColumn, Column, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
-import { IsOptional, IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 
-import { User } from '../users/user.entity';
+export enum GameStatus {
+  PENDING = 'pending',
+  OPEN = 'open',
+  CLOSED = 'closed',
+  CANCELLED = 'cancelled'
+}
 
-@Entity('GAME')
+@Entity('games')
 export class Game {
-
   @PrimaryGeneratedColumn()
-  gameId: number;
+  id: number;
 
-  @PrimaryColumn()
+  @Column({ unique: true })
+  room_identifier: string;
+
+  @Column({
+    type: 'enum',
+    enum: GameStatus,
+    default: GameStatus.OPEN
+  })
+  status: GameStatus;
+
+  @Column()
   player1_user_id: number;
-  
-  @PrimaryColumn()
+
+  @Column({ nullable: true })
   player2_user_id: number;
 
-  @PrimaryColumn()
+  @Column({ nullable: true })
   winner_user_id: number;
-  
-  @ManyToOne(() => User, (user) => user.players1)
-  @JoinColumn({ name: 'player1_user_id' })
-  player1User: User;
 
-  @ManyToOne(() => User, (user) => user.players2)
-  @JoinColumn({ name: 'player2_user_id' })
-  player2User: User;
+  @Column('int', { array: true, default: [0, 0] })
+  score: number[];
 
-  @ManyToOne(() => User, (user) => user.winners)
-  @JoinColumn({ name: 'winner_user_id' })
-  winner: User;
+  @Column({ type: 'timestamp', nullable: true })
+  ended_at: Date;
 
-  @Column({ nullable: false, default: false, })
-  is_ladder_game: boolean;  
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 }
