@@ -9,7 +9,7 @@ export enum chat_room_types {
   Dm = "Dm"
 }
 
-@Entity('CHAT_ROOM')
+@Entity('chat_room')
 export class ChatRoom {
   @PrimaryGeneratedColumn()
   id: number;

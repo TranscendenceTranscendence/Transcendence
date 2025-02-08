@@ -8,7 +8,7 @@ export enum chat_participant_roles {
   Guest = "guest"
 }
 
-@Entity('CHAT_PARTICIPANT')
+@Entity('chat_participant')
 export class ChatParticipant {
   @Column({
     type: 'enum',

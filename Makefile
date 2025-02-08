@@ -27,8 +27,11 @@ fclean: clean
 # Create SSL certificates
 ssl: ./backend/secrets/cert.pem ./backend/secrets/cert-key.pem
 
+logs:
+	@docker compose -f ./docker-compose.yml logs -f
+
 ./backend/secrets/cert.pem ./backend/secrets/cert-key.pem:
 	@mkdir -p ./backend/secrets
 	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./backend/secrets/cert-key.pem -out ./backend/secrets/cert.pem
 
-.PHONY: all up down stop re clean fclean ssl
+.PHONY: all up down stop re clean fclean logs ssl
