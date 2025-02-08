@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { useApi } from '../../utils/api';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   InputOTP,
   InputOTPGroup,
@@ -10,156 +11,128 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+  Form,
+} from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-
-  h1 {
-    color: #333;
-    font-family: 'Roboto', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    input {
-      padding: 0.5rem;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: red;
-  margin-top: 1rem;
-`;
-
-const SuccessMessage = styled.div`
-  color: green;
-  margin-top: 1rem;
-`;
+const FormSchema = z.object({
+  code: z
+    .string()
+    .length(6, { message: "Your one-time password must be 6 digits." })
+    .regex(/^[0-9]{6}$/, {
+      message: "Your one-time password must contain only digits.",
+    }),
+});
 
 const TwoFactorAuth = () => {
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [qr, setQr] = useState('');
+  const [qr, setQr] = useState("");
   const navigate = useNavigate();
-  const api = useApi();
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: { code: "" },
+  });
 
-  const generateBase64FromStream = async (readableStream) => {
-    const response = new Response(readableStream);
-    const buffer = await response.arrayBuffer(); // Convert the stream to ArrayBuffer
-    return arrayBufferToBase64(buffer);
-  };
-  
-  const arrayBufferToBase64 = (buffer) => {
-    const binary = String.fromCharCode(...new Uint8Array(buffer));
-    return btoa(binary); // Convert to Base64
-  };
-  
   useEffect(() => {
     const generateQRCode = async () => {
       try {
-        const response = await axios.get('https://localhost:3000/2fa/generate', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-          responseType: 'blob',
-        });
-        console.log('2FA QR code generated:', response);
+        const response = await axios.get(
+          "https://localhost:3000/2fa/generate",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+            responseType: "blob",
+          }
+        );
 
         const reader = new FileReader();
         reader.onload = () => {
           setQr(reader.result as string);
         };
         reader.readAsDataURL(response.data);
-
       } catch (error) {
-        console.error('Failed to generate 2FA QR code:', error);
-        setError('Failed to generate 2FA QR code');
+        console.error("Failed to generate 2FA QR code:", error);
       }
     };
-  
     generateQRCode();
   }, []);
-  
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
+  const onSubmit = async (data: { code: string }) => {
     try {
-      const response = await axios.post('https://localhost:3000/2fa/turn-on', {
-        twoFactorAuthenticationCode: code,
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      const response = await axios.post(
+        "https://localhost:3000/2fa/turn-on",
+        {
+          twoFactorAuthenticationCode: data.code,
         },
-      });
-  
-      if (response.status === 200 || response.status === 201) {
-        const data = response.data;
-        console.log('Received data:', data);
-        if (data.msg === 'TwoFactorAuthentication turned on') {
-          setSuccess('2FA verification successful!');
-           // Save new access token with 2FA enabled to local storage
-          localStorage.setItem('access_token', data.accessToken);
-          setError('');
-          navigate('/update');
-        } else {
-          setError('Invalid 2FA code. Please try again.');
-          setSuccess('');
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        localStorage.setItem("access_token", response.data.accessToken);
+        navigate("/update");
       } else {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
     } catch (error) {
-      console.error('Error verifying 2FA code:', error);
-      setError('An error occurred. Please try again.');
-      setSuccess('');
+      console.error("Error verifying 2FA code:", error);
     }
   };
 
   return (
-    <Container>
-      <h1>Google Two Factor Authentication</h1>
+    <div className="flex flex-col items-center justify-center h-screen">
       <img src={qr} alt="2FA QR Code" />
-      <form onSubmit={handleSubmit}>
-        <InputOTP maxLength={6} pattern="[0-9]{6}" >
-        <InputOTPGroup>
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
-        </InputOTPGroup>
-        <InputOTPSeparator />
-        <InputOTPGroup>
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
-        </InputOTPGroup>
-      </InputOTP>
-      <br />
-        <Button type="submit">Register</Button>
-      </form>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
-      {success && <SuccessMessage>{success}</SuccessMessage>}
-    </Container>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="items-center text-center"
+        >
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem className="flex flex-col items-center">
+                <FormControl>
+                  <InputOTP maxLength={6} {...field}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+                <FormDescription>
+                  Please enter the one-time password sent to your phone.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="mt-3">
+            Send Code
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
-
 
 export default TwoFactorAuth;
