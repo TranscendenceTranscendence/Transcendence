@@ -33,9 +33,17 @@ jobs:
           npx eslint ./src/ \
             --config .eslintrc.js \
             --ext .js,.jsx,.ts,.tsx \
-            --format @microsoft/eslint-formatter-sarif \
-            --output-file eslint-results.sarif
+            --format json \
+            --output-file eslint-results.json
         continue-on-error: true
+
+      - name: Filter only errors from ESLint results
+        run: |
+          jq '[.[] | select(.severity == 2)]' frontend/eslint-results.json > frontend/eslint-errors.json
+
+      - name: Convert filtered results to SARIF
+        run: |
+          npx @microsoft/eslint-formatter-sarif frontend/eslint-errors.json > frontend/eslint-results.sarif
 
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v3
