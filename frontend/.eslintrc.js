@@ -8,7 +8,9 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 12,
     sourceType: "module",
@@ -16,8 +18,9 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: ["react", "react-hooks"],
+  plugins: ["react", "react-hooks", "@typescript-eslint"],
   rules: {
-    //add customize rules here as per your project's needs
+    "react/react-in-jsx-scope": "off",
+    "no-undef": "off",
   },
 };
