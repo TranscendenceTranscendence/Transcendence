@@ -6,7 +6,8 @@ import {
 import { handleSubmitMessages } from "../utils/PostRequest.tsx";
 import { ChatNode } from "./ChatNode.tsx";
 import React from "react";
-import { KickUser, PromoteUser } from "./ChatActions.tsx";
+import { KickUser, PromoteUser } from "./utils.ts";
+import { useApi } from "@/utils/api/index.ts";
 
 interface oldMessage {
   content: string;

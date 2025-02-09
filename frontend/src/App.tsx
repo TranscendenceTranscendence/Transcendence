@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import Login from "./pages/login/index";
 import Logout from "./pages/login/LogoutButton";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
-import { Chat } from "./chat/Chat.jsx";
+import { Chat } from "./chat/Chat.tsx";
 import EnableTwoFactorAuth from "./pages/login/EnableTwoFactorAuth.tsx";
 import DisableTwoFactorAuth from "./pages/login/DisableTwoFactorAuth";
 import TwoFactorAuth from "./pages/login/TwoFactorAuth";

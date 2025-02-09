@@ -15,10 +15,19 @@
 
 import * as runtime from '../runtime';
 import type {
+  ChatParticipant,
+  ChatParticipantResponse,
+  ChatParticipantsResponse,
   CreateChatParticipantDto,
   UpdateChatParticipantDto,
 } from '../models/index';
 import {
+    ChatParticipantFromJSON,
+    ChatParticipantToJSON,
+    ChatParticipantResponseFromJSON,
+    ChatParticipantResponseToJSON,
+    ChatParticipantsResponseFromJSON,
+    ChatParticipantsResponseToJSON,
     CreateChatParticipantDtoFromJSON,
     CreateChatParticipantDtoToJSON,
     UpdateChatParticipantDtoFromJSON,
@@ -197,7 +206,7 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Fetch participants by chat room ID
      */
-    async chatParticipantsControllerFindParticipantByChatRoomRaw(requestParameters: ChatParticipantsControllerFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsControllerFindParticipantByChatRoomRaw(requestParameters: ChatParticipantsControllerFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatParticipantsResponse>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
@@ -216,20 +225,21 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChatParticipantsResponseFromJSON(jsonValue));
     }
 
     /**
      * Fetch participants by chat room ID
      */
-    async chatParticipantsControllerFindParticipantByChatRoom(requestParameters: ChatParticipantsControllerFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindParticipantByChatRoomRaw(requestParameters, initOverrides);
+    async chatParticipantsControllerFindParticipantByChatRoom(requestParameters: ChatParticipantsControllerFindParticipantByChatRoomRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatParticipantsResponse> {
+        const response = await this.chatParticipantsControllerFindParticipantByChatRoomRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
      * Fetch participant in chat room by user ID
      */
-    async chatParticipantsControllerFindParticipantChatRoomUserIdRaw(requestParameters: ChatParticipantsControllerFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsControllerFindParticipantChatRoomUserIdRaw(requestParameters: ChatParticipantsControllerFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatParticipantResponse>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
@@ -255,14 +265,15 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChatParticipantResponseFromJSON(jsonValue));
     }
 
     /**
      * Fetch participant in chat room by user ID
      */
-    async chatParticipantsControllerFindParticipantChatRoomUserId(requestParameters: ChatParticipantsControllerFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerFindParticipantChatRoomUserIdRaw(requestParameters, initOverrides);
+    async chatParticipantsControllerFindParticipantChatRoomUserId(requestParameters: ChatParticipantsControllerFindParticipantChatRoomUserIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatParticipantResponse> {
+        const response = await this.chatParticipantsControllerFindParticipantChatRoomUserIdRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -307,7 +318,7 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
     /**
      * Update a chat participant
      */
-    async chatParticipantsControllerUpdateParticipantRaw(requestParameters: ChatParticipantsControllerUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatParticipantsControllerUpdateParticipantRaw(requestParameters: ChatParticipantsControllerUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatParticipant>> {
         if (requestParameters['chatRoomId'] == null) {
             throw new runtime.RequiredError(
                 'chatRoomId',
@@ -343,14 +354,15 @@ export class ChatParticipantsApi extends runtime.BaseAPI {
             body: UpdateChatParticipantDtoToJSON(requestParameters['updateChatParticipantDto']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChatParticipantFromJSON(jsonValue));
     }
 
     /**
      * Update a chat participant
      */
-    async chatParticipantsControllerUpdateParticipant(requestParameters: ChatParticipantsControllerUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatParticipantsControllerUpdateParticipantRaw(requestParameters, initOverrides);
+    async chatParticipantsControllerUpdateParticipant(requestParameters: ChatParticipantsControllerUpdateParticipantRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatParticipant> {
+        const response = await this.chatParticipantsControllerUpdateParticipantRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { PostChatRoom } from "../utils/PostRequest.tsx";
-import { ChatRoomList } from "./ChatRoomList.tsx";
+import  ChatRoomList from "./ChatRoomList.tsx";
 import ChatContainer from "../chat/ChatContainer.tsx";
 import { handleSubmitParticipant } from "../utils/PostRequest.tsx";
+import { MeResponseSuccess } from '@/generated-api/index.ts';
 import { useFetchRequest } from "../utils/FetchRequest.tsx";
 import { JoinPrivate } from "./JoinPrivate.tsx";
 
@@ -31,7 +32,7 @@ enum chat_participant_roles {
 }
 
 interface ChatRoomContainerProps {
-  userId: number;
+  userId: MeResponseSuccess;
 }
 
 export const ChatRoomContainer = ({ userId }: ChatRoomContainerProps) => {
@@ -78,10 +79,11 @@ export const ChatRoomContainer = ({ userId }: ChatRoomContainerProps) => {
     } else console.log("Failed to change ChatRoom probably null!!");
     console.log("Chat room ID changed to:", newChatRoom?.id);
   };
+  console.log("chatRooms", chatRooms);
   return (
     <div className="chatRoomBox">
       <ChatRoomList
-        chatRooms={chatRooms}
+        chatRooms={chatRooms ?? []}
         chatRoomId={chatRoomId}
         userId={userId}
         onChatRoomChange={handleChatRoomChange}
