@@ -21,7 +21,6 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: User;
 }
 
-// This is sample data.
 class User {
   id: number;
   nickname: string;
