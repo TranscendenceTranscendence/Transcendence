@@ -11,9 +11,7 @@ import {
 } from "@/components/ui/sidebar"
 import AvatarDisplay from "../pages/updateUser/components/AvatarDisplay";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
+  Avatar
 } from "@/components/ui/avatar"
 import { useNavigate } from 'react-router-dom'
 
@@ -36,7 +34,7 @@ class User {
 }
 
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar() {
   {
     const navigate = useNavigate();
     

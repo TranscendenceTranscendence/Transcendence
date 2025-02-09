@@ -33,9 +33,7 @@ export default function Page() {
   {
     const api = useApi();
     const [friends, setFriends] = useState<Friends[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
+    
     useEffect(() => {
       const fetchFriends = async () => {
         try {
@@ -44,9 +42,6 @@ export default function Page() {
           setFriends(friends);
         } catch (error) {
           console.error('Failed to fetch friends list:', error);
-          setError(error.message);
-        } finally {
-          setLoading(false);
         }
       };
 
