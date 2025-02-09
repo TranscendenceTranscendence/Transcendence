@@ -20,39 +20,80 @@ import { mapValues } from '../runtime';
  */
 export interface CreateGameDto {
     /**
-     * Player 1 user ID
+     * Room identifier
+     * @type {string}
+     * @memberof CreateGameDto
+     */
+    roomIdentifier: string;
+    /**
+     * Game status
+     * @type {string}
+     * @memberof CreateGameDto
+     */
+    status: CreateGameDtoStatusEnum;
+    /**
+     * Player 1 ID
      * @type {number}
      * @memberof CreateGameDto
      */
     player1UserId: number;
     /**
-     * Player 2 user ID
+     * Player 2 ID
      * @type {number}
      * @memberof CreateGameDto
      */
     player2UserId: number;
     /**
-     * Winner user ID
+     * Winner ID
      * @type {number}
      * @memberof CreateGameDto
      */
     winnerUserId: number;
     /**
-     * Is it a ladder game?
-     * @type {boolean}
+     * Game score
+     * @type {Array<number>}
      * @memberof CreateGameDto
      */
-    isLadderGame: boolean;
+    score: Array<number>;
+    /**
+     * Game end time
+     * @type {Date}
+     * @memberof CreateGameDto
+     */
+    endedAt: Date;
+    /**
+     * Game creation time
+     * @type {Date}
+     * @memberof CreateGameDto
+     */
+    createdAt: Date;
 }
+
+
+/**
+ * @export
+ */
+export const CreateGameDtoStatusEnum = {
+    Pending: 'pending',
+    Open: 'open',
+    Closed: 'closed',
+    Cancelled: 'cancelled'
+} as const;
+export type CreateGameDtoStatusEnum = typeof CreateGameDtoStatusEnum[keyof typeof CreateGameDtoStatusEnum];
+
 
 /**
  * Check if a given object implements the CreateGameDto interface.
  */
 export function instanceOfCreateGameDto(value: object): value is CreateGameDto {
+    if (!('roomIdentifier' in value) || value['roomIdentifier'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('player1UserId' in value) || value['player1UserId'] === undefined) return false;
     if (!('player2UserId' in value) || value['player2UserId'] === undefined) return false;
     if (!('winnerUserId' in value) || value['winnerUserId'] === undefined) return false;
-    if (!('isLadderGame' in value) || value['isLadderGame'] === undefined) return false;
+    if (!('score' in value) || value['score'] === undefined) return false;
+    if (!('endedAt' in value) || value['endedAt'] === undefined) return false;
+    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     return true;
 }
 
@@ -66,10 +107,14 @@ export function CreateGameDtoFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
+        'roomIdentifier': json['room_identifier'],
+        'status': json['status'],
         'player1UserId': json['player1_user_id'],
         'player2UserId': json['player2_user_id'],
         'winnerUserId': json['winner_user_id'],
-        'isLadderGame': json['is_ladder_game'],
+        'score': json['score'],
+        'endedAt': (new Date(json['ended_at'])),
+        'createdAt': (new Date(json['created_at'])),
     };
 }
 
@@ -84,10 +129,14 @@ export function CreateGameDtoToJSONTyped(value?: CreateGameDto | null, ignoreDis
 
     return {
         
+        'room_identifier': value['roomIdentifier'],
+        'status': value['status'],
         'player1_user_id': value['player1UserId'],
         'player2_user_id': value['player2UserId'],
         'winner_user_id': value['winnerUserId'],
-        'is_ladder_game': value['isLadderGame'],
+        'score': value['score'],
+        'ended_at': ((value['endedAt']).toISOString()),
+        'created_at': ((value['createdAt']).toISOString()),
     };
 }
 
