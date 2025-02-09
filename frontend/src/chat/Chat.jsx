@@ -1,5 +1,3 @@
-
-import { WebSocketChat } from './ChatBox.tsx';
 import { PostMessage, PostUser } from '../utils/PostRequest.tsx';
 import { ChatRoomContainer } from '../chatroom/ChatRoomContainer.tsx';
 import { useState, useEffect } from 'react';

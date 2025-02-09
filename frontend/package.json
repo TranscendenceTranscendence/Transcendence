@@ -4,13 +4,8 @@
   "private": true,
   "proxy": "http://localhost:3000",
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
     "@fontsource/inter": "^5.1.0",
     "@hookform/resolvers": "^3.10.0",
-    "@mui/icons-material": "^6.3.0",
-    "@mui/joy": "^5.0.0-beta.48",
-    "@mui/material": "^6.3.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -75,7 +70,6 @@
     "recharts": "^2.15.0",
     "socket.io-client": "^4.8.1",
     "sonner": "^1.7.2",
-    "styled-components": "^6.1.13",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "typeorm": "^0.3.20",
@@ -113,6 +107,7 @@
   },
   "devDependencies": {
     "@craco/craco": "^7.1.0",
+    "@eslint/js": "^9.20.0",
     "@openapitools/openapi-generator-cli": "^2.15.3",
     "@types/axios": "^0.14.4",
     "@types/js-cookie": "^3.0.6",
@@ -120,7 +115,11 @@
     "@types/socket.io-client": "^3.0.0",
     "@types/universal-cookie": "^3.0.0",
     "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.4",
+    "globals": "^15.14.0",
     "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "typescript-eslint": "^8.23.0"
   }
 }

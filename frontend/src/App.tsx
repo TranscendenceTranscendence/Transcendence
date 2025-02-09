@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/login/index";
@@ -9,7 +8,8 @@ import DisableTwoFactorAuth from "./pages/login/DisableTwoFactorAuth";
 import TwoFactorAuth from "./pages/login/TwoFactorAuth";
 import Profile from "./pages/user/Profile";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
+import { Toaster } from "./components/ui/sonner.tsx";
 
 function App() {
   const params = new URLSearchParams(window.location.search);
@@ -21,7 +21,7 @@ function App() {
     window.history.replaceState(
       {},
       "",
-      `${window.location.pathname}${params.size > 0 ? `?${params}` : ""}`,
+      `${window.location.pathname}${params.size > 0 ? `?${params}` : ""}`
     );
   }
 
@@ -32,16 +32,19 @@ function App() {
   }, [params, navigate]);
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/update" element={<UpdateUser />} />
-      <Route path="/chat" element={<Chat />} />
-      <Route path="/profile/:id" element={<Profile />} />
-      <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
-      <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
-      <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
-    </Routes>
+    <Fragment>
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/update" element={<UpdateUser />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
+        <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
+        <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+      </Routes>
+    </Fragment>
   );
 }
 
