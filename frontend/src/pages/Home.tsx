@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
-import { useApi } from '@/utils/api';
+import { useApi } from '@/utils/api'
 import {
   SidebarInset,
   SidebarProvider,
@@ -27,7 +27,7 @@ class Friends {
     this.ladder_level = ladder_level;
     this.avatar = avatar;
   }
-};
+}
 
 export default function Page() {
   {

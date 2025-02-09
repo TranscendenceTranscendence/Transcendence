@@ -9,17 +9,15 @@ import {
   SidebarContent,
 
 } from "@/components/ui/sidebar"
+import AvatarDisplay from "../pages/updateUser/components/AvatarDisplay";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: User;
-}
 
 class User {
   id: number;
@@ -35,7 +33,7 @@ class User {
     this.ladder_level = ladder_level;
     this.avatar = avatar;
   }
-};
+}
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -90,8 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <Sidebar>
         <SidebarContent className="flex flex-col items-center">
           <Avatar className="w-60 h-60 p-4">
-              <AvatarImage src={user.avatar} alt={user.nickname} />
-              <AvatarFallback>{user.nickname}</AvatarFallback>
+              <AvatarDisplay avatarUrl={user.avatar} />
             </Avatar>
           <div className="flex flex-col items-center gap-4">
             <p className="font-bold text-3xl">{user.nickname}</p>

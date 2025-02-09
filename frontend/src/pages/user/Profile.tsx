@@ -35,6 +35,7 @@ export default function Profile() {
       })
       .catch(error => {
         console.error('Failed to fetch user data:', error);
+        setError('Failed to fetch user data');
       });
     // axios({
     //   url: `https://localhost:3000/users/${userIdNumber}`,
@@ -85,7 +86,7 @@ export default function Profile() {
       </div>
       <div>
         <p>Email: {user.email || 'undefined'}</p>
-        <p>Two factor Authentication: {user.enableTwoFactor ? 'Enabled' : 'Disabled'}</p>
+        <p>Two factor Authentication: {user.twoFactorEnabled ? 'Enabled' : 'Disabled'}</p>
       </div>
     </div>
   );

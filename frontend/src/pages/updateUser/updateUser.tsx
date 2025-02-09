@@ -1,9 +1,4 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import AvatarDisplay from "./components/AvatarDisplay";
 import ProfileForm from "./components/ProfileForm";
 import type { UpdateUserDto } from "../../generated-api";

@@ -163,19 +163,19 @@ export interface User {
      * @type {Array<Game>}
      * @memberof User
      */
-    players1: Array<Game>;
+    gamesAsPlayer1: Array<Game>;
     /**
      * 
      * @type {Array<Game>}
      * @memberof User
      */
-    players2: Array<Game>;
+    gamesAsPlayer2: Array<Game>;
     /**
      * 
      * @type {Array<Game>}
      * @memberof User
      */
-    winners: Array<Game>;
+    gamesWon: Array<Game>;
 }
 
 
@@ -211,9 +211,9 @@ export function instanceOfUser(value: object): value is User {
     if (!('chatParticipants' in value) || value['chatParticipants'] === undefined) return false;
     if (!('sentFriendRequests' in value) || value['sentFriendRequests'] === undefined) return false;
     if (!('receivedFriendRequests' in value) || value['receivedFriendRequests'] === undefined) return false;
-    if (!('players1' in value) || value['players1'] === undefined) return false;
-    if (!('players2' in value) || value['players2'] === undefined) return false;
-    if (!('winners' in value) || value['winners'] === undefined) return false;
+    if (!('gamesAsPlayer1' in value) || value['gamesAsPlayer1'] === undefined) return false;
+    if (!('gamesAsPlayer2' in value) || value['gamesAsPlayer2'] === undefined) return false;
+    if (!('gamesWon' in value) || value['gamesWon'] === undefined) return false;
     return true;
 }
 
@@ -243,9 +243,9 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
         'chatParticipants': ((json['chatParticipants'] as Array<any>).map(ChatParticipantFromJSON)),
         'sentFriendRequests': ((json['sentFriendRequests'] as Array<any>).map(FriendFromJSON)),
         'receivedFriendRequests': ((json['receivedFriendRequests'] as Array<any>).map(FriendFromJSON)),
-        'players1': ((json['players1'] as Array<any>).map(GameFromJSON)),
-        'players2': ((json['players2'] as Array<any>).map(GameFromJSON)),
-        'winners': ((json['winners'] as Array<any>).map(GameFromJSON)),
+        'gamesAsPlayer1': ((json['gamesAsPlayer1'] as Array<any>).map(GameFromJSON)),
+        'gamesAsPlayer2': ((json['gamesAsPlayer2'] as Array<any>).map(GameFromJSON)),
+        'gamesWon': ((json['gamesWon'] as Array<any>).map(GameFromJSON)),
     };
 }
 
@@ -276,9 +276,9 @@ export function UserToJSONTyped(value?: User | null, ignoreDiscriminator: boolea
         'chatParticipants': ((value['chatParticipants'] as Array<any>).map(ChatParticipantToJSON)),
         'sentFriendRequests': ((value['sentFriendRequests'] as Array<any>).map(FriendToJSON)),
         'receivedFriendRequests': ((value['receivedFriendRequests'] as Array<any>).map(FriendToJSON)),
-        'players1': ((value['players1'] as Array<any>).map(GameToJSON)),
-        'players2': ((value['players2'] as Array<any>).map(GameToJSON)),
-        'winners': ((value['winners'] as Array<any>).map(GameToJSON)),
+        'gamesAsPlayer1': ((value['gamesAsPlayer1'] as Array<any>).map(GameToJSON)),
+        'gamesAsPlayer2': ((value['gamesAsPlayer2'] as Array<any>).map(GameToJSON)),
+        'gamesWon': ((value['gamesWon'] as Array<any>).map(GameToJSON)),
     };
 }
 
