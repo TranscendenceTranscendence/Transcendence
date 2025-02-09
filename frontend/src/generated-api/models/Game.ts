@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { User } from './User';
-import {
-    UserFromJSON,
-    UserFromJSONTyped,
-    UserToJSON,
-    UserToJSONTyped,
-} from './User';
-
 /**
  * 
  * @export
@@ -32,7 +24,19 @@ export interface Game {
      * @type {number}
      * @memberof Game
      */
-    gameId: number;
+    id: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Game
+     */
+    roomIdentifier: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Game
+     */
+    status: GameStatusEnum;
     /**
      * 
      * @type {number}
@@ -53,42 +57,50 @@ export interface Game {
     winnerUserId: number;
     /**
      * 
-     * @type {User}
+     * @type {Array<number>}
      * @memberof Game
      */
-    player1User: User;
+    score: Array<number>;
     /**
      * 
-     * @type {User}
+     * @type {Date}
      * @memberof Game
      */
-    player2User: User;
+    endedAt: Date;
     /**
      * 
-     * @type {User}
+     * @type {Date}
      * @memberof Game
      */
-    winner: User;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof Game
-     */
-    isLadderGame: boolean;
+    createdAt: Date;
 }
+
+
+/**
+ * @export
+ */
+export const GameStatusEnum = {
+    Pending: 'pending',
+    Open: 'open',
+    Closed: 'closed',
+    Cancelled: 'cancelled'
+} as const;
+export type GameStatusEnum = typeof GameStatusEnum[keyof typeof GameStatusEnum];
+
 
 /**
  * Check if a given object implements the Game interface.
  */
 export function instanceOfGame(value: object): value is Game {
-    if (!('gameId' in value) || value['gameId'] === undefined) return false;
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('roomIdentifier' in value) || value['roomIdentifier'] === undefined) return false;
+    if (!('status' in value) || value['status'] === undefined) return false;
     if (!('player1UserId' in value) || value['player1UserId'] === undefined) return false;
     if (!('player2UserId' in value) || value['player2UserId'] === undefined) return false;
     if (!('winnerUserId' in value) || value['winnerUserId'] === undefined) return false;
-    if (!('player1User' in value) || value['player1User'] === undefined) return false;
-    if (!('player2User' in value) || value['player2User'] === undefined) return false;
-    if (!('winner' in value) || value['winner'] === undefined) return false;
-    if (!('isLadderGame' in value) || value['isLadderGame'] === undefined) return false;
+    if (!('score' in value) || value['score'] === undefined) return false;
+    if (!('endedAt' in value) || value['endedAt'] === undefined) return false;
+    if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     return true;
 }
 
@@ -102,14 +114,15 @@ export function GameFromJSONTyped(json: any, ignoreDiscriminator: boolean): Game
     }
     return {
         
-        'gameId': json['gameId'],
+        'id': json['id'],
+        'roomIdentifier': json['room_identifier'],
+        'status': json['status'],
         'player1UserId': json['player1_user_id'],
         'player2UserId': json['player2_user_id'],
         'winnerUserId': json['winner_user_id'],
-        'player1User': UserFromJSON(json['player1User']),
-        'player2User': UserFromJSON(json['player2User']),
-        'winner': UserFromJSON(json['winner']),
-        'isLadderGame': json['is_ladder_game'],
+        'score': json['score'],
+        'endedAt': (new Date(json['ended_at'])),
+        'createdAt': (new Date(json['created_at'])),
     };
 }
 
@@ -124,14 +137,15 @@ export function GameToJSONTyped(value?: Game | null, ignoreDiscriminator: boolea
 
     return {
         
-        'gameId': value['gameId'],
+        'id': value['id'],
+        'room_identifier': value['roomIdentifier'],
+        'status': value['status'],
         'player1_user_id': value['player1UserId'],
         'player2_user_id': value['player2UserId'],
         'winner_user_id': value['winnerUserId'],
-        'player1User': UserToJSON(value['player1User']),
-        'player2User': UserToJSON(value['player2User']),
-        'winner': UserToJSON(value['winner']),
-        'is_ladder_game': value['isLadderGame'],
+        'score': value['score'],
+        'ended_at': ((value['endedAt']).toISOString()),
+        'created_at': ((value['createdAt']).toISOString()),
     };
 }
 

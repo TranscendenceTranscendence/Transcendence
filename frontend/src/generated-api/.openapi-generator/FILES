@@ -28,6 +28,7 @@ models/CreateUserDto.ts
 models/FileUploadResponseSuccess.ts
 models/Friend.ts
 models/Game.ts
+models/GetFriendRequestsDto.ts
 models/MeResponseSuccess.ts
 models/UpdateAchievementDto.ts
 models/UpdateChatParticipantDto.ts
