@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import { useApi } from '@/utils/api';
 import { Button } from "@/components/ui/button"
 import { SettingsIcon } from "lucide-react"
@@ -36,15 +35,14 @@ class User {
 
 export function AppSidebar() {
   {
+    const api = useApi();
+    const [user, setUser] = useState<User | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     
     const handleLogout = async () => {
       try {
-          await axios.post('https://localhost:3000/auth/logout', {}, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-            },
-          });
+          await api.Auth.authControllerLogout(); 
           // Clear local storage
           localStorage.removeItem('access_token');
           // localStorage.removeItem('refreshToken'); // If you have a refresh token
@@ -55,9 +53,6 @@ export function AppSidebar() {
           console.error('Error logging out:', error);
       }
     };
-    const api = useApi();
-    const [user, setUser] = useState<User | null>(null);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
       const fetchCurrentUser = async () => {
