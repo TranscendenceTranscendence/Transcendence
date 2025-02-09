@@ -17,8 +17,13 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-     "compilerOptions": {
-        "typeRoots": ["./node_modules/@types", "./src/@types"]
-    }
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ],
+    "types": [
+      "node",
+      "jest"
+    ]
   }
 }
