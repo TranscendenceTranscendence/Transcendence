@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
@@ -141,11 +141,18 @@ export class UsersController {
 
   @Patch('me')
   @ApiOperation({ summary: 'Update current user details' })
-  @ApiResponse({ status: 200, description: 'User updated successfully.' })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully.',
+    type: UpdateUserResponse,
+  })
   @ApiResponse({ status: 400, description: 'Invalid data provided.' })
   @ApiResponse({ status: 401, description: 'Unauthorized access.' })
   @UseGuards(JwtAccessAuthGuard)
-  async update(@Body() body: UpdateUserDto, @Req() req) {
+  async update(
+    @Body() body: UpdateUserDto,
+    @Req() req: Request,
+  ): Promise<UpdateUserResponse> {
     try {
       const nicknameTaken = !(await this.usersService.update(
         req.user.id,
@@ -153,16 +160,23 @@ export class UsersController {
       ));
       if (nicknameTaken) {
         return {
+          success: false,
           errors: {
             nickname: 'Nickname already taken',
           },
         };
       }
       return {
+        success: true,
         message: 'User Updated Successfully',
       };
     } catch (error) {
-      return error;
+      return {
+        success: false,
+        errors: {
+          global: error.message,
+        },
+      };
     }
   }
 

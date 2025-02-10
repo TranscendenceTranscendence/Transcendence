@@ -16,7 +16,7 @@ export class UsersService {
     private jwt: JwtService,
     @Inject(JwtConfig.KEY)
     private jwtConfig: ConfigType<typeof JwtConfig>,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const userData = await this.usersRepository.create(createUserDto);
@@ -32,7 +32,10 @@ export class UsersService {
     return userData;
   }
 
-  async update(id: number, UpdateUserDto: UpdateUserDto): Promise<User | false> {
+  async update(
+    id: number,
+    UpdateUserDto: UpdateUserDto,
+  ): Promise<User | false> {
     const existingUser = await this.findOne(id);
     const userData = this.usersRepository.merge(existingUser, UpdateUserDto);
 
@@ -40,8 +43,7 @@ export class UsersService {
     const userWithSameNickname = await this.usersRepository.findOne({
       where: { nickname: UpdateUserDto.nickname },
     });
-
-    return false;
+    if (userWithSameNickname && userWithSameNickname.id !== id) return false;
 
     return await this.usersRepository.save(userData);
   }
