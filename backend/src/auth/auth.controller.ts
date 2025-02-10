@@ -58,13 +58,6 @@ export class AuthController {
         const accessToken = await this.authService.generateAccessToken(user, false);
 
         res.setHeader('Authorization', `Bearer ${accessToken}`);
-        
-        // req.res.cookie('access_token', accessToken, {
-        //     httpOnly: true,
-        //     signed: true,
-        //     secure: true,         // Send only over HTTPS
-        //     sameSite: 'none',     // Allow cross-origin requests
-        // });
 
         let redirectUrl = null;
 
