@@ -7,7 +7,7 @@ interface DecodedToken {
 
 // Function to check authentication and get user details
 const getAuthData = (): { isAuthenticated: boolean; userId?: string } => {
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("access_token");
     if (!token) return { isAuthenticated: false };
 
     try {
