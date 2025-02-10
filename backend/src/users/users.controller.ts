@@ -17,6 +17,7 @@ import {
   ApiResponse,
   ApiProperty,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -25,7 +26,6 @@ import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
 import { PartialType } from '@nestjs/mapped-types';
-import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
 
 class MeResponseSuccess extends PartialType(User) {
   @ApiProperty()
@@ -98,7 +98,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @UseGuards(JwtAccessAuthGuard)
-  async me(@Req() req: RequestWithUser): Promise<MeResponseSuccess> {
+  async me(@Req() req: Request): Promise<MeResponseSuccess> {
     console.log('req.user.id', req.user.id);
     try {
       const user = req.user;
