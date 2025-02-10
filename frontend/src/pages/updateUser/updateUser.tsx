@@ -1,22 +1,14 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import AvatarDisplay from "./components/AvatarDisplay";
 import ProfileForm from "./components/ProfileForm";
 import type { UpdateUserDto } from "../../generated-api";
+import { useCallback, useState } from "react";
 
-export default function Checkout(props: { disableCustomTheme?: boolean }) {
-  const [avatarUrl, setAvatarUrl] = React.useState<string | undefined>(
-    undefined
-  );
+export default function UpdateUser() {
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
 
-  const onSend = (data: UpdateUserDto) => {
-    console.log(data);
+  const onSend = useCallback((data: UpdateUserDto) => {
     setAvatarUrl(data.avatar);
-  };
+  }, []);
 
   return (
     <div className="flex flex-col sm:flex-row min-h-screen">
