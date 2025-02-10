@@ -1,25 +1,41 @@
 import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
-    exp: number;  // Expiration time in seconds
-    userId: string;  // Add other fields as needed
+  exp: number;
+  userId: string;
+  isSecondFactorAuthenticated: boolean;
+  needsTwoFactorAuthentication: boolean;
 }
 
 // Function to check authentication and get user details
-const getAuthData = (): { isAuthenticated: boolean; userId?: string } => {
-    const token = localStorage.getItem("jwt");
-    if (!token) return { isAuthenticated: false };
+const getAuthData = (): DecodedToken & { isAuthenticated: boolean } => {
+  const token = localStorage.getItem("access_token");
+  if (!token)
+    return {
+      isAuthenticated: false,
+      exp: 0,
+      userId: "",
+      isSecondFactorAuthenticated: false,
+      needsTwoFactorAuthentication: false,
+    };
 
-    try {
-        const decoded: DecodedToken = jwtDecode(token);
-        const isTokenValid = decoded.exp * 1000 > Date.now();
-        return {
-            isAuthenticated: isTokenValid,
-            userId: isTokenValid ? decoded.userId : undefined,
-        };
-    } catch (error) {
-        return { isAuthenticated: false };
-    }
+  try {
+    const decoded: DecodedToken = jwtDecode(token);
+    const isTokenValid = decoded.exp * 1000 > Date.now();
+    console.log(decoded);
+    return {
+      isAuthenticated: isTokenValid,
+      ...(isTokenValid && decoded),
+    };
+  } catch (error) {
+    return {
+      isAuthenticated: false,
+      exp: 0,
+      userId: "",
+      isSecondFactorAuthenticated: false,
+      needsTwoFactorAuthentication: false,
+    };
+  }
 };
 
 export default getAuthData;
