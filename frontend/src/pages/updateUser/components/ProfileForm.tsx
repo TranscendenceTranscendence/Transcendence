@@ -25,7 +25,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar } from "@/components/ui/avatar";
 
 const profileSchema = z.object({
   nickname: z.string().min(1, "Nickname is required"),
@@ -96,9 +95,32 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
     async (data: UpdateUserDto) => {
       setIsSaving(true);
       try {
-        await api.Users.usersControllerUpdate({ updateUserDto: data });
-        onSend(data);
-        toast.success("Profile updated successfully!");
+        const response = await api.Users.usersControllerUpdate({
+          updateUserDto: data,
+        });
+
+        if (response.success) {
+          onSend(data);
+          toast.success("Profile updated successfully!");
+        } else {
+          if ("global" in response.errors)
+            toast.error(
+              typeof response.errors.global === "string"
+                ? response.errors.global
+                : "An error occurred"
+            );
+          else {
+            const fields = form.getValues();
+            for (const field in fields) {
+              if (field in response.errors) {
+                form.setError(field as keyof UpdateUserDto, {
+                  type: "server",
+                  message: response.errors[field],
+                });
+              }
+            }
+          }
+        }
       } catch (error) {
         console.error(error);
         toast.error("Failed to update profile.");
