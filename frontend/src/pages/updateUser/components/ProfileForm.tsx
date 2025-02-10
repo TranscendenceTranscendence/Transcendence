@@ -41,7 +41,6 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
   const api = useApi();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
-  const fetched = React.useRef(false);
 
   const form = useForm<UpdateUserDto>({
     resolver: zodResolver(profileSchema),
@@ -53,8 +52,6 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
   });
 
   useEffect(() => {
-    if (fetched.current) return;
-    fetched.current = true;
     api.Users.usersControllerMe()
       .then((response) => {
         form.setValue("nickname", response.nickname);
@@ -67,29 +64,28 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         });
       })
       .catch(console.error);
-  }, [api.Users, form, onSend]);
+  }, []);
 
   const handleCheckboxChange = async (checked: boolean) => {
     navigate(checked ? "/2fa/turn-on" : "/2fa/turn-off");
   };
 
   const handleFileChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event) => {
       if (!event.target.files?.length) return;
-      const file: File = event.target.files[0];
+      const file = event.target.files[0];
       try {
-        const response: { filePath: string } =
-          await api.FileUpload.fileUploadControllerUploadFile({
-            file,
-            filename: file.name,
-            category: "avatar",
-          });
+        const response = await api.FileUpload.fileUploadControllerUploadFile({
+          file,
+          filename: file.name,
+          category: "avatar",
+        });
         form.setValue("avatar", response.filePath);
       } catch (error) {
         console.error(error);
       }
     },
-    [api, form]
+    [api, form.setValue]
   );
 
   const onFormSubmit = useCallback(

@@ -5,6 +5,7 @@ import {
     Post, 
     Get, 
     Req,
+    Res,
     Body,
     UseGuards, 
     UseInterceptors,
@@ -12,6 +13,7 @@ import {
     ForbiddenException,
     StreamableFile
 } from "@nestjs/common";
+import { Request, Response as ExpressResponse } from 'express';
 import { JwtAccessAuthGuard } from "../guards/jwt-access.guard";
 import RequestWithUser from "../interfaces/requestWithUser.interface";
 import { UsersService } from "../../users/users.service";
@@ -71,6 +73,15 @@ export class TwoFactorAuthController {
     }
     await this.usersService.turnOnTwoFactorAuthentication(user.id);
 
+    // const accessToken = await this.authService.generateAccessToken(req.user, true);
+    
+    // req.res.cookie('access_token', accessToken, {
+    //   httpOnly: true,
+    //   signed: true,
+    //   secure: true,         // Send only over HTTPS
+    //   sameSite: 'none',     // Allow cross-origin requests
+    // });
+
     const accessToken = await this.authService.generateAccessToken(user, true);
     return {
       msg: "TwoFactorAuthentication turned on",
@@ -96,6 +107,7 @@ export class TwoFactorAuthController {
     if (!isCodeValidated) {
       throw new UnauthorizedException('Invalid Authentication-Code');
     }
+    // await this.usersService.turnOffTwoFactorAuthentication(user.id);
 
     await this.usersService.update(user.id, { 
         nickname: user.nickname,
