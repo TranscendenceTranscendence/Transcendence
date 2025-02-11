@@ -18,6 +18,7 @@ import type {
   CreateUserDto,
   MeResponseSuccess,
   UpdateUserDto,
+  UpdateUserResponse,
   User,
 } from '../models/index';
 import {
@@ -27,6 +28,8 @@ import {
     MeResponseSuccessToJSON,
     UpdateUserDtoFromJSON,
     UpdateUserDtoToJSON,
+    UpdateUserResponseFromJSON,
+    UpdateUserResponseToJSON,
     UserFromJSON,
     UserToJSON,
 } from '../models/index';
@@ -206,7 +209,7 @@ export class UsersApi extends runtime.BaseAPI {
     /**
      * Update current user details
      */
-    async usersControllerUpdateRaw(requestParameters: UsersControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async usersControllerUpdateRaw(requestParameters: UsersControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateUserResponse>> {
         if (requestParameters['updateUserDto'] == null) {
             throw new runtime.RequiredError(
                 'updateUserDto',
@@ -228,14 +231,15 @@ export class UsersApi extends runtime.BaseAPI {
             body: UpdateUserDtoToJSON(requestParameters['updateUserDto']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateUserResponseFromJSON(jsonValue));
     }
 
     /**
      * Update current user details
      */
-    async usersControllerUpdate(requestParameters: UsersControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.usersControllerUpdateRaw(requestParameters, initOverrides);
+    async usersControllerUpdate(requestParameters: UsersControllerUpdateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateUserResponse> {
+        const response = await this.usersControllerUpdateRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }
