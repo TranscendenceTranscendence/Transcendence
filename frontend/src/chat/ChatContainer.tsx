@@ -1,4 +1,3 @@
-import React from "react";
 import "../css/ChatBox.css";
 import { ChatBox } from "./ChatBox.tsx";
 import io from "socket.io-client";
@@ -9,11 +8,9 @@ interface ChatContainerProps {
 }
 
 const ChatContainer = ({ chatRoomId, userId }: ChatContainerProps) => {
-  // const chatRoomId = localStorage.getItem('chatRoomId');
   const socket = io("wss://localhost:3000", {
     reconnectionAttempts: 5,
-    // reconnectionDelay: 1000,
-    transports: ["websocket"], // Force WebSocket transport
+    transports: ["websocket"],
   });
   return (
     <div className="chatBox">

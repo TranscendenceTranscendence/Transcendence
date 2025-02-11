@@ -14,7 +14,6 @@ import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import { ChatRoom } from './chat_room.entity';
 
-
 class ChatRoomsResponse {
     @ApiProperty()
     success: boolean;
@@ -24,13 +23,13 @@ class ChatRoomsResponse {
     message?: string;
 }
 
-@ApiTags('ChatRooms') // Groups the endpoints under "ChatRooms" in Swagger
+@ApiTags('ChatRooms')
 @Controller('chatroom')
 export class ChatRoomsController {
     constructor(private readonly chatRoomsService: ChatRoomsService) {}
 
     @Post()
-    @ApiOperation({ summary: 'Create a new chat room' })
+    @ApiOperation({ summary: 'Create a new chat room and add the creator as an owner' })
     @ApiResponse({
         status: 201,
         description: 'Chat room created successfully.',
@@ -41,10 +40,11 @@ export class ChatRoomsController {
     })
     async create(@Body() createChatRoomDto: CreateChatRoomDto) {
         try {
-            await this.chatRoomsService.create(createChatRoomDto);
+            const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
             return {
                 success: true,
                 message: 'ChatRoom Created Successfully',
+                chatRoom,
             };
         } catch (error) {
             return {

@@ -152,9 +152,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     return <div>Error loading messages: {error}</div>;
   }
 
-  // if (!chatRoomId)
-  //     return <p>fout</p>;
-  console.log("local participant -> ", localParticipant);
   return (
     <div>
       <ul className="chatMessages">

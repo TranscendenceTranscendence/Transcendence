@@ -1,34 +1,10 @@
 import {useState, useEffect } from "react";
-import { PostChatRoom } from "../utils/PostRequest.tsx";
+import { PostChatRoom } from "./PostChatRoom.tsx";
 import  ChatRoomList from "./ChatRoomList.tsx";
 import ChatContainer from "../chat/ChatContainer.tsx";
-import { MeResponseSuccess } from '@/generated-api/index.ts';
+import { MeResponseSuccess, ChatRoom, ChatParticipantChatParticipantRoleEnum  } from '@/generated-api/index.ts';
 import { JoinPrivate } from "./JoinPrivate.tsx";
 import { useChatRooms, UseaddParticipant } from "./ApiRequest.tsx";
-
-enum chat_room_types {
-  Public = "public",
-  Protected = "protected",
-  Private = "private",
-}
-
-interface Participant {
-  user_id: number;
-}
-
-interface ChatRoom {
-  title: string;
-  id: number;
-  chat_room_type: chat_room_types;
-  password: string;
-  chatParticipants: Participant[];
-}
-
-enum chat_participant_roles {
-  Owner = "owner",
-  Admin = "admin",
-  Guest = "guest",
-}
 
 interface ChatRoomContainerProps {
   userDetails: MeResponseSuccess;
@@ -47,6 +23,7 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
       return 1;
     }
   });
+
   useEffect(() => {
     if (chatRoomId !== null) {
       localStorage.setItem("chatRoomId", JSON.stringify(chatRoomId));
@@ -59,22 +36,24 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
 
   const addParticipant = async (userId: number, chatRoomId: number) => {
     console.log(
-      "participant wordt geadded aan de chatRoom" + userId + chatRoomId
+      "Participant is being added to the chatroom" + userId + chatRoomId
     );
     UseaddParticipant(userId, chatRoomId);
   };
 
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
     console.log("handleChatRoomChange", newChatRoom);
-    if (newChatRoom != null) {
+    if (newChatRoom != null)
+    {
       localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
       setChatRoomId(newChatRoom?.id);
       console.log("addParticipant");
       addParticipant(userDetails.id, newChatRoom.id);
-    } else console.log("Failed to change ChatRoom probably null!!");
+    }
+    else 
+      console.log("Failed to change ChatRoom probably null!!");
     console.log("Chat room ID changed to:", newChatRoom?.id);
   };
-  console.log("chatRooms", chatRooms);
   return (
     <div className="chatRoomBox">
       <ChatRoomList
@@ -85,11 +64,10 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
         setAskPassword={setAskPassword}
       />
       <ChatContainer chatRoomId={chatRoomId} userId={userDetails.id} />
-      <JoinPrivate onChatRoomChange={handleChatRoomChange} />
+      {/* <JoinPrivate onChatRoomChange={handleChatRoomChange} /> */}
       <PostChatRoom
-        url={"https://localhost:3000/chatroom"}
         userId={userDetails.id}
-        role={chat_participant_roles.Owner}
+        role={ChatParticipantChatParticipantRoleEnum.Owner}
       />
     </div>
   );
