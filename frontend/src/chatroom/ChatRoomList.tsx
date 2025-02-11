@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import "../css/Chatroom.css";
 import { PasswordPrompt } from "./PasswordPrompt";
 import { OnlineDot } from "./OnlineDot";
+import { ChatRoomsResponse } from '@/generated-api/index.ts';
 
 enum chat_room_types {
   Public = "public",
@@ -22,7 +23,7 @@ interface ChatRoom {
 }
 
 interface ChatRoomListProps {
-  chatRooms?: ChatRoom[];
+  chatRooms?: ChatRoomsResponse;
   userId: number;
   onChatRoomChange: (newChatRoom: ChatRoom) => void;
   askPassword: boolean;
@@ -42,10 +43,10 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
     },
     [onChatRoomChange]
   );
-
+  console.log("asdf" , chatRooms);
   return (
     <div className="chat-room-list">
-      {chatRooms.map((chatRoom) => (
+      {chatRooms?.chatRooms?.map((chatRoom) => (
         <div key={chatRoom.id} className="chat-room-item">
           <h3>{chatRoom.title}</h3>
           <OnlineDot status={chatRoom.chatParticipants.some(p => p.user_id === userId)} />
@@ -58,6 +59,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
           <button onClick={() => handleChatRoomChange(chatRoom)}>Join</button>
         </div>
       ))}
+
     </div>
   );
 };

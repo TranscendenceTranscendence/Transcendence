@@ -8,10 +8,21 @@ import {
     ParseIntPipe,
     Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
+import { ChatRoom } from './chat_room.entity';
+
+
+class ChatRoomsResponse {
+    @ApiProperty()
+    success: boolean;
+    @ApiProperty()
+    chatRooms?: ChatRoom[];
+    @ApiProperty()
+    message?: string;
+}
 
 @ApiTags('ChatRooms') // Groups the endpoints under "ChatRooms" in Swagger
 @Controller('chatroom')
@@ -92,13 +103,14 @@ export class ChatRoomsController {
     @ApiResponse({
         status: 200,
         description: 'Chat rooms with participants fetched successfully.',
+        type: ChatRoomsResponse,
     })
-    async findAllincludeParticipant() {
+    async findAllincludeParticipant() : Promise<ChatRoomsResponse> {
         try {
             const data = await this.chatRoomsService.findAllincludeParticipant();
             return {
                 success: true,
-                data,
+                chatRooms: data,
                 message: 'ChatRoom Fetched Successfully',
             };
         } catch (error) {

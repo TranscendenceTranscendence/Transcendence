@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import {useState, useEffect } from "react";
 import { PostChatRoom } from "../utils/PostRequest.tsx";
 import  ChatRoomList from "./ChatRoomList.tsx";
 import ChatContainer from "../chat/ChatContainer.tsx";
-import { handleSubmitParticipant } from "../utils/PostRequest.tsx";
 import { MeResponseSuccess } from '@/generated-api/index.ts';
-import { useFetchRequest } from "../utils/FetchRequest.tsx";
 import { JoinPrivate } from "./JoinPrivate.tsx";
-import { useApi } from "@/utils/api/index.ts";
+import { useChatRooms, UseaddParticipant } from "./ApiRequest.tsx";
 
 enum chat_room_types {
   Public = "public",
@@ -37,11 +35,9 @@ interface ChatRoomContainerProps {
 }
 
 export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
-  const api = useApi();
   const [askPassword, setAskPassword] = useState<boolean>(false);
-  const { data: chatRooms } = api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
-  // const url = "https://localhost:3000/chatroom/includeParticipant";
-  // const { data: chatRooms } = useFetchRequest<ChatRoom[]>(url);
+  const { chatRooms } = useChatRooms();
+
   const [chatRoomId, setChatRoomId] = useState(() => {
     try {
       const savedId = localStorage.getItem("chatRoomId");
@@ -65,11 +61,7 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
     console.log(
       "participant wordt geadded aan de chatRoom" + userId + chatRoomId
     );
-    await handleSubmitParticipant(
-      `https://localhost:3000/chatParticipants/${chatRoomId}/join/${userId}`,
-      userId,
-      chatRoomId
-    );
+    UseaddParticipant(userId, chatRoomId);
   };
 
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
@@ -86,8 +78,7 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
   return (
     <div className="chatRoomBox">
       <ChatRoomList
-        chatRooms={chatRooms ?? []}
-        chatRoomId={chatRoomId}
+        chatRooms={chatRooms}
         userId={userDetails.id}
         onChatRoomChange={handleChatRoomChange}
         askPassword={askPassword}

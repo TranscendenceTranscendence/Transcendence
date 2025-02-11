@@ -1,37 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { PostChatRoom } from "../utils/PostRequest.tsx";
-import  ChatRoomList from "./ChatRoomList.tsx";
-import ChatContainer from "../chat/ChatContainer.tsx";
-import { handleSubmitParticipant } from "../utils/PostRequest.tsx";
-import { MeResponseSuccess } from '@/generated-api/index.ts';
-import { useFetchRequest } from "../utils/FetchRequest.tsx";
-import { JoinPrivate } from "./JoinPrivate.tsx";
-import { useApi } from "@/utils/api/index.ts";
+import { useEffect, useState } from "react";
+import { useApi } from '@/utils/api/index.ts';
+import { ChatRoomsResponse } from '@/generated-api/index.ts';
 
-export const getChatRoomWithParticipants = () => {
+export const useChatRooms = () => {
     const api = useApi();
-    const [messages, setMessages] = useState<oldMessage[]>([]);
-    const [error, setError] = useState<Error | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [chatRooms, setChatRooms] = useState<ChatRoomsResponse | null>(null);
+  
+    const fetchChatRooms = async () => {
+      try {
+        const response: ChatRoomsResponse = await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
+        console.log("ChatRoomsResponse:", response);
+  
+        if (response.success) {
+          setChatRooms(response);
+        } else {
+          console.error("Failed to fetch chat rooms:", response.message);
+        }
+      } catch (error) {
+        console.error("Error fetching chat rooms:", error);
+      }
+    };
   
     useEffect(() => {
-      const fetchMessages = async () => {
-        setLoading(true);
-        try {
-          const response = await api.ChatMessages.chatMessagesControllerFindOne({ id: chatRoomId });
-          console.log("Fetched Messages:", response.data);
-          setMessages(response.data || []);
-        } catch (err) {
-          setError(err as Error);
-        } finally {
-          setLoading(false);
-        }
-      };
+      fetchChatRooms();
+    }, []);
   
-      if (chatRoomId) {
-        fetchMessages();
-      }
-    }, [chatRoomId]);
-    console.log("MessagesUseEffect:", messages);
-    return { messages, loading, error };
+    return { chatRooms, fetchChatRooms };
   };
+
+export const UseaddParticipant = (userId : number, chatRoomId : number) => {
+  const api = useApi();
+  
+    const addParticipant = async (userId: number, chatRoomId: number) => {
+      try {
+        const response = await api.ChatParticipants.chatParticipantsControllerAddParticipantToChatroom({
+          chatRoomId,
+          userId,
+        });
+        console.log('Participant added:', response);
+      } catch (error) {
+        console.error('Error adding participant:', error);
+      }
+    };
+
+    useEffect(() => {
+      addParticipant(userId, chatRoomId);
+    });
+}
