@@ -15,9 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
+  ChatRoomsResponse,
   CreateChatRoomDto,
 } from '../models/index';
 import {
+    ChatRoomsResponseFromJSON,
+    ChatRoomsResponseToJSON,
     CreateChatRoomDtoFromJSON,
     CreateChatRoomDtoToJSON,
 } from '../models/index';
@@ -132,7 +135,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     /**
      * Get all chat rooms including participants
      */
-    async chatRoomsControllerFindAllincludeParticipantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async chatRoomsControllerFindAllincludeParticipantRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -144,14 +147,15 @@ export class ChatRoomsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ChatRoomsResponseFromJSON(jsonValue));
     }
 
     /**
      * Get all chat rooms including participants
      */
-    async chatRoomsControllerFindAllincludeParticipant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
+    async chatRoomsControllerFindAllincludeParticipant(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ChatRoomsResponse> {
+        const response = await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
+        return await response.value();
     }
 
     /**

@@ -6,6 +6,7 @@ import { handleSubmitParticipant } from "../utils/PostRequest.tsx";
 import { MeResponseSuccess } from '@/generated-api/index.ts';
 import { useFetchRequest } from "../utils/FetchRequest.tsx";
 import { JoinPrivate } from "./JoinPrivate.tsx";
+import { useApi } from "@/utils/api/index.ts";
 
 enum chat_room_types {
   Public = "public",
@@ -32,20 +33,22 @@ enum chat_participant_roles {
 }
 
 interface ChatRoomContainerProps {
-  userId: MeResponseSuccess;
+  userDetails: MeResponseSuccess;
 }
 
-export const ChatRoomContainer = ({ userId }: ChatRoomContainerProps) => {
+export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
+  const api = useApi();
   const [askPassword, setAskPassword] = useState<boolean>(false);
-  const url = "https://localhost:3000/chatroom/includeParticipant";
-  const { data: chatRooms } = useFetchRequest<ChatRoom[]>(url);
+  const { data: chatRooms } = api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
+  // const url = "https://localhost:3000/chatroom/includeParticipant";
+  // const { data: chatRooms } = useFetchRequest<ChatRoom[]>(url);
   const [chatRoomId, setChatRoomId] = useState(() => {
     try {
       const savedId = localStorage.getItem("chatRoomId");
       return savedId ? JSON.parse(savedId) : 1;
     } catch (error) {
       console.error("Failed to parse chatRoomId from localStorage:", error);
-      return 1; // Default value
+      return 1;
     }
   });
   useEffect(() => {
@@ -75,7 +78,7 @@ export const ChatRoomContainer = ({ userId }: ChatRoomContainerProps) => {
       localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
       setChatRoomId(newChatRoom?.id);
       console.log("addParticipant");
-      addParticipant(userId, newChatRoom.id);
+      addParticipant(userDetails.id, newChatRoom.id);
     } else console.log("Failed to change ChatRoom probably null!!");
     console.log("Chat room ID changed to:", newChatRoom?.id);
   };
@@ -85,16 +88,16 @@ export const ChatRoomContainer = ({ userId }: ChatRoomContainerProps) => {
       <ChatRoomList
         chatRooms={chatRooms ?? []}
         chatRoomId={chatRoomId}
-        userId={userId}
+        userId={userDetails.id}
         onChatRoomChange={handleChatRoomChange}
         askPassword={askPassword}
         setAskPassword={setAskPassword}
       />
-      <ChatContainer chatRoomId={chatRoomId} userId={userId} />
+      <ChatContainer chatRoomId={chatRoomId} userId={userDetails.id} />
       <JoinPrivate onChatRoomChange={handleChatRoomChange} />
       <PostChatRoom
         url={"https://localhost:3000/chatroom"}
-        userId={userId}
+        userId={userDetails.id}
         role={chat_participant_roles.Owner}
       />
     </div>

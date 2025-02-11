@@ -7,6 +7,7 @@ export * from './ChatParticipant';
 export * from './ChatParticipantResponse';
 export * from './ChatParticipantsResponse';
 export * from './ChatRoom';
+export * from './ChatRoomsResponse';
 export * from './CreateAchievementDto';
 export * from './CreateBlockedDto';
 export * from './CreateChatMessageDto';

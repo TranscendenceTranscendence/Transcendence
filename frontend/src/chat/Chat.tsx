@@ -25,14 +25,13 @@ export const Chat = () => {
         fetchUserDetails();
     }, []);
 
-    // Ensure userDetails is loaded before rendering components that depend on it
     if (!userDetails) {
         return <div>Loading user data...</div>;
     }
 
     return (
         <div>
-            <ChatRoomContainer userId={userDetails.id} />
+            <ChatRoomContainer userDetails={userDetails} />
         </div>
     );
 };

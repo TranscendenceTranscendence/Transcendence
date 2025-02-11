@@ -20,6 +20,7 @@ models/ChatParticipant.ts
 models/ChatParticipantResponse.ts
 models/ChatParticipantsResponse.ts
 models/ChatRoom.ts
+models/ChatRoomsResponse.ts
 models/CreateAchievementDto.ts
 models/CreateBlockedDto.ts
 models/CreateChatMessageDto.ts
