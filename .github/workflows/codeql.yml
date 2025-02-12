@@ -91,7 +91,7 @@ jobs:
       - name: Install Prettier
         run: |
           cd frontend
-          npm install prettier@2.3.2
+          npm install prettier@3.5.0
 
       - name: Run Prettier
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Install Prettier
         run: |
           cd backend
-          npm install prettier@2.3.2
+          npm install prettier@3.5.0
 
       - name: Run Prettier
         run: |
