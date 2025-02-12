@@ -43,7 +43,11 @@ export class JwtAccessAuthGuard implements CanActivate {
       throw new UnauthorizedException('User not found');
     }
 
-    if (user.two_factor_enabled && !decodedToken.isSecondFactorAuthenticated && request.url !== '/2fa/authenticate') {
+    if (
+      user.two_factor_enabled &&
+      !decodedToken.isSecondFactorAuthenticated &&
+      request.url !== '/2fa/authenticate'
+    ) {
       throw new ForbiddenException('2FA is enabled but not authenticated');
     }
 

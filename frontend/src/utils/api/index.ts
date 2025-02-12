@@ -22,7 +22,7 @@ export const useApi = () => {
     FileUpload: new generatedApi.FileUploadApi(config),
     App: new generatedApi.AppApi(config),
     TwoFactorAuthentication: new generatedApi.TwoFactorAuthenticationApi(
-      config
+      config,
     ),
   };
   return api;

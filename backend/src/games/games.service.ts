@@ -2,7 +2,6 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './game.entity';
 
 @Injectable()
@@ -12,12 +11,8 @@ export class GamesService {
     private readonly gamesRepository: Repository<Game>,
   ) {}
 
-  async create(
-    createGameDto: CreateGameDto,): Promise<Game> {
-        const gameData =
-            await this.gamesRepository.create(
-                createGameDto,
-            );
+  async create(createGameDto: CreateGameDto): Promise<Game> {
+    const gameData = await this.gamesRepository.create(createGameDto);
     return this.gamesRepository.save(gameData);
   }
 
@@ -26,19 +21,11 @@ export class GamesService {
   }
 
   async findByUserId(id: number): Promise<Game[]> {
-    const gameData =
-        await this.gamesRepository.find({ 
-          where: [
-            { player1_user_id: id },
-            { player2_user_id: id }
-          ]
-        });
-    if (!gameData)
-        throw new HttpException(
-            'Game Not Found',
-            404,
-        );
-        return gameData;
+    const gameData = await this.gamesRepository.find({
+      where: [{ player1_user_id: id }, { player2_user_id: id }],
+    });
+    if (!gameData) throw new HttpException('Game Not Found', 404);
+    return gameData;
   }
 
   // async update(
@@ -56,6 +43,6 @@ export class GamesService {
 
   async remove(id: number): Promise<Game[]> {
     const existingGame = await this.findByUserId(id);
-    return await this.gamesRepository.remove(existingGame,);
+    return await this.gamesRepository.remove(existingGame);
   }
 }

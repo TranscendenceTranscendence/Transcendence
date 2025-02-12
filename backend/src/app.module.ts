@@ -12,20 +12,17 @@ import { FriendsModule } from './friends/friends.module';
 import { GamesModule } from './games/games.module';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule } from './config/config.module';
-import { ConfigService } from './config/config.service';
 import { QueueModule } from './queue/queue.module';
 import { ChatModule } from './websockets/chat.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
-
 
 @Module({
   imports: [
     MulterModule.register({
       limits: {
         fileSize: 1024 * 1024 * 5,
-      }
+      },
     }),
     PassportModule.register({
       session: false,

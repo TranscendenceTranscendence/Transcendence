@@ -1,7 +1,7 @@
-import { registerAs } from "@nestjs/config";
+import { registerAs } from '@nestjs/config';
 
-export default registerAs("FortyTwoOAuth", ()=>({
-    clientID: process.env.FT_CLIENT_ID,
-    clientSecret: process.env.FT_CLIENT_SECRET,
-    callbackURL: process.env.REDIRECT_URL,
+export default registerAs('FortyTwoOAuth', () => ({
+  clientID: process.env.FT_CLIENT_ID,
+  clientSecret: process.env.FT_CLIENT_SECRET,
+  callbackURL: process.env.REDIRECT_URL,
 }));
