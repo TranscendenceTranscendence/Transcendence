@@ -83,10 +83,10 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "format:write": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
-    "lint:write": "eslint \"src/**/*.ts\" --fix",
-    "lint:check": "eslint \"src/**/*.ts\"",
+    "format:write": "prettier --write \"src/**/*.(ts|tsx)\" --config=\"./.prettierrc\"",
+    "format:check": "prettier --check \"src/**/*.(ts|tsx)\" --config=\"./.prettierrc\"",
+    "lint:write": "eslint \"src/**/*.ts*\" --fix",
+    "lint:check": "eslint \"src/**/*.ts*\"",
     "test": "craco test",
     "eject": "react-scripts eject",
     "generate-api": "openapi-generator-cli generate -i ../backend/openapi.json -g typescript-fetch -o ./src/generated-api && npm run format:write"
