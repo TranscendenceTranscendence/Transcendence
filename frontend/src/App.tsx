@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
-import { Chat } from "./chat/Chat.jsx";
 import EnableTwoFactorAuth from "./pages/login/EnableTwoFactorAuth.tsx";
 import DisableTwoFactorAuth from "./pages/login/DisableTwoFactorAuth";
 import TwoFactorAuth from "./pages/login/TwoFactorAuth";
@@ -24,7 +23,7 @@ function App() {
     window.history.replaceState(
       {},
       "",
-      `${window.location.pathname}${params.size > 0 ? `?${params}` : ""}`
+      `${window.location.pathname}${params.size > 0 ? `?${params}` : ""}`,
     );
   }
 
@@ -47,7 +46,6 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
           <Route path="/update" element={<UpdateUser />} />
-          <Route path="/chat" element={<Chat />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
           <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />

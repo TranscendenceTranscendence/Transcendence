@@ -59,12 +59,12 @@ export const ChatRoomContainer = ({ userId }: ChatRoomContainerProps) => {
 
   const addParticipant = async (userId: number, chatRoomId: number) => {
     console.log(
-      "participant wordt geadded aan de chatRoom" + userId + chatRoomId
+      "participant wordt geadded aan de chatRoom" + userId + chatRoomId,
     );
     await handleSubmitParticipant(
       `https://localhost:3000/chatParticipants/${chatRoomId}/join/${userId}`,
       userId,
-      chatRoomId
+      chatRoomId,
     );
   };
 

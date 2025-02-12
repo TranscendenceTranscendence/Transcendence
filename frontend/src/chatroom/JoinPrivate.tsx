@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useFetchRequestDep } from "../utils/FetchRequest.tsx";
 
 enum chat_room_types {
   Public = "public",
@@ -27,8 +26,7 @@ export const JoinPrivate: React.FC<JoinPrivateProps> = ({
   onChatRoomChange,
 }) => {
   const [roomName, setRoomName] = useState("");
-  const url = "https://localhost:3000/chatroom";
-  const { data: fetched } = useFetchRequestDep<ChatRoom[]>(url, roomName);
+  const { data: fetched } = { data: [] };
 
   const HandleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

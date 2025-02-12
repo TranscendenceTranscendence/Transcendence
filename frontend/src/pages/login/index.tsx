@@ -10,7 +10,7 @@ export default function Login() {
         <CardContent>
           <p
             className={cn(
-              "text-4xl font-bold mb-4 bg-gradient-to-r from-pink-500 via-orange-500 to-teal-400 bg-clip-text text-transparent animate-gradient"
+              "text-4xl font-bold mb-4 bg-gradient-to-r from-pink-500 via-orange-500 to-teal-400 bg-clip-text text-transparent animate-gradient",
             )}
           >
             Transcendence

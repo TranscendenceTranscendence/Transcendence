@@ -25,7 +25,9 @@ const FormSchema = z.object({
   code: z
     .string()
     .length(6, { message: "Your one-time password must be 6 digits." })
-    .regex(/^[0-9]{6}$/, { message: "Your one-time password must contain only digits." }),
+    .regex(/^[0-9]{6}$/, {
+      message: "Your one-time password must contain only digits.",
+    }),
 });
 
 const DisableTwoFactorAuth = () => {
@@ -38,14 +40,18 @@ const DisableTwoFactorAuth = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("https://localhost:3000/2fa/turn-off", {
-        twoFactorAuthenticationCode: data.code,
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      const response = await axios.post(
+        "https://localhost:3000/2fa/turn-off",
+        {
+          twoFactorAuthenticationCode: data.code,
         },
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        },
+      );
 
       if (response.status === 200 || response.status === 201) {
         setSuccess(true);
@@ -61,12 +67,19 @@ const DisableTwoFactorAuth = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen px-4">
-      <h1 className="text-xl font-semibold text-gray-800 mb-4">Disable Two-Factor Authentication</h1>
+      <h1 className="text-xl font-semibold text-gray-800 mb-4">
+        Disable Two-Factor Authentication
+      </h1>
       {success ? (
-        <p className="text-green-600 text-center">2FA has been disabled successfully!</p>
+        <p className="text-green-600 text-center">
+          2FA has been disabled successfully!
+        </p>
       ) : (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col items-center">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col items-center"
+          >
             <FormField
               control={form.control}
               name="code"
@@ -95,7 +108,9 @@ const DisableTwoFactorAuth = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="mt-4">Disable 2FA</Button>
+            <Button type="submit" className="mt-4">
+              Disable 2FA
+            </Button>
           </form>
         </Form>
       )}

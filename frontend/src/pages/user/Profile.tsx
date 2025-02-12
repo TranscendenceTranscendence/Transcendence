@@ -4,7 +4,6 @@ import { User } from "../../generated-api";
 import { useConfig } from "@/utils/config";
 import { useApi } from "@/utils/api";
 
-
 // interface User {
 //   nickname: string;
 //   avatar: string;
