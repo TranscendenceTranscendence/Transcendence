@@ -103,28 +103,17 @@ export class UsersController {
     try {
       const user = req.user;
 
-    @Get('me')
-    @ApiOperation({ summary: 'Get current user details' })
-    @ApiResponse({ status: 200, description: 'User fetched successfully.', type: MeResponseSuccess })
-    @ApiResponse({ status: 404, description: 'User not found.' })
-    @UseGuards(JwtAccessAuthGuard)
-    async me(@Req() req: RequestWithUser): Promise<MeResponseSuccess> {
-        console.log("req.user.id", req.user.id);
-        try {
-            const user = req.user;
-
-            // user to me response
-            return {
-                id: user.id,
-                avatar: user.avatar,
-                email: user.email,
-                nickname: user.nickname,
-                ladder_level: user.ladder_level,
-                enable_two_factor: user.two_factor_enabled,
-            };
-        } catch (error) {
-            throw new InternalServerErrorException(error.message);
-        }
+      // user to me response
+      return {
+        id: user.id,
+        avatar: user.avatar,
+        email: user.email,
+        nickname: user.nickname,
+        ladder_level: user.ladder_level,
+        enable_two_factor: user.two_factor_enabled,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 
