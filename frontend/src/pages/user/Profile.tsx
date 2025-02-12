@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { User } from "../../generated-api";
 import { useConfig } from "@/utils/config";
 import { useApi } from "@/utils/api";
-import { set } from "date-fns";
+
 
 // interface User {
 //   nickname: string;
