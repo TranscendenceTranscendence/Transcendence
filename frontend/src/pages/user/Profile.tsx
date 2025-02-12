@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { User, UsersApi } from "../../generated-api";
+import { User } from "../../generated-api";
 import { useConfig } from "@/utils/config";
 import { useApi } from "@/utils/api";
 import { set } from "date-fns";
