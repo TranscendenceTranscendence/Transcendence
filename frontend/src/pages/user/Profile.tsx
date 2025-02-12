@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {
-  User,
-  UsersApi
-} from "../../generated-api";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { User } from "../../generated-api";
+import { useConfig } from "@/utils/config";
+import { useApi } from "@/utils/api";
+
 
 // interface User {
 //   nickname: string;
@@ -15,53 +15,31 @@ import {
 // }
 
 export default function Profile() {
-  const {id} = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const config = useConfig();
+  const api = useApi();
 
   useEffect(() => {
-    const api = new UsersApi()
-
     const userIdNumber = Number(id);
     if (isNaN(userIdNumber)) {
-      setError('Invalid user ID');
+      setError("Invalid user ID");
       return;
     }
-    // Fetch user data from the back/end
-    api.usersControllerFindOne({id: userIdNumber})
+    // Fetch user data from the backend
+    api.Users.usersControllerFindOne({ id: userIdNumber })
       .then((user) => {
         setUser(user);
-        console.log('user:', user);
+        setAvatarUrl(config.backendUrl + user.avatar);
+        console.log("user:", user);
       })
-      .catch(error => {
-        console.error('Failed to fetch user data:', error);
+      .catch((error) => {
+        console.error("Failed to fetch user data:", error);
+        setError("Failed to fetch user data");
       });
-    // axios({
-    //   url: `https://localhost:3000/users/${userIdNumber}`,
-    //   method: 'GET',
-    //   withCredentials: true,
-    // })
-    //   .then(({
-    //            data
-    //          }) => {
-    //     setUser({
-    //       nickname: data.nickname,
-    //       avatar: data.avatar,
-    //       email: data.email,
-    //       two_factor_enabled: data.two_factor_enabled,
-    //       ladder_level: data.ladder_level,
-    //       user_status: data.user_status,
-    //     });
-    //     console.log('User id:', id); // Log the entire user object
-    //     console.log('User data:', data); // Log the entire user object
-    //     console.log('User avatar:', data.avatar); // Log the user avatar value
-    //     console.log('User nickname:', data.nickname); // Log the user nickname value
-    //   })
-    //   .catch(error => {
-    //     console.error('Failed to fetch user data:', error);
-    //   });
-    
-  }, [ id]);
+  }, [api.Users, config.backendUrl, id]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -76,18 +54,23 @@ export default function Profile() {
       <h1>Profile</h1>
       <p>Status: {user.userStatus}</p>
       <div>
-        <img src={`data:image/jpeg;base64, ${user.avatar}`} alt="User AvatarDisplay"
-             style={{width: '100px', height: '140px', borderRadius: '10%'}}/>
+        <img
+          src={avatarUrl}
+          alt="User AvatarDisplay"
+          style={{ width: "100px", height: "140px", borderRadius: "10%" }}
+        />
       </div>
       <div>
-        <h2>{user.nickname || 'undefined'}</h2>
+        <h2>{user.nickname || "undefined"}</h2>
         <h3>Level: {user.ladderLevel}</h3>
       </div>
       <div>
-        <p>Email: {user.email || 'undefined'}</p>
-        <p>Two factor Authentication: {user.enableTwoFactor ? 'Enabled' : 'Disabled'}</p>
+        <p>Email: {user.email || "undefined"}</p>
+        <p>
+          Two factor Authentication:{" "}
+          {user.twoFactorEnabled ? "Enabled" : "Disabled"}
+        </p>
       </div>
     </div>
   );
 }
-
