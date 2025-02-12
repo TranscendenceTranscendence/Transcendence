@@ -20,4 +20,5 @@ export * from './MeResponseSuccess';
 export * from './UpdateAchievementDto';
 export * from './UpdateChatParticipantDto';
 export * from './UpdateUserDto';
+export * from './UpdateUserResponse';
 export * from './User';
