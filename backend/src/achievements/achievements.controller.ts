@@ -5,9 +5,9 @@ import {
   Body,
   Patch,
   Param,
-  Delete
+  Delete,
 } from '@nestjs/common';
-import {ApiTags, ApiResponse, ApiOperation, ApiBody} from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/create-achievement.dto';
 import { UpdateAchievementDto } from './dto/update-achievement.dto';
@@ -28,9 +28,7 @@ export class AchievementsController {
     description: 'Bad Request.',
   })
   @ApiBody({ type: CreateAchievementDto, required: true })
-  async create(
-    @Body() createAchievementDto: CreateAchievementDto,
-  ) {
+  async create(@Body() createAchievementDto: CreateAchievementDto) {
     try {
       await this.achievementsService.create(createAchievementDto);
       return {

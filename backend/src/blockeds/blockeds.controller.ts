@@ -1,16 +1,7 @@
 // Blockeds Controller
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateBlockedDto } from './dto/create-blocked.dto';
-import { UpdateBlockedDto } from './dto/update-blocked.dto';
-import { Blocked } from './blocked.entity';
 import { BlockedsService } from './blockeds.service';
 
 @ApiTags('Blockeds') // Groups the endpoints under "Blockeds" in Swagger

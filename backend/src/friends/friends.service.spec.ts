@@ -9,7 +9,6 @@ import { HttpException } from '@nestjs/common';
 describe('FriendsService', () => {
   let service: FriendsService;
   let friendsRepository: Repository<Friend>;
-  let usersRepository: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,7 +26,9 @@ describe('FriendsService', () => {
     }).compile();
 
     service = module.get<FriendsService>(FriendsService);
-    friendsRepository = module.get<Repository<Friend>>(getRepositoryToken(Friend));
+    friendsRepository = module.get<Repository<Friend>>(
+      getRepositoryToken(Friend),
+    );
     usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
@@ -91,7 +92,9 @@ describe('FriendsService', () => {
 
       const mockTotal = 1;
 
-      jest.spyOn(friendsRepository, 'findAndCount').mockResolvedValueOnce([mockFriendRequests, mockTotal]);
+      jest
+        .spyOn(friendsRepository, 'findAndCount')
+        .mockResolvedValueOnce([mockFriendRequests, mockTotal]);
 
       const result = await service.getFriendRequests({ recieverId: 2 }, 1, 10);
 
@@ -105,13 +108,19 @@ describe('FriendsService', () => {
     });
 
     it('should handle repository errors gracefully', async () => {
-      jest.spyOn(friendsRepository, 'findAndCount').mockRejectedValueOnce(new Error('Database error'));
+      jest
+        .spyOn(friendsRepository, 'findAndCount')
+        .mockRejectedValueOnce(new Error('Database error'));
 
-      await expect(service.getFriendRequests({ recieverId: 2 }, 1, 10)).rejects.toThrow(HttpException);
+      await expect(
+        service.getFriendRequests({ recieverId: 2 }, 1, 10),
+      ).rejects.toThrow(HttpException);
     });
 
     it('should return no data if there are no friend requests', async () => {
-      jest.spyOn(friendsRepository, 'findAndCount').mockResolvedValueOnce([[], 0]);
+      jest
+        .spyOn(friendsRepository, 'findAndCount')
+        .mockResolvedValueOnce([[], 0]);
 
       const result = await service.getFriendRequests({ recieverId: 2 }, 1, 10);
 

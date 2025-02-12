@@ -1,10 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum GameStatus {
   PENDING = 'pending',
   OPEN = 'open',
   CLOSED = 'closed',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 @Entity('games')
@@ -18,7 +18,7 @@ export class Game {
   @Column({
     type: 'enum',
     enum: GameStatus,
-    default: GameStatus.OPEN
+    default: GameStatus.OPEN,
   })
   status: GameStatus;
 

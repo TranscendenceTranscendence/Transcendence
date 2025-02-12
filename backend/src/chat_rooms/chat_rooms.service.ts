@@ -8,16 +8,16 @@ import { In } from 'typeorm';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 
 export enum chat_room_types {
-	Public = "public",
-	Protected = "protected",
-	Private = "private",
-  Dm = "Dm"
+  Public = 'public',
+  Protected = 'protected',
+  Private = 'private',
+  Dm = 'Dm',
 }
 
 export enum chat_participant_roles {
-  Owner = "owner",
-  Admin = "admin",
-  Guest = "guest"
+  Owner = 'owner',
+  Admin = 'admin',
+  Guest = 'guest',
 }
 
 @Injectable()
@@ -27,28 +27,25 @@ export class ChatRoomsService {
     private readonly chatRoomsRepository: Repository<ChatRoom>,
     @InjectRepository(ChatParticipant)
     private readonly chatParticipantsRepository: Repository<ChatParticipant>,
-
   ) {}
 
-  async create(
-    createChatRoomDto: CreateChatRoomDto,
-    ): Promise<ChatRoom> {
-      const {title, password, chat_room_type, user_id, role}  = createChatRoomDto
-        const chatRoomData =
-            await this.chatRoomsRepository.create({
-                title,
-                chat_room_type,
-                password,
+  async create(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoom> {
+    const { title, password, chat_room_type, user_id, role } =
+      createChatRoomDto;
+    const chatRoomData = await this.chatRoomsRepository.create({
+      title,
+      chat_room_type,
+      password,
     });
-      const savedChatRoom = await this.chatRoomsRepository.save(chatRoomData);
+    const savedChatRoom = await this.chatRoomsRepository.save(chatRoomData);
 
-      const participant = this.chatParticipantsRepository.create({
-        user_id,
-        chat_room_id: savedChatRoom.id,
-        chat_participant_role : role,
-      });
+    const participant = this.chatParticipantsRepository.create({
+      user_id,
+      chat_room_id: savedChatRoom.id,
+      chat_participant_role: role,
+    });
 
-      const savedPart = await this.chatParticipantsRepository.save(participant);
+    await this.chatParticipantsRepository.save(participant);
     return savedChatRoom;
   }
 
@@ -66,19 +63,14 @@ export class ChatRoomsService {
     return await this.chatRoomsRepository.find({
       where: {
         chat_room_type: In(['public', 'protected']),
-       },
+      },
     });
   }
 
   async findOne(id: number): Promise<ChatRoom> {
-    const chatRoomData =
-        await this.chatRoomsRepository.findOneBy({ id });
-    if (!chatRoomData)
-        throw new HttpException(
-            'ChatRoom Not Found',
-            404,
-        );
-        return chatRoomData;
+    const chatRoomData = await this.chatRoomsRepository.findOneBy({ id });
+    if (!chatRoomData) throw new HttpException('ChatRoom Not Found', 404);
+    return chatRoomData;
   }
 
   async update(
@@ -87,16 +79,14 @@ export class ChatRoomsService {
   ): Promise<ChatRoom> {
     const existingChatRoom = await this.findOne(id);
     const chatRoomData = this.chatRoomsRepository.merge(
-        existingChatRoom,
-        UpdateChatRoomDto,
+      existingChatRoom,
+      UpdateChatRoomDto,
     );
-    return await this.chatRoomsRepository.save(
-        chatRoomData,
-    );
+    return await this.chatRoomsRepository.save(chatRoomData);
   }
 
   async remove(id: number): Promise<ChatRoom> {
     const existingChatRoom = await this.findOne(id);
-    return await this.chatRoomsRepository.remove(existingChatRoom,);
+    return await this.chatRoomsRepository.remove(existingChatRoom);
   }
 }

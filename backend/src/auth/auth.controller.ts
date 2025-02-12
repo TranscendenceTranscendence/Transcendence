@@ -1,12 +1,5 @@
 // Auth Controller
-import {
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -40,8 +33,7 @@ export class AuthController {
     description: 'Unauthorized.',
   })
   @UseGuards(FortyTwoAuthGuard)
-  fortyTwoLogin() {
-  }
+  fortyTwoLogin() {}
 
   @Get('42/callback')
   @ApiOperation({ summary: '42 OAuth callback' })
