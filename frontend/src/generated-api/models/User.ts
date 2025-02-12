@@ -121,61 +121,61 @@ export interface User {
    * @type {Array<Achievement>}
    * @memberof User
    */
-  achievements: Array<Achievement>;
+  achievements?: Array<Achievement>;
   /**
    *
    * @type {Array<Blocked>}
    * @memberof User
    */
-  blockedUsers: Array<Blocked>;
+  blockedUsers?: Array<Blocked>;
   /**
    *
    * @type {Array<Blocked>}
    * @memberof User
    */
-  users: Array<Blocked>;
+  users?: Array<Blocked>;
   /**
    *
    * @type {Array<ChatMessage>}
    * @memberof User
    */
-  chatMessages: Array<ChatMessage>;
+  chatMessages?: Array<ChatMessage>;
   /**
    *
    * @type {Array<ChatParticipant>}
    * @memberof User
    */
-  chatParticipants: Array<ChatParticipant>;
+  chatParticipants?: Array<ChatParticipant>;
   /**
    *
    * @type {Array<Friend>}
    * @memberof User
    */
-  sentFriendRequests: Array<Friend>;
+  sentFriendRequests?: Array<Friend>;
   /**
    *
    * @type {Array<Friend>}
    * @memberof User
    */
-  receivedFriendRequests: Array<Friend>;
+  receivedFriendRequests?: Array<Friend>;
   /**
    *
    * @type {Array<Game>}
    * @memberof User
    */
-  gamesAsPlayer1: Array<Game>;
+  gamesAsPlayer1?: Array<Game>;
   /**
    *
    * @type {Array<Game>}
    * @memberof User
    */
-  gamesAsPlayer2: Array<Game>;
+  gamesAsPlayer2?: Array<Game>;
   /**
    *
    * @type {Array<Game>}
    * @memberof User
    */
-  gamesWon: Array<Game>;
+  gamesWon?: Array<Game>;
 }
 
 /**
@@ -211,30 +211,6 @@ export function instanceOfUser(value: object): value is User {
     return false;
   if (!("userStatus" in value) || value["userStatus"] === undefined)
     return false;
-  if (!("achievements" in value) || value["achievements"] === undefined)
-    return false;
-  if (!("blockedUsers" in value) || value["blockedUsers"] === undefined)
-    return false;
-  if (!("users" in value) || value["users"] === undefined) return false;
-  if (!("chatMessages" in value) || value["chatMessages"] === undefined)
-    return false;
-  if (!("chatParticipants" in value) || value["chatParticipants"] === undefined)
-    return false;
-  if (
-    !("sentFriendRequests" in value) ||
-    value["sentFriendRequests"] === undefined
-  )
-    return false;
-  if (
-    !("receivedFriendRequests" in value) ||
-    value["receivedFriendRequests"] === undefined
-  )
-    return false;
-  if (!("gamesAsPlayer1" in value) || value["gamesAsPlayer1"] === undefined)
-    return false;
-  if (!("gamesAsPlayer2" in value) || value["gamesAsPlayer2"] === undefined)
-    return false;
-  if (!("gamesWon" in value) || value["gamesWon"] === undefined) return false;
   return true;
 }
 
@@ -259,22 +235,46 @@ export function UserFromJSONTyped(
     email: json["email"],
     ladderLevel: json["ladder_level"],
     userStatus: json["user_status"],
-    achievements: (json["achievements"] as Array<any>).map(AchievementFromJSON),
-    blockedUsers: (json["blockedUsers"] as Array<any>).map(BlockedFromJSON),
-    users: (json["users"] as Array<any>).map(BlockedFromJSON),
-    chatMessages: (json["chatMessages"] as Array<any>).map(ChatMessageFromJSON),
-    chatParticipants: (json["chatParticipants"] as Array<any>).map(
-      ChatParticipantFromJSON,
-    ),
-    sentFriendRequests: (json["sentFriendRequests"] as Array<any>).map(
-      FriendFromJSON,
-    ),
-    receivedFriendRequests: (json["receivedFriendRequests"] as Array<any>).map(
-      FriendFromJSON,
-    ),
-    gamesAsPlayer1: (json["gamesAsPlayer1"] as Array<any>).map(GameFromJSON),
-    gamesAsPlayer2: (json["gamesAsPlayer2"] as Array<any>).map(GameFromJSON),
-    gamesWon: (json["gamesWon"] as Array<any>).map(GameFromJSON),
+    achievements:
+      json["achievements"] == null
+        ? undefined
+        : (json["achievements"] as Array<any>).map(AchievementFromJSON),
+    blockedUsers:
+      json["blockedUsers"] == null
+        ? undefined
+        : (json["blockedUsers"] as Array<any>).map(BlockedFromJSON),
+    users:
+      json["users"] == null
+        ? undefined
+        : (json["users"] as Array<any>).map(BlockedFromJSON),
+    chatMessages:
+      json["chatMessages"] == null
+        ? undefined
+        : (json["chatMessages"] as Array<any>).map(ChatMessageFromJSON),
+    chatParticipants:
+      json["chatParticipants"] == null
+        ? undefined
+        : (json["chatParticipants"] as Array<any>).map(ChatParticipantFromJSON),
+    sentFriendRequests:
+      json["sentFriendRequests"] == null
+        ? undefined
+        : (json["sentFriendRequests"] as Array<any>).map(FriendFromJSON),
+    receivedFriendRequests:
+      json["receivedFriendRequests"] == null
+        ? undefined
+        : (json["receivedFriendRequests"] as Array<any>).map(FriendFromJSON),
+    gamesAsPlayer1:
+      json["gamesAsPlayer1"] == null
+        ? undefined
+        : (json["gamesAsPlayer1"] as Array<any>).map(GameFromJSON),
+    gamesAsPlayer2:
+      json["gamesAsPlayer2"] == null
+        ? undefined
+        : (json["gamesAsPlayer2"] as Array<any>).map(GameFromJSON),
+    gamesWon:
+      json["gamesWon"] == null
+        ? undefined
+        : (json["gamesWon"] as Array<any>).map(GameFromJSON),
   };
 }
 
@@ -300,21 +300,45 @@ export function UserToJSONTyped(
     email: value["email"],
     ladder_level: value["ladderLevel"],
     user_status: value["userStatus"],
-    achievements: (value["achievements"] as Array<any>).map(AchievementToJSON),
-    blockedUsers: (value["blockedUsers"] as Array<any>).map(BlockedToJSON),
-    users: (value["users"] as Array<any>).map(BlockedToJSON),
-    chatMessages: (value["chatMessages"] as Array<any>).map(ChatMessageToJSON),
-    chatParticipants: (value["chatParticipants"] as Array<any>).map(
-      ChatParticipantToJSON,
-    ),
-    sentFriendRequests: (value["sentFriendRequests"] as Array<any>).map(
-      FriendToJSON,
-    ),
-    receivedFriendRequests: (value["receivedFriendRequests"] as Array<any>).map(
-      FriendToJSON,
-    ),
-    gamesAsPlayer1: (value["gamesAsPlayer1"] as Array<any>).map(GameToJSON),
-    gamesAsPlayer2: (value["gamesAsPlayer2"] as Array<any>).map(GameToJSON),
-    gamesWon: (value["gamesWon"] as Array<any>).map(GameToJSON),
+    achievements:
+      value["achievements"] == null
+        ? undefined
+        : (value["achievements"] as Array<any>).map(AchievementToJSON),
+    blockedUsers:
+      value["blockedUsers"] == null
+        ? undefined
+        : (value["blockedUsers"] as Array<any>).map(BlockedToJSON),
+    users:
+      value["users"] == null
+        ? undefined
+        : (value["users"] as Array<any>).map(BlockedToJSON),
+    chatMessages:
+      value["chatMessages"] == null
+        ? undefined
+        : (value["chatMessages"] as Array<any>).map(ChatMessageToJSON),
+    chatParticipants:
+      value["chatParticipants"] == null
+        ? undefined
+        : (value["chatParticipants"] as Array<any>).map(ChatParticipantToJSON),
+    sentFriendRequests:
+      value["sentFriendRequests"] == null
+        ? undefined
+        : (value["sentFriendRequests"] as Array<any>).map(FriendToJSON),
+    receivedFriendRequests:
+      value["receivedFriendRequests"] == null
+        ? undefined
+        : (value["receivedFriendRequests"] as Array<any>).map(FriendToJSON),
+    gamesAsPlayer1:
+      value["gamesAsPlayer1"] == null
+        ? undefined
+        : (value["gamesAsPlayer1"] as Array<any>).map(GameToJSON),
+    gamesAsPlayer2:
+      value["gamesAsPlayer2"] == null
+        ? undefined
+        : (value["gamesAsPlayer2"] as Array<any>).map(GameToJSON),
+    gamesWon:
+      value["gamesWon"] == null
+        ? undefined
+        : (value["gamesWon"] as Array<any>).map(GameToJSON),
   };
 }

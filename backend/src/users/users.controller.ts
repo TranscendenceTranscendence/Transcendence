@@ -107,7 +107,9 @@ export class UsersController {
       return {
         id: user.id,
         avatar: user.avatar,
+        email: user.email,
         nickname: user.nickname,
+        ladder_level: user.ladder_level,
         enable_two_factor: user.two_factor_enabled,
       };
     } catch (error) {
@@ -124,7 +126,6 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   async findOne(@Param('id') id: number): Promise<User> {
-    console.log('tesseeetteteteteteeeesttt');
     try {
       const data = await this.usersService.findOne(+id);
       if (data === undefined) {

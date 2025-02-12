@@ -73,33 +73,43 @@ export class User {
   user_status: UserStatus;
 
   // Relationships
+  @IsOptional()
   @OneToMany(() => Achievement, (achievement) => achievement.user)
-  achievements: Achievement[];
+  achievements?: Achievement[];
 
+  @IsOptional()
   @OneToMany(() => Blocked, (blocked) => blocked.user)
-  blockedUsers: Blocked[];
+  blockedUsers?: Blocked[];
 
+  @IsOptional()
   @OneToMany(() => Blocked, (blocked) => blocked.blockedUser)
-  users: Blocked[];
+  users?: Blocked[];
 
+  @IsOptional()
   @OneToMany(() => ChatMessage, (message) => message.user)
-  chatMessages: ChatMessage[];
+  chatMessages?: ChatMessage[];
 
+  @IsOptional()
   @OneToMany(() => ChatParticipant, (participant) => participant.user)
-  chatParticipants: ChatParticipant[];
+  chatParticipants?: ChatParticipant[];
 
+  @IsOptional()
   @OneToMany(() => Friend, (friend) => friend.sender)
-  sentFriendRequests: Friend[];
+  sentFriendRequests?: Friend[];
 
+  @IsOptional()
   @OneToMany(() => Friend, (friend) => friend.receiver)
-  receivedFriendRequests: Friend[];
+  receivedFriendRequests?: Friend[];
 
+  @IsOptional()
   @OneToMany(() => Game, (game) => game.player1_user_id)
-  gamesAsPlayer1: Game[];
+  gamesAsPlayer1?: Game[];
 
+  @IsOptional()
   @OneToMany(() => Game, (game) => game.player2_user_id)
-  gamesAsPlayer2: Game[];
+  gamesAsPlayer2?: Game[];
 
+  @IsOptional()
   @OneToMany(() => Game, (game) => game.winner_user_id)
-  gamesWon: Game[];
+  gamesWon?: Game[];
 }
