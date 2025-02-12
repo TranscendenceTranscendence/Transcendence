@@ -89,7 +89,7 @@
     "lint:check": "eslint \"src/**/*.ts\"",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "generate-api": "openapi-generator-cli generate -i ../backend/openapi.json -g typescript-fetch -o ./src/generated-api"
+    "generate-api": "openapi-generator-cli generate -i ../backend/openapi.json -g typescript-fetch -o ./src/generated-api && npm run format:write"
   },
   "eslintConfig": {
     "extends": [
