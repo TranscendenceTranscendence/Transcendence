@@ -96,8 +96,7 @@ jobs:
       - name: Run Prettier
         run: |
           cd frontend
-          npx prettier --check ./src/
-        continue-on-error: true
+          npm run format:check
 
   prettier-backend:
     name: Backend Prettier
@@ -118,5 +117,4 @@ jobs:
       - name: Run Prettier
         run: |
           cd backend
-          npx prettier --check ./src/
-        continue-on-error: true
+          npm run format:check
