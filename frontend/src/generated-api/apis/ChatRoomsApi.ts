@@ -48,7 +48,7 @@ export interface ChatRoomsControllerUpdateRequest {
 export class ChatRoomsApi extends runtime.BaseAPI {
 
     /**
-     * Create a new chat room
+     * Create a new chat room and add the creator as an owner
      */
     async chatRoomsControllerCreateRaw(requestParameters: ChatRoomsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters['createChatRoomDto'] == null) {
@@ -76,7 +76,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Create a new chat room
+     * Create a new chat room and add the creator as an owner
      */
     async chatRoomsControllerCreate(requestParameters: ChatRoomsControllerCreateRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.chatRoomsControllerCreateRaw(requestParameters, initOverrides);

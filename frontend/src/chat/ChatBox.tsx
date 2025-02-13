@@ -8,6 +8,7 @@ import { ChatNode } from "./ChatNode.tsx";
 import React from "react";
 import { KickUser, PromoteUser } from "./utils.ts";
 import { useApi } from "@/utils/api/index.ts";
+import { useMessages } from "./ChatApiCalls.tsx";
 
 interface oldMessage {
   content: string;
@@ -51,15 +52,18 @@ interface ChatBoxProps {
 }
 
 export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
-  const url = `https://localhost:3000/chatMessages/${chatRoomId}`;
-  const {
-    data: fetchedMessages,
-    error,
-    loading,
-  } = useFetchRequest<oldMessage[]>(url);
+  // const url = `https://localhost:3000/chatMessages/${chatRoomId}`;
+  // const {
+  //   data: fetchedMessages,
+  //   error,
+  //   loading,
+  // } = useFetchRequest<oldMessage[]>(url);
+  //vervangen
+  const { fetchedMessages } = useMessages(chatRoomId);
   const { data: activeParticipants, loading: loading2 } = useFetchRequestMount<
     Participants[]
-  >(`https://localhost:3000/chatParticipants/${chatRoomId}/find/`);
+    >(`https://localhost:3000/chatParticipants/${chatRoomId}/find/`);
+  //vervangen
   const localParticipant = activeParticipants?.find(
     (participant) => participant.user_id?.toString() == userId.toString()
   );
@@ -71,8 +75,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     y: number;
   } | null>(null);
 
-  console.log(localParticipant);
-  console.log(userId);
   useEffect(() => {
     if (fetchedMessages) {
       setMessages(fetchedMessages);
@@ -144,13 +146,13 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     setSelectedMessage(null);
   };
 
-  if (loading) {
-    return <div>Loading messages...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading messages...</div>;
+  // }
 
-  if (error) {
-    return <div>Error loading messages: {error}</div>;
-  }
+  // if (error) {
+  //   return <div>Error loading messages: {error}</div>;
+  // }
 
   return (
     <div>

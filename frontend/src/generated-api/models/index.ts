@@ -20,6 +20,7 @@ export * from './Friend';
 export * from './Game';
 export * from './GetFriendRequestsDto';
 export * from './MeResponseSuccess';
+export * from './MessagesResponse';
 export * from './UpdateAchievementDto';
 export * from './UpdateChatParticipantDto';
 export * from './UpdateUserDto';

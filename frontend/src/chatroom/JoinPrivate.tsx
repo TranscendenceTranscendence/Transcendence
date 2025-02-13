@@ -27,7 +27,7 @@ export const JoinPrivate: React.FC<JoinPrivateProps> = ({
   onChatRoomChange,
 }) => {
   const [roomName, setRoomName] = useState("");
-  
+
   // const url = "https://localhost:3000/chatroom";
   // const { data: fetched } = useFetchRequestDep<ChatRoom[]>(url, roomName);
 
@@ -55,16 +55,6 @@ export const JoinPrivate: React.FC<JoinPrivateProps> = ({
         />
         <button type="submit">Join</button>
       </form>
-      {/* {fetched && fetched.length > 0 && (
-        <div>
-          <h3>Available Rooms</h3>
-          <ul>
-            {fetched.map((room) => (
-              <li key={room.id}>{room.title}</li>
-            ))}
-          </ul>
-        </div>
-      )} */}
     </div>
   );
 };

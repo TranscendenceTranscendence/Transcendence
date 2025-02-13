@@ -1,4 +1,4 @@
-import { MeResponseSuccess, ChatRoomsResponse } from '@/generated-api/index.ts';
+import { MeResponseSuccess, ChatRoomsResponse, MessagesResponse } from '@/generated-api/index.ts';
 import { useApi } from '@/utils/api/index.ts';
 import { useEffect, useState } from 'react';
 
@@ -28,12 +28,12 @@ export const useUserDetails = () => {
 export const useChatRooms = () => {
     const api = useApi();
     const [chatRooms, setChatRooms] = useState<ChatRoomsResponse | null>(null);
-  
+
     const fetchChatRooms = async () => {
       try {
         const response: ChatRoomsResponse = await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
         console.log("ChatRoomsResponse:", response);
-  
+
         if (response.success) {
           setChatRooms(response);
         } else {
@@ -43,10 +43,36 @@ export const useChatRooms = () => {
         console.error("Error fetching chat rooms:", error);
       }
     };
-  
+
     useEffect(() => {
       fetchChatRooms();
     }, []);
-  
+
     return { chatRooms, fetchChatRooms };
+};
+
+export const useMessages = ( chatroomId ) => {
+  const api = useApi();
+  const [fetchedMessages, setFetchedMessages] = useState<MessagesResponse | null>(null);
+
+  const fetchMessages = async () => {
+    try {
+      const response : MessagesResponse = await api.ChatMessages.chatMessagesControllerFindOne( chatroomId );
+      console.log("MessagesResponse:", response);
+
+      if (response.success) {
+        setFetchedMessages(response);
+      } else {
+        console.error("Failed to fetch chat rooms:", response.message);
+      }
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+    }
   };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  return { fetchedMessages, fetchMessages };
+};

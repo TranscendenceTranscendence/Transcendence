@@ -103,7 +103,7 @@ export class ChatRoomsController {
     @ApiResponse({
         status: 200,
         description: 'Chat rooms with participants fetched successfully.',
-        type: ChatRoomsResponse,
+        type: ChatRoomsResponse
     })
     async findAllincludeParticipant() : Promise<ChatRoomsResponse> {
         try {

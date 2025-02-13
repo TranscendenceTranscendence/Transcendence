@@ -33,6 +33,7 @@ models/Friend.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
 models/MeResponseSuccess.ts
+models/MessagesResponse.ts
 models/UpdateAchievementDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserDto.ts
