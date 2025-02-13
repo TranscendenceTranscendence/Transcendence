@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import "@fontsource/inter";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 root.render(
   (
@@ -16,7 +16,7 @@ root.render(
         <App />
       </BrowserRouter>
     </React.StrictMode>
-  ) as React.ReactNode
+  ) as React.ReactNode,
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useApi } from "../../../utils/api";
@@ -88,7 +88,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         console.error(error);
       }
     },
-    [api, form]
+    [api, form],
   );
 
   const onFormSubmit = useCallback(
@@ -107,7 +107,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
             toast.error(
               typeof response.errors.global === "string"
                 ? response.errors.global
-                : "An error occurred"
+                : "An error occurred",
             );
           else {
             const fields = form.getValues();
@@ -128,7 +128,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         setIsSaving(false);
       }
     },
-    [api, onSend]
+    [api, onSend, form],
   );
 
   return (

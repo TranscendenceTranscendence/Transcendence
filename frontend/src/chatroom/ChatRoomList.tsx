@@ -37,7 +37,7 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
   setAskPassword,
 }) => {
   const [selectedChatRoom, setSelectedChatRoom] = useState<ChatRoom | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export const ChatRoomList: React.FC<ChatRoomListProps> = ({
   }, [selectedChatRoom, setAskPassword]);
 
   const CheckIfActive = (
-    chatParticipants: Participant[] | undefined
+    chatParticipants: Participant[] | undefined,
   ): boolean => {
     return (
       chatParticipants?.some((participant) => participant.user_id === userId) ??

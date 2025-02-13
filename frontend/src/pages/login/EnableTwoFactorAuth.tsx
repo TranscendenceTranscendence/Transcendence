@@ -47,7 +47,7 @@ const TwoFactorAuth = () => {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             responseType: "blob",
-          }
+          },
         );
 
         const reader = new FileReader();
@@ -74,7 +74,7 @@ const TwoFactorAuth = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       if (response.status === 200 || response.status === 201) {
