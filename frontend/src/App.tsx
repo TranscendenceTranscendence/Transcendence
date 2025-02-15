@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
+import Home from "./pages/home/Home.tsx";
 import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
 import EnableTwoFactorAuth from "./pages/login/EnableTwoFactorAuth.tsx";
