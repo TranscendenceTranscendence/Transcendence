@@ -11,7 +11,7 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
     const [type, setType] = useState<CreateChatRoomDtoChatRoomTypeEnum>("public");
     const [refetch, setRefetch] = useState<boolean>(false);
     const api = useApi();
-  
+
     const addChatRoom = async () => {
         try {
             const chatRoomData: ChatRoomsControllerCreateRequest = {
@@ -20,12 +20,12 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
                     password: password || "",
                     creationDate: new Date(),
                     chatRoomType: type,
-                    userId: userId,
+                    userId: userId.userId,
                     role: ChatParticipantChatParticipantRoleEnum.Owner,
                 }
             };
             console.log("Chat Room Data:", chatRoomData);
-    
+
             const res = await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
             console.log("Chat Room Created:", res);
             setResponse({ data: res });
@@ -42,7 +42,7 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
         setName("");
         setPassword("");
     };
-  
+
     return (
       <div>
         <p>Add Chatroom</p>
@@ -54,14 +54,14 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
             placeholder="Add title"
             required
           />
-  
+
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Add password (optional)"
           />
-  
+
           <div>
             <p>Select chat type:</p>
             <div>
@@ -75,7 +75,7 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
               />
               <label htmlFor="public">Public</label>
             </div>
-  
+
             <div>
               <input
                 type="radio"
@@ -87,7 +87,7 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
               />
               <label htmlFor="protected">Protected</label>
             </div>
-  
+
             <div>
               <input
                 type="radio"
@@ -100,10 +100,10 @@ export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRole
               <label htmlFor="private">Private</label>
             </div>
           </div>
-  
+
           <button type="submit">Send chatroom</button>
         </form>
-  
+
         {response && (
           <div>
             <h3>Server Response:</h3>

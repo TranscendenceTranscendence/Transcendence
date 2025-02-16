@@ -25,7 +25,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
     },
     [onChatRoomChange]
   );
-  console.log("asdf" , chatRooms);
   return (
     <div className="chat-room-list">
       {chatRooms?.chatRooms?.map((chatRoom) => (
