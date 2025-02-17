@@ -3,7 +3,6 @@ import { PostChatRoom } from "./PostChatRoom.tsx";
 import  ChatRoomList from "./ChatRoomList.tsx";
 import ChatContainer from "../chat/ChatContainer.tsx";
 import { MeResponseSuccess, ChatRoom, ChatParticipantChatParticipantRoleEnum  } from '@/generated-api/index.ts';
-import { JoinPrivate } from "./JoinPrivate.tsx";
 import { useChatRooms, UseaddParticipant } from "./ApiRequest.tsx";
 
 interface ChatRoomContainerProps {
@@ -64,7 +63,6 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
         setAskPassword={setAskPassword}
       />
       <ChatContainer chatRoomId={chatRoomId} userId={userDetails.id} />
-      {/* <JoinPrivate onChatRoomChange={handleChatRoomChange} /> */}
       <PostChatRoom
         userId={userDetails.id}
         role={ChatParticipantChatParticipantRoleEnum.Owner}

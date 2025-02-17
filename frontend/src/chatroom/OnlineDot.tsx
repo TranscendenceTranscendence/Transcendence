@@ -1,4 +1,3 @@
-import React from "react";
 import '../css/ChatDot.css'
 
 export const OnlineDot = ({ status }: { status: boolean }) => {

@@ -1,25 +1,8 @@
-import React from "react";
-
-interface oldMessage {
-  content: string;
-  user_id: number;
-}
-
-enum chat_participant_roles {
-  Owner = "owner",
-  Admin = "admin",
-  Guest = "guest",
-}
-
-interface Participants {
-  user_id: number | null;
-  chat_room_id: number | null;
-  chat_participant_role: chat_participant_roles;
-}
+import { ChatMessage, ChatParticipant } from "@/generated-api/index.ts";
 
 interface ChatNodeProps {
-  message: oldMessage;
-  user: Participants[];
+  message: ChatMessage;
+  user: ChatParticipant[];
   loading: boolean;
 }
 
@@ -32,7 +15,7 @@ export const ChatNode = ({ message, user, loading }: ChatNodeProps) => {
 
   return (
     <li>
-      {message.content} - Sent by: {user[0]?.user_id}
+      {message.content} - Sent by: {user[0]?.userId}
     </li>
   );
 };

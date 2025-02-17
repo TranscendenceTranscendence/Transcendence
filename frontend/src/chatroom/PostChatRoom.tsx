@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { useApi } from '@/utils/api/index.ts';
 import { ChatParticipantChatParticipantRoleEnum, ChatRoomsControllerCreateRequest, CreateChatRoomDtoChatRoomTypeEnum } from '@/generated-api/index.ts';
 
-export const PostChatRoom = ( userId , role : ChatParticipantChatParticipantRoleEnum ) => {
+export const PostChatRoom = ( userId ) => {
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [response, setResponse] = useState<{ data?: any; error?: any } | null>(
       null
     );
     const [type, setType] = useState<CreateChatRoomDtoChatRoomTypeEnum>("public");
-    const [refetch, setRefetch] = useState<boolean>(false);
     const api = useApi();
 
     const addChatRoom = async () => {

@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from '../runtime';
+import type { ChatMessage } from './ChatMessage';
+import {
+    ChatMessageFromJSON,
+    ChatMessageFromJSONTyped,
+    ChatMessageToJSON,
+    ChatMessageToJSONTyped,
+} from './ChatMessage';
+
 /**
  * 
  * @export
@@ -27,10 +35,10 @@ export interface MessagesResponse {
     success: boolean;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<ChatMessage>}
      * @memberof MessagesResponse
      */
-    data: Array<string>;
+    data?: Array<ChatMessage>;
     /**
      * 
      * @type {string}
@@ -44,7 +52,6 @@ export interface MessagesResponse {
  */
 export function instanceOfMessagesResponse(value: object): value is MessagesResponse {
     if (!('success' in value) || value['success'] === undefined) return false;
-    if (!('data' in value) || value['data'] === undefined) return false;
     if (!('message' in value) || value['message'] === undefined) return false;
     return true;
 }
@@ -60,7 +67,7 @@ export function MessagesResponseFromJSONTyped(json: any, ignoreDiscriminator: bo
     return {
         
         'success': json['success'],
-        'data': json['data'],
+        'data': json['data'] == null ? undefined : ((json['data'] as Array<any>).map(ChatMessageFromJSON)),
         'message': json['message'],
     };
 }
@@ -77,7 +84,7 @@ export function MessagesResponseToJSONTyped(value?: MessagesResponse | null, ign
     return {
         
         'success': value['success'],
-        'data': value['data'],
+        'data': value['data'] == null ? undefined : ((value['data'] as Array<any>).map(ChatMessageToJSON)),
         'message': value['message'],
     };
 }

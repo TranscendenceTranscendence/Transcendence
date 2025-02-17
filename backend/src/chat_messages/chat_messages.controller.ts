@@ -15,7 +15,7 @@ import {  ChatMessage } from './chat_message.entity';
 class MessagesResponse {
     @ApiProperty()
     success: boolean;
-    @ApiProperty()
+    @ApiProperty({ type: [ChatMessage], required: false })
     data?: ChatMessage[];
     @ApiProperty()
     message?: string;

@@ -57,7 +57,7 @@ export const useMessages = ( chatroomId ) => {
 
   const fetchMessages = async () => {
     try {
-      const response: MessagesResponse = await api.ChatMessages.chatMessagesControllerFindOne( chatroomId);
+      const response: MessagesResponse = await api.ChatMessages.chatMessagesControllerFindOne({ id: chatroomId });
       console.log("MessagesResponse:", response);
 
       if (response.success) {
@@ -100,5 +100,19 @@ export const useActiveParticipantbyChatroomId = (chatRoomId : number) =>  {
     fetchActiveParticipants();
   }, []);
 
-  return { activeParticipants, setActiveParticipants };
+  return { activeParticipants, fetchActiveParticipants };
+};
+
+export const useAddMessage = async (input: string, userId: number, chatRoomId: number) => {
+  const api = useApi();
+
+  try {
+    const response = await api.ChatMessages.chatMessagesControllerCreate({ 
+       content: input,
+       user_id: userId,
+       chat_room_id: chatRoomId });
+    console.log("Participant added:", response);
+  } catch (error) {
+    console.error("Error adding participant:", error);
+  }
 };

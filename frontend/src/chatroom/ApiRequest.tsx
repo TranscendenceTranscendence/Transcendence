@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useApi } from '@/utils/api/index.ts';
-import { ChatRoomsResponse, ChatParticipantChatParticipantRoleEnum } from '@/generated-api/index.ts';
+import { ChatRoomsResponse } from '@/generated-api/index.ts';
 
 export const useChatRooms = () => {
     const api = useApi();
@@ -47,5 +47,3 @@ export const UseaddParticipant = (userId : number, chatRoomId : number) => {
       addParticipant(userId, chatRoomId);
     });
 }
-
-// export const AddChatRoom = (userId : number, role : ChatParticipantChatParticipantRoleEnum)
