@@ -8,58 +8,24 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-
-interface Friends {
-  friend: Friends;
-}
-
-class Friends {
-  id: number;
-  nickname: string;
-  email: string;
-  ladder_level: number;
-  avatar: string;
-
-  constructor({
-    id,
-    nickname,
-    email,
-    ladder_level,
-    avatar,
-  }: {
-    id: number;
-    nickname: string;
-    email: string;
-    ladder_level: number;
-    avatar: string;
-  }) {
-    this.id = id;
-    this.nickname = nickname;
-    this.email = email;
-    this.ladder_level = ladder_level;
-    this.avatar = avatar;
-  }
-}
+import { Friend } from "@/generated-api";
 
 export default function Page() {
   const api = useApi();
-  const [friends, setFriends] = useState<Friends[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
     const fetchFriends = async () => {
       try {
         const response = await api.Friends.friendsControllerGetFriends();
-        const friends = Array.isArray(response)
-          ? response.map((friend) => new Friends(friend))
-          : [];
-        setFriends(friends);
+        setFriends(response.data);
       } catch (error) {
         console.error("Failed to fetch friends list:", error);
       }
     };
 
     fetchFriends();
-  }, [api.Friends]);
+  }, []);
 
   return (
     <SidebarProvider>
@@ -75,18 +41,19 @@ export default function Page() {
           <div className="row-span-3 w-full rounded-xl bg-gray-200 ...">
             <p className="font-bold text-3xl m-8">FRIENDS</p>
             <div className="grid grid-cols-3 gap-4">
-              {friends.map((friend) => (
+              {friends.map(({ receiver, sender }) => (
+                // TODO(Daan): check which user is the current user and display the other user
                 <div
-                  key={friend.id}
+                  key={receiver.id}
                   className="flex flex-col items-center gap-2"
                 >
-                  <p className="font-bold text-xl">{friend.nickname}</p>
+                  <p className="font-bold text-xl">{receiver.nickname}</p>
                   <p className="font-bold text-lg">
-                    Level {friend.ladder_level}
+                    Level {receiver.ladderLevel}
                   </p>
                   <img
-                    src={friend.avatar}
-                    alt={friend.nickname}
+                    src={receiver.avatar}
+                    alt={receiver.nickname}
                     className="w-24 h-24 rounded-full"
                   />
                 </div>

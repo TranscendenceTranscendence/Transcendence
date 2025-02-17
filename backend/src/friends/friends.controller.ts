@@ -90,7 +90,7 @@ export class FriendsController {
 
     return {
       success: true,
-      data,
+      ...data,
     };
   }
 }
