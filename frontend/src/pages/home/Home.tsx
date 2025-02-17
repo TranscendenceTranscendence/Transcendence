@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Friend } from "@/generated-api";
+import { useConfig } from "@/utils/config";
 
 export default function Page() {
   const api = useApi();
+  const config = useConfig();
   const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
@@ -43,6 +45,8 @@ export default function Page() {
             <div className="grid grid-cols-3 gap-4">
               {friends.map(({ receiver, sender }) => (
                 // TODO(Daan): check which user is the current user and display the other user
+                // TODO(Daan): style this
+                // TODO(Daan): move this to a separate component
                 <div
                   key={receiver.id}
                   className="flex flex-col items-center gap-2"
@@ -52,7 +56,7 @@ export default function Page() {
                     Level {receiver.ladderLevel}
                   </p>
                   <img
-                    src={receiver.avatar}
+                    src={config.backendUrl + receiver.avatar}
                     alt={receiver.nickname}
                     className="w-24 h-24 rounded-full"
                   />
