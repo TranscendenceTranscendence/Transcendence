@@ -6,7 +6,6 @@ import { Request } from 'express';
 
 describe('FriendsController', () => {
   let controller: FriendsController;
-  let friendsService: FriendsService;
 
   const mockFriendsService = {
     sendFriendRequest: jest.fn(),

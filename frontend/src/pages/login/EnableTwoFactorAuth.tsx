@@ -14,13 +14,11 @@ import { Button } from "@/components/ui/button";
 import {
   FormField,
   FormItem,
-  FormLabel,
   FormControl,
   FormDescription,
   FormMessage,
   Form,
 } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const FormSchema = z.object({
   code: z
@@ -49,7 +47,7 @@ const TwoFactorAuth = () => {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
             responseType: "blob",
-          }
+          },
         );
 
         const reader = new FileReader();
@@ -76,7 +74,7 @@ const TwoFactorAuth = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       if (response.status === 200 || response.status === 201) {

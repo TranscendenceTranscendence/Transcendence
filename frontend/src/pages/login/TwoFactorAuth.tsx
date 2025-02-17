@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "@/hooks/use-toast";
 import { Button } from "../../components/ui/button";
 import {
   Form,
@@ -25,12 +24,14 @@ const FormSchema = z.object({
   pin: z
     .string()
     .length(6, { message: "Your one-time password must be 6 digits." })
-    .regex(/^[0-9]{6}$/, { message: "Your one-time password must contain only digits." }),
+    .regex(/^[0-9]{6}$/, {
+      message: "Your one-time password must contain only digits.",
+    }),
 });
 
 const TwoFactorAuthForm = () => {
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -40,42 +41,44 @@ const TwoFactorAuthForm = () => {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       const response = await axios.post(
-        'https://localhost:3000/2fa/authenticate',
+        "https://localhost:3000/2fa/authenticate",
         { twoFactorAuthenticationCode: data.pin },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       if (response.status === 200 || response.status === 201) {
         const responseData = response.data;
-        if (responseData.msg === 'Authenticated successfully') {
-          localStorage.setItem('access_token', responseData.accessToken);
-          setSuccess('2FA authentication successful!');
-          setError('');
-          navigate('/');
+        if (responseData.msg === "Authenticated successfully") {
+          localStorage.setItem("access_token", responseData.accessToken);
+          setSuccess("2FA authentication successful!");
+          setError("");
+          navigate("/");
         } else {
-          setError('Invalid 2FA code. Please try again.');
-          setSuccess('');
+          throw new Error("Network response was not ok");
         }
-      } else {
-        throw new Error('Network response was not ok');
       }
     } catch (error) {
-      console.error('Error authenticating 2FA code:', error);
-      setError('An error occurred. Please try again.');
-      setSuccess('');
+      console.error("Error authenticating 2FA code:", error);
+      setError("An error occurred. Please try again.");
+      setSuccess("");
     }
   }
 
   return (
     <div className="flex flex-col items-center justify-center h-screen px-4">
-      <h1 className="text-xl font-semibold text-gray-800 mb-4">Google Two-Factor Authentication</h1>
+      <h1 className="text-xl font-semibold text-gray-800 mb-4">
+        Google Two-Factor Authentication
+      </h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col items-center">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col items-center"
+        >
           <FormField
             control={form.control}
             name="pin"
@@ -97,7 +100,8 @@ const TwoFactorAuthForm = () => {
                   </InputOTP>
                 </FormControl>
                 <FormDescription>
-                  Please enter the one-time password from your Google Authenticator app.
+                  Please enter the one-time password from your Google
+                  Authenticator app.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

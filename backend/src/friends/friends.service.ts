@@ -65,7 +65,10 @@ export class FriendsService {
     }
 
     // Create and save friend request
-    const newFriendRequest = this.friendsRepository.create({ receiver, sender });
+    const newFriendRequest = this.friendsRepository.create({
+      receiver,
+      sender,
+    });
 
     try {
       await this.friendsRepository.save(newFriendRequest);
@@ -78,11 +81,7 @@ export class FriendsService {
     }
   }
 
-  async getFriendRequests(
-    request: GetFriendRequestsDto,
-    page = 1,
-    limit = 10,
-  ) {
+  async getFriendRequests(request: GetFriendRequestsDto, page = 1, limit = 10) {
     const { receiverId } = request;
 
     // Ensure page and limit are positive integers
@@ -91,12 +90,14 @@ export class FriendsService {
 
     try {
       // Fetch friend requests with pagination
-      const [friendRequests, total] = await this.friendsRepository.findAndCount({
-        where: { receiver: { id: receiverId } }, // Ensure proper relation mapping
-        skip: (page - 1) * limit,
-        take: limit,
-        relations: ['sender'], // Include sender details
-      });
+      const [friendRequests, total] = await this.friendsRepository.findAndCount(
+        {
+          where: { receiver: { id: receiverId } }, // Ensure proper relation mapping
+          skip: (page - 1) * limit,
+          take: limit,
+          relations: ['sender'], // Include sender details
+        },
+      );
 
       return {
         data: friendRequests,

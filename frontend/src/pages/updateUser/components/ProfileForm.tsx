@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useApi } from "../../../utils/api";
@@ -25,7 +25,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar } from "@/components/ui/avatar";
 
 const profileSchema = z.object({
   nickname: z.string().min(1, "Nickname is required"),
@@ -41,6 +40,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
   const api = useApi();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
+  const fetched = React.useRef(false);
 
   const form = useForm<UpdateUserDto>({
     resolver: zodResolver(profileSchema),
@@ -52,6 +52,8 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
   });
 
   useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
     api.Users.usersControllerMe()
       .then((response) => {
         form.setValue("nickname", response.nickname);
@@ -64,37 +66,61 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         });
       })
       .catch(console.error);
-  }, []);
+  }, [api.Users, form, onSend]);
 
   const handleCheckboxChange = async (checked: boolean) => {
     navigate(checked ? "/2fa/turn-on" : "/2fa/turn-off");
   };
 
   const handleFileChange = useCallback(
-    async (event) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!event.target.files?.length) return;
-      const file = event.target.files[0];
+      const file: File = event.target.files[0];
       try {
-        const response = await api.FileUpload.fileUploadControllerUploadFile({
-          file,
-          filename: file.name,
-          category: "avatar",
-        });
+        const response: { filePath: string } =
+          await api.FileUpload.fileUploadControllerUploadFile({
+            file,
+            filename: file.name,
+            category: "avatar",
+          });
         form.setValue("avatar", response.filePath);
       } catch (error) {
         console.error(error);
       }
     },
-    [api, form.setValue]
+    [api, form],
   );
 
   const onFormSubmit = useCallback(
     async (data: UpdateUserDto) => {
       setIsSaving(true);
       try {
-        await api.Users.usersControllerUpdate({ updateUserDto: data });
-        onSend(data);
-        toast.success("Profile updated successfully!");
+        const response = await api.Users.usersControllerUpdate({
+          updateUserDto: data,
+        });
+
+        if (response.success) {
+          onSend(data);
+          toast.success("Profile updated successfully!");
+        } else {
+          if ("global" in response.errors)
+            toast.error(
+              typeof response.errors.global === "string"
+                ? response.errors.global
+                : "An error occurred",
+            );
+          else {
+            const fields = form.getValues();
+            for (const field in fields) {
+              if (field in response.errors) {
+                form.setError(field as keyof UpdateUserDto, {
+                  type: "server",
+                  message: response.errors[field],
+                });
+              }
+            }
+          }
+        }
       } catch (error) {
         console.error(error);
         toast.error("Failed to update profile.");
@@ -102,7 +128,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         setIsSaving(false);
       }
     },
-    [api, onSend]
+    [api, onSend, form],
   );
 
   return (

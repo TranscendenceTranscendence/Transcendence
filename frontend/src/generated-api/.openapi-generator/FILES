@@ -38,6 +38,7 @@ models/MessagesResponse.ts
 models/UpdateAchievementDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserDto.ts
+models/UpdateUserResponse.ts
 models/User.ts
 models/index.ts
 runtime.ts

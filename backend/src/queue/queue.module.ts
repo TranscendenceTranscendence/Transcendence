@@ -3,10 +3,9 @@ import { QueueService } from './queue.service';
 import { QueueController } from './queue.controller';
 import { HttpModule } from '@nestjs/axios';
 
-
 @Module({
   imports: [HttpModule],
   providers: [QueueService],
-  controllers: [QueueController]
+  controllers: [QueueController],
 })
 export class QueueModule {}
