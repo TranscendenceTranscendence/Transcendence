@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useApi } from "../../../utils/api";
@@ -57,11 +57,11 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
     api.Users.usersControllerMe()
       .then((response) => {
         form.setValue("nickname", response.nickname);
-        form.setValue("twoFactorEnabled", response.enableTwoFactor);
+        form.setValue("twoFactorEnabled", response.twoFactorEnabled);
         form.setValue("avatar", response.avatar);
         onSend({
           nickname: response.nickname,
-          twoFactorEnabled: response.enableTwoFactor,
+          twoFactorEnabled: response.twoFactorEnabled,
           avatar: response.avatar,
         });
       })
@@ -128,7 +128,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         setIsSaving(false);
       }
     },
-    [api, onSend, form],
+    [api, onSend],
   );
 
   return (
