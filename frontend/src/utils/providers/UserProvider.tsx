@@ -1,6 +1,6 @@
 import { MeResponseSuccess, User } from "@/generated-api";
 import { useApi } from "@/utils/api";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const userContext = createContext({
@@ -62,4 +62,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </userContext.Provider>
   );
+};
+
+export const useUser = () => {
+  const context = useContext(userContext);
+  if (context === undefined)
+    throw new Error("useUser must be used within a UserProvider");
+  return context;
 };
