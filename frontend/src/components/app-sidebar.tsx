@@ -7,7 +7,6 @@ import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import AvatarDisplay from "../pages/updateUser/components/AvatarDisplay";
 import { Avatar } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { set } from "date-fns";
 
 class User {
   id: number;
@@ -35,11 +34,7 @@ export function AppSidebar() {
     const handleLogout = async () => {
       try {
         await api.Auth.authControllerLogout();
-        // Clear local storage
         localStorage.removeItem("access_token");
-        // localStorage.removeItem('refreshToken'); // If you have a refresh token
-
-        // Redirect to login page
         navigate("/login");
       } catch (error) {
         console.error("Error logging out:", error);
@@ -54,6 +49,7 @@ export function AppSidebar() {
           const response = await api.Users.usersControllerMe();
           const me = new User(response);
           setUser(me);
+          console.info("me set:", me);
         } catch (error) {
           console.error("Failed to fetch current user:", error);
           setError("Failed to fetch user data");

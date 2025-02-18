@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Friend } from "@/generated-api";
 import { useConfig } from "@/utils/config";
 import { useUser } from "@/utils/providers/UserProvider";
+import { FriendsBox } from "./FriendsBox";
 
 export default function Page() {
   const api = useApi();
@@ -42,33 +43,7 @@ export default function Page() {
           </div>
         </header>
         <div className="grid grid-flow-col grid-rows-3 gap-8 m-16 ">
-          <div className="row-span-3 w-full rounded-xl bg-gray-200 ...">
-            <p className="font-bold text-3xl m-8">FRIENDS</p>
-            <div className="grid grid-cols-3 gap-4">
-              {friends.map(({ receiver, sender }) => {
-                const friend = receiver.id == me.user.id ? sender : receiver;
-                return (
-                  // TODO(Daan): check which user is the current user and display the other user
-                  // TODO(Daan): style this
-                  // TODO(Daan): move this to a separate component
-                  <div
-                    key={friend.id}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <p className="font-bold text-xl">{friend.nickname}</p>
-                    <p className="font-bold text-lg">
-                      Level {friend.ladderLevel}
-                    </p>
-                    <img
-                      src={config.backendUrl + friend.avatar}
-                      alt={friend.nickname}
-                      className="w-24 h-24 rounded-full"
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <FriendsBox friends={friends} />
           <div className="col-span-2 w-full ...">
             <Button className="p-16 font-bold text-5xl rounded-xl w-full">
               P L A Y
