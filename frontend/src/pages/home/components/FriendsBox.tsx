@@ -34,9 +34,7 @@ export const FriendsBox = ({ friends }: FriendBoxProps) => {
                   <AvatarDisplay
                     avatarUrl={friend.avatar}
                     className="w-14"
-                    isActive={
-                      friend.userStatus === UserUserStatusEnum.Online || true
-                    }
+                    status={friend.userStatus}
                   />
                   <div>
                     <p className="font-bold text-xl">{friend.nickname}</p>
