@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { useApi } from "@/utils/api";
@@ -15,9 +15,7 @@ import { FriendsBox } from "./components/FriendsBox";
 
 export default function Page() {
   const api = useApi();
-  const config = useConfig();
   const [friends, setFriends] = useState<Friend[]>([]);
-  const me = useUser();
 
   useEffect(() => {
     const fetchFriends = async () => {

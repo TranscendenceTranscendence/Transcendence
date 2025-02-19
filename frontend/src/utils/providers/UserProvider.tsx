@@ -1,4 +1,4 @@
-import { MeResponseSuccess, User } from "@/generated-api";
+import { MeResponseSuccess } from "@/generated-api";
 import { useApi } from "@/utils/api";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,7 @@ export const userContext = createContext({
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<MeResponseSuccess | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const api = useApi();
@@ -35,7 +35,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     (async () => {
-      if (!loading) return;
+      console.log("fetching user data");
+      if (loading) return;
       setLoading(true);
       try {
         const response = await api.Users.usersControllerMe();
@@ -44,15 +45,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("Failed to fetch current user:", error);
         setError("Failed to fetch user data");
       }
+      setLoading(false);
     })();
   }, []);
 
   if (error) {
     return <div>Error: {error}</div>;
-  }
-
-  if (!user) {
-    return <div>Loading...</div>;
   }
 
   return (

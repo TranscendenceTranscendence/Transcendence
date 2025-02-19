@@ -21,7 +21,6 @@ import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';

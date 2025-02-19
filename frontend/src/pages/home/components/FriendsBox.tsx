@@ -22,7 +22,7 @@ export const FriendsBox = ({ friends }: FriendBoxProps) => {
         <CardContent>
           <div className="grid grid-cols-1 gap-4">
             {friends.map(({ receiver, sender }) => {
-              const friend = receiver.id == me.user.id ? sender : receiver;
+              const friend = receiver.id == me.user?.id ? sender : receiver;
               return (
                 <div
                   key={friend.id}
