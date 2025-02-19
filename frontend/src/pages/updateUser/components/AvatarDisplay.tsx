@@ -5,9 +5,14 @@ import { useConfig } from "../../../utils/config";
 interface AvatarProps {
   avatarUrl?: string;
   className?: string;
+  isActive?: boolean;
 }
 
-export default function AvatarDisplay({ avatarUrl, className }: AvatarProps) {
+export default function AvatarDisplay({
+  avatarUrl,
+  className,
+  isActive,
+}: AvatarProps) {
   const config = useConfig();
 
   return (
@@ -15,6 +20,7 @@ export default function AvatarDisplay({ avatarUrl, className }: AvatarProps) {
       className={
         "w-full h-auto aspect-square" + (className ? " " + className : "")
       }
+      isActive={isActive}
     >
       <AvatarImage src={config.backendUrl + avatarUrl} alt="User Avatar" />
     </Avatar>
