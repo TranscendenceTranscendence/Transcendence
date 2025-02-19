@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User } from "@/generated-api";
+// import { User } from "@/generated-api";
 
-interface InviteToGameProps {
-  user: User;
-}
+// interface InviteToGameProps {
+//   user: User;
+// }
 
 const InviteToGame: React.FC = () => {
   // const api = useApi();

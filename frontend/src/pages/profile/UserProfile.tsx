@@ -19,7 +19,7 @@ export default function UserProfile() {
         console.error("Failed to fetch user data:", error);
         setError("Failed to fetch user data");
       });
-  }, []);
+  });
 
   if (error) {
     return <div>Error: {error}</div>;

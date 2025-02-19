@@ -5,7 +5,7 @@ import { useApi } from "@/utils/api";
 import UserAvatar from "./components/UserAvatar";
 import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
-import InviteToGame from "./components/InviteToGame";
+// import InviteToGame from "./components/InviteToGame";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -49,7 +49,7 @@ export default function VisitingProfile() {
       );
       navigate("/profile");
     }
-  }, [currentUser, visitingUser]);
+  }, [currentUser, visitingUser, navigate]);
 
   if (error) {
     return <div>Error: {error}</div>;

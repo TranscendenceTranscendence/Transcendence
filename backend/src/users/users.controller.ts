@@ -11,12 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiProperty,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
@@ -25,13 +20,6 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
-import { PartialType } from '@nestjs/mapped-types';
-import { ChatMessage } from '../chat_messages/chat_message.entity';
-import { Blocked } from '../blockeds/blocked.entity';
-import { Achievement } from '../achievements/achievement.entity';
-import { ChatParticipant } from '../chat_participants/chat_participant.entity';
-import { Friend } from '../friends/friend.entity';
-
 
 @ApiTags('Users')
 @Controller('users')
