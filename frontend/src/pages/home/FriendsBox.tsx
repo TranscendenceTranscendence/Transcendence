@@ -1,6 +1,8 @@
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Friend } from "@/generated-api";
 import { useConfig } from "@/utils/config";
 import { useUser } from "@/utils/providers/UserProvider";
+import AvatarDisplay from "../updateUser/components/AvatarDisplay";
 
 interface FriendBoxProps {
   friends: Friend[];
@@ -11,25 +13,30 @@ export const FriendsBox = ({ friends }: FriendBoxProps) => {
   const config = useConfig();
 
   return (
-    <div className="row-span-3 w-full rounded-xl bg-gray-200 ...">
-      <p className="font-bold text-3xl m-8">FRIENDS</p>
-      <div className="grid grid-cols-3 gap-4">
-        {friends.map(({ receiver, sender }) => {
-          const friend = receiver.id == me.user.id ? sender : receiver;
-          return (
-            // TODO(Daan): style this
-            <div key={friend.id} className="flex flex-col items-center gap-2">
-              <p className="font-bold text-xl">{friend.nickname}</p>
-              <p className="font-bold text-lg">Level {friend.ladderLevel}</p>
-              <img
-                src={config.backendUrl + friend.avatar}
-                alt={friend.nickname}
-                className="w-24 h-24 rounded-full"
-              />
-            </div>
-          );
-        })}
-      </div>
+    <div className="row-span-3 w-full">
+      <Card className="">
+        <CardHeader>
+          <p className="font-bold text-3xl">FRIENDS</p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4">
+            {friends.map(({ receiver, sender }) => {
+              const friend = receiver.id == me.user.id ? sender : receiver;
+              return (
+                <div key={friend.id} className="flex items-center gap-4 ">
+                  <AvatarDisplay avatarUrl={friend.avatar} className="w-14" />
+                  <div>
+                    <p className="font-bold text-xl">{friend.nickname}</p>
+                    <p className="text-lg text-gray-600">
+                      Level {friend.ladderLevel}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
