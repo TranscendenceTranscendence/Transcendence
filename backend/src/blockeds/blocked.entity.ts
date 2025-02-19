@@ -1,15 +1,17 @@
-import { Entity, ManyToOne, JoinColumn, Column, PrimaryColumn} from 'typeorm';
+import { Entity, ManyToOne, JoinColumn, Column, PrimaryColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 
-@Entity('BLOCKED')
+@Entity('blocked')
 export class Blocked {
-
-  @Column({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamp with time zone',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   blocked_time: Date;
 
   @PrimaryColumn()
   blocked_user_id: number;
-  
+
   @PrimaryColumn()
   user_id: number;
 

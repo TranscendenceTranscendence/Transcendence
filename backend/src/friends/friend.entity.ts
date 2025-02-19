@@ -1,4 +1,10 @@
-import { Entity, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  ManyToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  Column,
+} from 'typeorm';
 import { User } from '../users/user.entity';
 
 export enum FriendStatus {

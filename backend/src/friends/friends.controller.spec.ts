@@ -6,7 +6,6 @@ import { Request } from 'express';
 
 describe('FriendsController', () => {
   let controller: FriendsController;
-  let friendsService: FriendsService;
 
   const mockFriendsService = {
     sendFriendRequest: jest.fn(),
@@ -20,7 +19,7 @@ describe('FriendsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FriendsController],
-      providers: [  
+      providers: [
         {
           provide: FriendsService,
           useValue: mockFriendsService,

@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "frontend"
+		},
+		{
+			"path": "backend"
+		}
+	],
+	"settings": {
+		"dbcode.connections": [
+			{
+				"connectionId": "FI8CpTRuDpbPqsiolU7xf",
+				"name": "transcendence",
+				"driver": "postgres",
+				"connectionType": "host",
+				"host": "localhost",
+				"port": 5432,
+				"ssl": false,
+				"username": "user",
+				"password": "",
+				"savePassword": "secretStorage",
+				"database": "postgres",
+				"connectionTimeout": 30
+			}
+		]
+	}
+}

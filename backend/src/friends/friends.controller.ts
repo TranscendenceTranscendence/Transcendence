@@ -13,8 +13,7 @@ import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { GetFriendRequestsDto } from './dto/get-friend-requests.dto';
-import { JwtAccessAuthGuard } from "../auth/guards/jwt-access.guard";
-import RequestWithUser from '../auth/interfaces/requestWithUser.interface';
+import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
 
 @ApiTags('Friends') // Groups the endpoints under "Friends" in Swagger
 @Controller('friends')
@@ -31,48 +30,21 @@ export class FriendsController {
     status: 404,
     description: 'User not found.',
   })
-  @ApiResponse({
-    status: 409,
-    description: 'Friend request already exists.',
-  })
-  @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
-  })
   @UseGuards(JwtAccessAuthGuard)
   async sendFriendRequest(
     @Param('id', ParseIntPipe) receiverId: number,
-    @Req() req: RequestWithUser,
+    @Req() req: Request,
   ) {
-    try {
-      console.log('Sending friend request:', {
-        senderId: req.user?.id,
-        receiverId: receiverId
-      });
-
-      const senderId = req.user?.id;
-      if (!senderId) {
-        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-      }
-
-      await this.friendsService.sendFriendRequest({ receiverId, senderId });
-      
-      return {
-        success: true,
-        message: 'Friend request sent successfully.',
-      };
-    } catch (error) {
-      console.error('Error sending friend request:', error);
-      
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      
-      throw new HttpException(
-        'Failed to send friend request',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+    const senderId = req.user?.id; // Type safety assumed for `req.user`
+    if (!senderId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
+
+    await this.friendsService.sendFriendRequest({ receiverId, senderId });
+    return {
+      success: true,
+      message: 'Friend request sent successfully.',
+    };
   }
 
   @Get('/requests')

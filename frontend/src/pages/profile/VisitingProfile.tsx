@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  User
-} from "../../generated-api/models";
+import { User } from "../../generated-api/models";
 import { useApi } from "@/utils/api";
 import UserAvatar from "./components/UserAvatar";
 import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
 import InviteToGame from "./components/InviteToGame";
+
 export default function VisitingProfile() {
-  const {id} = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
@@ -18,38 +17,39 @@ export default function VisitingProfile() {
 
   useEffect(() => {
     const userIdNumber = Number(id);
-    
-      api.Users.usersControllerMe()
+
+    api.Users.usersControllerMe()
       .then((currentUser) => {
         setCurrentUser(currentUser);
-        console.log('currentUser:', currentUser);
+        console.log("currentUser:", currentUser);
       })
-        .catch(error => {
+      .catch((error) => {
         console.error("Can't get current user from cookies", error);
       });
 
     if (id && isNaN(userIdNumber)) {
-      setError('Invalid user ID');
+      setError("Invalid user ID");
       return;
     }
-    api.Users.usersControllerFindOne({id: userIdNumber})
+    api.Users.usersControllerFindOne({ id: userIdNumber })
       .then((visitingUser) => {
         setVisitingUser(visitingUser);
-        console.log('visitingUser:', visitingUser);
+        console.log("visitingUser:", visitingUser);
       })
-      .catch(error => {
-        console.error('Failed to fetch user data:', error);
-        setError('Invalid user ID');
+      .catch((error) => {
+        console.error("Failed to fetch user data:", error);
+        setError("Invalid user ID");
       });
-  }, [id]);
+  }, [id, api.Users]);
 
   useEffect(() => {
     if (currentUser && visitingUser && currentUser.id === visitingUser.id) {
-      console.log('currentUser is equal to visitingUser, navigating to /profile');
-      navigate('/profile');
+      console.log(
+        "currentUser is equal to visitingUser, navigating to /profile",
+      );
+      navigate("/profile");
     }
   }, [currentUser, visitingUser]);
-
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -65,8 +65,7 @@ export default function VisitingProfile() {
       <UserAvatar user={visitingUser} />
       <UserDetails user={visitingUser} />
       <FriendRequest user={visitingUser} />
-      <InviteToGame user={visitingUser} />
+      {/* <InviteToGame user={visitingUser} /> */}
     </div>
   );
 }
-

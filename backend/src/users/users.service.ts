@@ -1,12 +1,12 @@
-import {HttpException, Inject, Injectable} from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
-import JwtConfig from "../config/jwt.config";
-import {ConfigType} from "@nestjs/config";
+import JwtConfig from '../config/jwt.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
@@ -18,13 +18,8 @@ export class UsersService {
     private jwtConfig: ConfigType<typeof JwtConfig>,
   ) {}
 
-  async create(
-    createUserDto: CreateUserDto,
-    ): Promise<User> {
-        const userData =
-            await this.usersRepository.create(
-                createUserDto,
-            );
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const userData = await this.usersRepository.create(createUserDto);
     return this.usersRepository.save(userData);
   }
 
@@ -33,28 +28,29 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
-    const userData =
-        await this.usersRepository.findOneBy({ id });
-        return userData;
+    const userData = await this.usersRepository.findOneBy({ id });
+    return userData;
   }
 
   async update(
     id: number,
     UpdateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  ): Promise<User | false> {
     const existingUser = await this.findOne(id);
-    const userData = this.usersRepository.merge(
-        existingUser,
-        UpdateUserDto,
-    );
-    return await this.usersRepository.save(
-        userData,
-    );
+    const userData = this.usersRepository.merge(existingUser, UpdateUserDto);
+
+    // check if nickname is already taken
+    const userWithSameNickname = await this.usersRepository.findOne({
+      where: { nickname: UpdateUserDto.nickname },
+    });
+    if (userWithSameNickname && userWithSameNickname.id !== id) return false;
+
+    return await this.usersRepository.save(userData);
   }
 
   async remove(id: number): Promise<User> {
     const existingUser = await this.findOne(id);
-    return await this.usersRepository.remove(existingUser,);
+    return await this.usersRepository.remove(existingUser);
   }
 
   async signToken(id: number): Promise<string> {
@@ -77,22 +73,25 @@ export class UsersService {
 
   async getUserIdFromCookie(token: any): Promise<number> {
     if (!token) {
-        throw new HttpException('No JWT token found', 401);
+      throw new HttpException('No JWT token found', 401);
     }
     const decodedToken = this.jwt.decode(token);
     if (!decodedToken || typeof decodedToken !== 'object') {
-        throw new HttpException('Invalid JWT token', 401);
+      throw new HttpException('Invalid JWT token', 401);
     }
 
     const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
     if (decodedToken.exp < currentTime) {
-    throw new HttpException('JWT token has expired', 401);
+      throw new HttpException('JWT token has expired', 401);
     }
 
     return decodedToken.sub;
   }
 
-  async setTwoFactorAuthenticationSecret(secret: string, userId: number): Promise<UpdateResult> {
+  async setTwoFactorAuthenticationSecret(
+    secret: string,
+    userId: number,
+  ): Promise<UpdateResult> {
     return this.usersRepository.update(userId, {
       two_factor_auth_secret: secret,
     });
@@ -108,6 +107,6 @@ export class UsersService {
     return await this.usersRepository.update(userId, {
       two_factor_auth_secret: null,
       two_factor_enabled: false,
-    })
+    });
   }
 }

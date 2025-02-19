@@ -1,195 +1,200 @@
-import * as React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import Grid from '@mui/material/Grid';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { styled } from '@mui/system';
-import { Button, Snackbar, Alert, CircularProgress } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApi } from '../../../utils/api';
-import type { UpdateUserDto } from '../../../generated-api';
-import { Typography } from '@mui/joy';
-import axios from 'axios';
+import * as React from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useApi } from "../../../utils/api";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import type { UpdateUserDto } from "../../../generated-api";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const FormGrid = styled(Grid)(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-}));
+const profileSchema = z.object({
+  nickname: z.string().min(1, "Nickname is required"),
+  twoFactorEnabled: z.boolean(),
+  avatar: z.string().optional(),
+});
 
 interface ProfileFormProps {
-  onSubmit: (data: UpdateUserDto) => void;
+  onSend: (data: UpdateUserDto) => void;
 }
 
-const ProfileForm = React.forwardRef((props: ProfileFormProps, ref) => {
+export default function ProfileForm({ onSend }: ProfileFormProps) {
   const api = useApi();
   const navigate = useNavigate();
-  const { control, register, handleSubmit, setValue, getValues } = useForm<UpdateUserDto>({
+  const [isSaving, setIsSaving] = useState(false);
+  const fetched = React.useRef(false);
+
+  const form = useForm<UpdateUserDto>({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
-      nickname: '',
-      enableTwoFactor: false,
-      avatar: '',
+      nickname: "",
+      twoFactorEnabled: false,
+      avatar: "",
     },
   });
 
   useEffect(() => {
-    if (getValues('nickname') !== "") return;
-    api.Users.usersControllerMe().then((response) => {
-      setValue('nickname', response.nickname);
-      setValue('enableTwoFactor', response.enableTwoFactor);
-      setValue('avatar', response.avatar);
-      props.onSubmit(response);
-    }).catch((error) => {
-      console.error(error);
-    });
-  }, [api.Users, getValues, props, setValue]);
+    if (fetched.current) return;
+    fetched.current = true;
+    api.Users.usersControllerMe()
+      .then((response) => {
+        form.setValue("nickname", response.nickname);
+        form.setValue("twoFactorEnabled", response.enableTwoFactor);
+        form.setValue("avatar", response.avatar);
+        onSend({
+          nickname: response.nickname,
+          twoFactorEnabled: response.enableTwoFactor,
+          avatar: response.avatar,
+        });
+      })
+      .catch(console.error);
+  }, [api.Users, form, onSend]);
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error';
-  }>({ open: false, message: '', severity: 'success' });
-
-  // Expose getValues to the parent via ref
-  React.useImperativeHandle(ref, () => ({
-    getValues,
-  }));
-
-  const handleCheckboxChange = async (event) => {
-    const isChecked = event.target.checked;
-    if (!isChecked) {
-      navigate('/2fa/turn-off');
-    }
-    else {
-      navigate('/2fa/turn-on');
-    }
+  const handleCheckboxChange = async (checked: boolean) => {
+    navigate(checked ? "/2fa/turn-on" : "/2fa/turn-off");
   };
-  
-  const onSubmit = useCallback(async (data: UpdateUserDto) => {
-    setIsSaving(true);
-    try {
-      await api.Users.usersControllerUpdate({
-        updateUserDto: data,
-      });
-      props.onSubmit(data);
-      setSnackbar({ open: true, message: 'Profile updated successfully!', severity: 'success' });
-    } catch (error) {
-      console.error(error);
-      setSnackbar({ open: true, message: 'Failed to update profile.', severity: 'error' });
-    } finally {
-      setIsSaving(false);
-    }
-  }, [api, props]);
 
-  const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length) return;
+  const handleFileChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!event.target.files?.length) return;
+      const file: File = event.target.files[0];
+      try {
+        const response: { filePath: string } =
+          await api.FileUpload.fileUploadControllerUploadFile({
+            file,
+            filename: file.name,
+            category: "avatar",
+          });
+        form.setValue("avatar", response.filePath);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [api, form],
+  );
 
-    const file = event.target.files[0];
-    try {
-      const response = await api.FileUpload.fileUploadControllerUploadFile({
-        file,
-        filename: file.name,
-        category: 'avatar',
-      });
-      setValue('avatar', response.filePath);
-      setSnackbar({ open: true, message: 'Avatar uploaded successfully!', severity: 'success' });
-    } catch (error) {
-      console.error(error);
-      setSnackbar({ open: true, message: 'Failed to upload avatar.', severity: 'error' });
-    }
-  }, [api, setValue]);
+  const onFormSubmit = useCallback(
+    async (data: UpdateUserDto) => {
+      setIsSaving(true);
+      try {
+        const response = await api.Users.usersControllerUpdate({
+          updateUserDto: data,
+        });
+
+        if (response.success) {
+          onSend(data);
+          toast.success("Profile updated successfully!");
+        } else {
+          if ("global" in response.errors)
+            toast.error(
+              typeof response.errors.global === "string"
+                ? response.errors.global
+                : "An error occurred",
+            );
+          else {
+            const fields = form.getValues();
+            for (const field in fields) {
+              if (field in response.errors) {
+                form.setError(field as keyof UpdateUserDto, {
+                  type: "server",
+                  message: response.errors[field],
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to update profile.");
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [api, onSend, form],
+  );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={3}>
-        <FormGrid item xs={12} md={6}>
-          <FormLabel htmlFor="nickname" required>
-            Nickname
-          </FormLabel>
-          <OutlinedInput
-            id="nickname"
-            {...register('nickname', { required: 'Nickname is required' })}
-            placeholder="John"
-            autoComplete="off"
-            size="small"
-          />
-        </FormGrid>
-        <FormGrid item xs={12} md={12}>
-          <input
-            accept="image/*"
-            id="file-upload"
-            type="file"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
-          <label htmlFor="file-upload">
-            <Grid container spacing={1}
-              sx={{
-                alignItems: "center",
-                padding: ".5em",
-              }}
-            >
-              <Button variant="contained" component="span">
-                {getValues('avatar') ? 'Change avatar' : 'Upload avatar'}
-              </Button>
-              <Typography
-                sx={{
-                  width: 300, // Limit the width
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  direction: 'rtl', // Shows the end of the text
-                  paddingLeft: "1em",
-                }}
-              >
-                {getValues('avatar')}
-              </Typography>
-            </Grid>
-          </label>
-        </FormGrid>
-        <FormGrid item xs={12}>
-          <Controller
-            name="enableTwoFactor"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={<Checkbox {...field} checked={field.value} onChange={(e) => { field.onChange(e); handleCheckboxChange(e); }}/>}
-                label="Enable Two-Factor Authentication"
-              />
-            )}
-          />
-        </FormGrid>
-        <FormGrid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={isSaving}
-            startIcon={isSaving && <CircularProgress size={20} color="inherit" />}
-          >
-            {isSaving ? 'Saving...' : 'Submit'}
-          </Button>
-        </FormGrid>
-      </Grid>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onFormSubmit)}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">Welcome!</CardTitle>
+            <CardDescription>
+              Update your profile information here.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="nickname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nickname</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </form>
+            <FormItem>
+              <FormLabel>
+                {form.getValues("avatar") ? "Change avatar" : "Upload avatar"}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  id="picture"
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                />
+              </FormControl>
+            </FormItem>
+
+            <FormField
+              control={form.control}
+              name="twoFactorEnabled"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        handleCheckboxChange(!!checked);
+                        field.onChange(checked);
+                      }}
+                    />
+                  </FormControl>
+                  <FormLabel>Enable Two-Factor Authentication</FormLabel>
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Submit"}
+            </Button>
+          </CardContent>
+        </Card>
+      </form>
+    </Form>
   );
-});
-
-export default ProfileForm;
+}

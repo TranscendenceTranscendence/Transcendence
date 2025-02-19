@@ -31,17 +31,26 @@ export class FriendsService {
     try {
       const { senderId, receiverId } = request;
 
+      // Check if receiver exists
+      const receiver = await this.usersRepository.findOne({
+        where: { id: receiverId },
+      });
+
+      if (!receiver) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
       // Check existing request
       const existingRequest = await this.friendsRepository.findOne({
         where: [
           { sender_id: senderId, receiver_id: receiverId },
-          { sender_id: receiverId, receiver_id: senderId }
-        ]
+          { sender_id: receiverId, receiver_id: senderId },
+        ],
       });
 
       if (existingRequest) {
         throw new HttpException(
-          'Friend request already exists.',
+          'Friend request already exists',
           HttpStatus.CONFLICT,
         );
       }
@@ -49,28 +58,24 @@ export class FriendsService {
       const newFriendRequest = this.friendsRepository.create({
         sender_id: senderId,
         receiver_id: receiverId,
-        status: FriendStatus.PENDING
+        status: FriendStatus.PENDING,
       });
 
       await this.friendsRepository.save(newFriendRequest);
-      return { message: 'Friend request sent successfully.' };
+      return { message: 'Friend request sent successfully' };
     } catch (error) {
       console.error('Error in sendFriendRequest:', error);
       if (error instanceof HttpException) {
         throw error;
       }
       throw new HttpException(
-        'Failed to send friend request.',
+        'Failed to send friend request',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  async getFriendRequests(
-    request: GetFriendRequestsDto,
-    page = 1,
-    limit = 10,
-  ) {
+  async getFriendRequests(request: GetFriendRequestsDto, page = 1, limit = 10) {
     const { receiverId } = request;
 
     // Ensure page and limit are positive integers
@@ -79,12 +84,14 @@ export class FriendsService {
 
     try {
       // Fetch friend requests with pagination
-      const [friendRequests, total] = await this.friendsRepository.findAndCount({
-        where: { receiver: { id: receiverId } }, // Ensure proper relation mapping
-        skip: (page - 1) * limit,
-        take: limit,
-        relations: ['sender'], // Include sender details
-      });
+      const [friendRequests, total] = await this.friendsRepository.findAndCount(
+        {
+          where: { receiver: { id: receiverId } }, // Ensure proper relation mapping
+          skip: (page - 1) * limit,
+          take: limit,
+          relations: ['sender'], // Include sender details
+        },
+      );
 
       return {
         data: friendRequests,

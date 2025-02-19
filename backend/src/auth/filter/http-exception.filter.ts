@@ -1,12 +1,10 @@
-import { Catch, HttpException } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException } from '@nestjs/common';
 
 @Catch(HttpException)
 export class HttpExceptionFilter {
-  catch(exception, host) {
+  catch(_exception: HttpException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
-    const status = exception.getStatus();
+    const response: any = ctx.getResponse();
 
     response.redirect('https://localhost:3000');
   }

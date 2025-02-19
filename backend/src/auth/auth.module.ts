@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FortyTwoAuthGuard } from './guards/ft-auth/ft-auth.guard';
+import { FortyTwoAuthGuard } from './guards/ft-auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import FortyTwoOauthConfig from '../config/ft-oauth.config';
 import { FortyTwoStrategy } from './strategies/ft.strategy';
@@ -34,10 +34,7 @@ import { TwoFactorAuthController } from './twoFactorAuth/twoFactorAuth.controlle
       inject: [ConfigService],
     }),
   ],
-  controllers: [
-    AuthController,
-    TwoFactorAuthController,
-  ],
+  controllers: [AuthController, TwoFactorAuthController],
   providers: [
     AuthService,
     ConfigService,

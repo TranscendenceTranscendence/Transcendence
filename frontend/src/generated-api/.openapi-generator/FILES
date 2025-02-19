@@ -13,6 +13,11 @@ apis/TwoFactorAuthenticationApi.ts
 apis/UsersApi.ts
 apis/index.ts
 index.ts
+models/Achievement.ts
+models/Blocked.ts
+models/ChatMessage.ts
+models/ChatParticipant.ts
+models/ChatRoom.ts
 models/CreateAchievementDto.ts
 models/CreateBlockedDto.ts
 models/CreateChatMessageDto.ts
@@ -22,10 +27,12 @@ models/CreateGameDto.ts
 models/CreateUserDto.ts
 models/FileUploadResponseSuccess.ts
 models/Friend.ts
+models/Game.ts
 models/GetFriendRequestsDto.ts
 models/UpdateAchievementDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserDto.ts
+models/UpdateUserResponse.ts
 models/User.ts
 models/index.ts
 runtime.ts

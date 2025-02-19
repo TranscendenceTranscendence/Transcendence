@@ -12,11 +12,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
   private defaultAvatar: string;
 
   constructor(
-    @Inject(FortyTwoOauthConfig.KEY) private fortyTwoConfiguration: ConfigType<typeof FortyTwoOauthConfig>,
+    @Inject(FortyTwoOauthConfig.KEY)
+    private fortyTwoConfiguration: ConfigType<typeof FortyTwoOauthConfig>,
     private httpService: HttpService,
     private usersService: UsersService,
   ) {
-    console.log("TEEEEESSSTTTTT")
+    console.log('TEEEEESSSTTTTT');
     super({
       authorizationURL: `https://api.intra.42.fr/oauth/authorize?client_id=${fortyTwoConfiguration.clientID}&redirect_uri=${fortyTwoConfiguration.callbackURL}&response_type=code`,
       tokenURL: 'https://api.intra.42.fr/oauth/token',
@@ -29,7 +30,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
     this.defaultAvatar = '/uploads/cute_dog.jpeg';
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: Profile, cb: any) {
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+    cb: any,
+  ) {
     let user = await this.usersService.findOne(profile.id);
 
     if (user == null) {
@@ -44,9 +50,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
 
       user = await this.usersService.create(user);
     }
-    if (user)
-      cb(null, user);
-    else
-      cb(null, false);
+    if (user) cb(null, user);
+    else cb(null, false);
   }
 }
