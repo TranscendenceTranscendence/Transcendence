@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Friend } from "@/generated-api";
-import { useConfig } from "@/utils/config";
-import { useUser } from "@/utils/providers/UserProvider";
 import { FriendsBox } from "./components/FriendsBox";
 
 export default function Page() {

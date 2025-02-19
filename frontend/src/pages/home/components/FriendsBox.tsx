@@ -1,6 +1,5 @@
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Friend, UserUserStatusEnum } from "@/generated-api";
-import { useConfig } from "@/utils/config";
+import { Friend } from "@/generated-api";
 import { useUser } from "@/utils/providers/UserProvider";
 import AvatarDisplay from "../../updateUser/components/AvatarDisplay";
 import { useNavigate } from "react-router-dom";
