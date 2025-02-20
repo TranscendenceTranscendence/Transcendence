@@ -57,11 +57,11 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
     api.Users.usersControllerMe()
       .then((response) => {
         form.setValue("nickname", response.nickname);
-        form.setValue("twoFactorEnabled", response.enableTwoFactor);
+        form.setValue("twoFactorEnabled", response.twoFactorEnabled);
         form.setValue("avatar", response.avatar);
         onSend({
           nickname: response.nickname,
-          twoFactorEnabled: response.enableTwoFactor,
+          twoFactorEnabled: response.twoFactorEnabled,
           avatar: response.avatar,
         });
       })

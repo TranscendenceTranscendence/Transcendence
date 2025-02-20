@@ -9,12 +9,12 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user }) => {
   return (
     <div>
       <div>
-        <h2>{user.nickname || "undefined"}</h2>
-        <h3>{user.id || "undefined"}</h3>
+        <h2>{user.nickname}</h2>
+        <h3>{user.id}</h3>
         <h3>Level: {user.ladderLevel}</h3>
       </div>
       <div>
-        <p>Email: {user.email || "undefined"}</p>
+        <p>Email: {user.email}</p>
         <p>
           Two factor Authentication:{" "}
           {user.twoFactorEnabled ? "Enabled" : "Disabled"}
