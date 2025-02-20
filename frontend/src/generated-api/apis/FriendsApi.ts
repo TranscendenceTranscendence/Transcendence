@@ -64,6 +64,41 @@ export class FriendsApi extends runtime.BaseAPI {
   }
 
   /**
+   * Get all friends for current user
+   */
+  async friendsControllerGetFriendsRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<GetFriendRequestsDto>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/friends`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      GetFriendRequestsDtoFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Get all friends for current user
+   */
+  async friendsControllerGetFriends(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<GetFriendRequestsDto> {
+    const response = await this.friendsControllerGetFriendsRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
    * Send a friend request by Id
    */
   async friendsControllerSendFriendRequestRaw(
