@@ -38,11 +38,23 @@ export interface MeResponseSuccess {
    */
   nickname: string;
   /**
+   * The email of the user.
+   * @type {string}
+   * @memberof MeResponseSuccess
+   */
+  email: string;
+  /**
    * The two factor authentication status of the user.
    * @type {boolean}
    * @memberof MeResponseSuccess
    */
-  enableTwoFactor: boolean;
+  twoFactorEnabled: boolean;
+  /**
+   * The ladder level of the user.
+   * @type {number}
+   * @memberof MeResponseSuccess
+   */
+  ladderLevel: number;
 }
 
 /**
@@ -54,7 +66,10 @@ export function instanceOfMeResponseSuccess(
   if (!("id" in value) || value["id"] === undefined) return false;
   if (!("avatar" in value) || value["avatar"] === undefined) return false;
   if (!("nickname" in value) || value["nickname"] === undefined) return false;
-  if (!("enableTwoFactor" in value) || value["enableTwoFactor"] === undefined)
+  if (!("email" in value) || value["email"] === undefined) return false;
+  if (!("twoFactorEnabled" in value) || value["twoFactorEnabled"] === undefined)
+    return false;
+  if (!("ladderLevel" in value) || value["ladderLevel"] === undefined)
     return false;
   return true;
 }
@@ -74,7 +89,9 @@ export function MeResponseSuccessFromJSONTyped(
     id: json["id"],
     avatar: json["avatar"],
     nickname: json["nickname"],
-    enableTwoFactor: json["enable_two_factor"],
+    email: json["email"],
+    twoFactorEnabled: json["two_factor_enabled"],
+    ladderLevel: json["ladder_level"],
   };
 }
 
@@ -94,6 +111,8 @@ export function MeResponseSuccessToJSONTyped(
     id: value["id"],
     avatar: value["avatar"],
     nickname: value["nickname"],
-    enable_two_factor: value["enableTwoFactor"],
+    email: value["email"],
+    two_factor_enabled: value["twoFactorEnabled"],
+    ladder_level: value["ladderLevel"],
   };
 }

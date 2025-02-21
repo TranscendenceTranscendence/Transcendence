@@ -12,26 +12,13 @@ class User {
   id: number;
   nickname: string;
   email: string;
-  ladder_level: number;
+  ladderLevel: number;
   avatar: string;
-
-  constructor({
-    id,
-    nickname,
-    email,
-    ladder_level,
-    avatar,
-  }: {
-    id: number;
-    nickname: string;
-    email: string;
-    ladder_level: number;
-    avatar: string;
-  }) {
+  constructor({ id, nickname, email, ladderLevel, avatar }: User) {
     this.id = id;
     this.nickname = nickname;
     this.email = email;
-    this.ladder_level = ladder_level;
+    this.ladderLevel = ladderLevel;
     this.avatar = avatar;
   }
 }
@@ -40,17 +27,14 @@ export function AppSidebar() {
   {
     const api = useApi();
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleLogout = async () => {
       try {
         await api.Auth.authControllerLogout();
-        // Clear local storage
         localStorage.removeItem("access_token");
-        // localStorage.removeItem('refreshToken'); // If you have a refresh token
-
-        // Redirect to login page
         navigate("/login");
       } catch (error) {
         console.error("Error logging out:", error);
@@ -58,25 +42,20 @@ export function AppSidebar() {
     };
 
     useEffect(() => {
-      const fetchCurrentUser = async () => {
+      (async () => {
+        if (!loading) return;
+        setLoading(true);
         try {
           const response = await api.Users.usersControllerMe();
-          const me = new User({
-            id: response.id,
-            nickname: response.nickname,
-            email: response.email,
-            ladder_level: response.ladderLevel,
-            avatar: response.avatar,
-          });
+          const me = new User(response);
           setUser(me);
+          console.info("me set:", me);
         } catch (error) {
           console.error("Failed to fetch current user:", error);
           setError("Failed to fetch user data");
         }
-      };
-
-      fetchCurrentUser();
-    }, [api.Users]);
+      })();
+    }, []);
 
     if (error) {
       return <div>Error: {error}</div>;
@@ -94,7 +73,7 @@ export function AppSidebar() {
           </Avatar>
           <div className="flex flex-col items-center gap-4">
             <p className="font-bold text-3xl">{user.nickname}</p>
-            <p className="font-bold text-lg">Level {user.ladder_level}</p>
+            <p className="font-bold text-lg">Level {user.ladderLevel}</p>
           </div>
           <br />
           <div className="flex flex-col gap-2">

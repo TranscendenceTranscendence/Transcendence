@@ -128,7 +128,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
         setIsSaving(false);
       }
     },
-    [api, onSend, form],
+    [api, onSend],
   );
 
   return (

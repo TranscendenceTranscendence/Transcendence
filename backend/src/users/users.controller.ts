@@ -11,23 +11,46 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
+import { PartialType } from '@nestjs/mapped-types';
+
+class MeResponseSuccess extends PartialType(User) {
+  @ApiProperty()
+  id: number;
+  @ApiProperty({ type: 'string', description: 'The url to avatar' })
+  avatar: string;
+  @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
+  nickname: string;
+  @ApiProperty({ type: 'string', description: 'The email of the user.' })
+  email: string;
+  @ApiProperty({
+    type: 'boolean',
+    description: 'The two factor authentication status of the user.',
+  })
+  two_factor_enabled: boolean;
+  @ApiProperty({
+    type: 'number',
+    description: 'The ladder level of the user.',
+  })
+  ladder_level: number;
+}
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -83,25 +106,8 @@ export class UsersController {
     try {
       const user = req.user;
 
-      // Convert snake_case to camelCase
-      return {
-        id: user.id,
-        avatar: user.avatar,
-        nickname: user.nickname,
-        email: user.email,
-        user_status: user.user_status,
-        two_factor_enabled: user.two_factor_enabled,
-        two_factor_auth_secret: user.two_factor_auth_secret,
-        ladder_level: user.ladder_level,
-        is_second_auth_done: user.is_second_auth_done,
-        achievements: user.achievements,
-        blockedUsers: user.blockedUsers,
-        users: user.users,
-        chatMessages: user.chatMessages,
-        chatParticipants: user.chatParticipants,
-        sentFriendRequests: user.sentFriendRequests,
-        receivedFriendRequests: user.receivedFriendRequests,
-      };
+      // user to me response
+      return user;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

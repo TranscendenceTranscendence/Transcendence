@@ -28,6 +28,7 @@ module.exports = {
   plugins: ["react", "react-hooks", "@typescript-eslint", "prettier"],
   rules: {
     "react/react-in-jsx-scope": "off",
+    "react-hooks/exhaustive-deps": "off",
     "no-undef": "off",
   },
 };

@@ -71,4 +71,26 @@ export class FriendsController {
       data: friendRequests,
     };
   }
+
+  @Get('/')
+  @ApiOperation({ summary: 'Get all friends for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully fetched friends.',
+    type: GetFriendRequestsDto,
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async getFriends(@Req() req: Request) {
+    const userId = req.user?.id; // Ensure type safety for `req.user`
+    if (!userId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    const data = await this.friendsService.getFriends(userId);
+
+    return {
+      success: true,
+      ...data,
+    };
+  }
 }

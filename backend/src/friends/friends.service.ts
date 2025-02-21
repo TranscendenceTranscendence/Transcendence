@@ -75,6 +75,28 @@ export class FriendsService {
     }
   }
 
+  async getFriends(userId: number, page = 1, limit = 10) {
+    // Ensure page and limit are positive integers
+    page = Math.max(1, page);
+    limit = Math.max(1, limit);
+
+    // Fetch friends with pagination
+    const [friends, totalFriends] = await this.friendsRepository.findAndCount({
+      where: [{ sender_id: userId }, { receiver_id: userId }],
+      relations: ['sender', 'receiver'],
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return {
+      data: friends,
+      total: totalFriends,
+      page,
+      pageSize: limit,
+      totalPages: Math.ceil(totalFriends / limit),
+    };
+  }
+
   async getFriendRequests(request: GetFriendRequestsDto, page = 1, limit = 10) {
     const { receiverId } = request;
 
@@ -84,21 +106,19 @@ export class FriendsService {
 
     try {
       // Fetch friend requests with pagination
-      const [friendRequests, total] = await this.friendsRepository.findAndCount(
-        {
-          where: { receiver: { id: receiverId } }, // Ensure proper relation mapping
-          skip: (page - 1) * limit,
-          take: limit,
-          relations: ['sender'], // Include sender details
-        },
-      );
+      const friendRequests = await this.friendsRepository.find({
+        where: { receiver_id: receiverId },
+        relations: ['sender'],
+        take: limit,
+        skip: (page - 1) * limit,
+      });
 
       return {
         data: friendRequests,
-        total,
+        total: friendRequests.length,
         page,
         pageSize: limit,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(10 / limit),
       };
     } catch {
       throw new HttpException(
