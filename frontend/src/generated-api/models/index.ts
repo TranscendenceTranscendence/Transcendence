@@ -16,6 +16,7 @@ export * from "./FileUploadResponseSuccess";
 export * from "./Friend";
 export * from "./Game";
 export * from "./GetFriendRequestsDto";
+export * from "./MeResponseSuccess";
 export * from "./UpdateAchievementDto";
 export * from "./UpdateChatParticipantDto";
 export * from "./UpdateUserDto";
