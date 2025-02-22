@@ -17,4 +17,7 @@ export class Achievement {
 
   @PrimaryColumn({ type: 'enum', enum: AchievementType })
   type: AchievementType;
+
+  @PrimaryColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

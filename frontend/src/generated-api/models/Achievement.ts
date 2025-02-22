@@ -45,6 +45,12 @@ export interface Achievement {
    * @memberof Achievement
    */
   type: AchievementTypeEnum;
+  /**
+   *
+   * @type {Date}
+   * @memberof Achievement
+   */
+  createdAt: Date;
 }
 
 /**
@@ -64,6 +70,7 @@ export function instanceOfAchievement(value: object): value is Achievement {
   if (!("userId" in value) || value["userId"] === undefined) return false;
   if (!("user" in value) || value["user"] === undefined) return false;
   if (!("type" in value) || value["type"] === undefined) return false;
+  if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
   return true;
 }
 
@@ -82,6 +89,7 @@ export function AchievementFromJSONTyped(
     userId: json["userId"],
     user: UserFromJSON(json["user"]),
     type: json["type"],
+    createdAt: new Date(json["createdAt"]),
   };
 }
 
@@ -101,5 +109,6 @@ export function AchievementToJSONTyped(
     userId: value["userId"],
     user: UserToJSON(value["user"]),
     type: value["type"],
+    createdAt: value["createdAt"].toISOString(),
   };
 }
