@@ -13,13 +13,14 @@ export class AchievementsService {
   async addAchievementToUser(
     userId: number,
     achievementType: AchievementType,
-  ): Promise<Achievement> {
-    const newAchievement = await this.achievementsRepository.create({
-      userId,
-      type: achievementType,
+  ): Promise<Achievement | false> {
+    const achievementData = { userId, type: achievementType };
+    const achievement = await this.achievementsRepository.findOne({
+      where: achievementData,
     });
-    await this.achievementsRepository.save(newAchievement);
-    return newAchievement;
+    if (achievement)
+      return false; // Achievement already exists for this user
+    else return this.achievementsRepository.save(achievementData);
   }
 
   async findByUserId(userId: number): Promise<Achievement[]> {
