@@ -1,21 +1,23 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-  PrimaryColumn,
-} from 'typeorm';
+import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 
-@Entity('ACHIEVEMENTS')
-export class Achievement {
-  @PrimaryGeneratedColumn()
-  id: number;
+export enum AchievementType {
+  FIRST_LOGIN = 'FIRST_LOGIN',
+  FIRST_PROFILE_UPDATE = 'FIRST_PROFILE_UPDATE',
+}
 
+@Entity('achievements')
+export class Achievement {
   @PrimaryColumn()
-  user_id: number;
+  userId: number;
 
   @ManyToOne(() => User, (user) => user.achievements)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user: User;
+
+  @PrimaryColumn({ type: 'enum', enum: AchievementType })
+  type: AchievementType;
+
+  @PrimaryColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

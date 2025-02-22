@@ -32,12 +32,6 @@ export interface Achievement {
    * @type {number}
    * @memberof Achievement
    */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof Achievement
-   */
   userId: number;
   /**
    *
@@ -45,15 +39,38 @@ export interface Achievement {
    * @memberof Achievement
    */
   user: User;
+  /**
+   *
+   * @type {string}
+   * @memberof Achievement
+   */
+  type: AchievementTypeEnum;
+  /**
+   *
+   * @type {Date}
+   * @memberof Achievement
+   */
+  createdAt: Date;
 }
+
+/**
+ * @export
+ */
+export const AchievementTypeEnum = {
+  Login: "FIRST_LOGIN",
+  ProfileUpdate: "FIRST_PROFILE_UPDATE",
+} as const;
+export type AchievementTypeEnum =
+  (typeof AchievementTypeEnum)[keyof typeof AchievementTypeEnum];
 
 /**
  * Check if a given object implements the Achievement interface.
  */
 export function instanceOfAchievement(value: object): value is Achievement {
-  if (!("id" in value) || value["id"] === undefined) return false;
   if (!("userId" in value) || value["userId"] === undefined) return false;
   if (!("user" in value) || value["user"] === undefined) return false;
+  if (!("type" in value) || value["type"] === undefined) return false;
+  if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
   return true;
 }
 
@@ -69,9 +86,10 @@ export function AchievementFromJSONTyped(
     return json;
   }
   return {
-    id: json["id"],
-    userId: json["user_id"],
+    userId: json["userId"],
     user: UserFromJSON(json["user"]),
+    type: json["type"],
+    createdAt: new Date(json["createdAt"]),
   };
 }
 
@@ -88,8 +106,9 @@ export function AchievementToJSONTyped(
   }
 
   return {
-    id: value["id"],
-    user_id: value["userId"],
+    userId: value["userId"],
     user: UserToJSON(value["user"]),
+    type: value["type"],
+    createdAt: value["createdAt"].toISOString(),
   };
 }

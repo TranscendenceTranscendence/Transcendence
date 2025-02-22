@@ -12,7 +12,6 @@ import { Toaster } from "./components/ui/sonner.tsx";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./utils/middleware/ProtectedRoute.tsx";
 import PublicRoute from "./utils/middleware/PublicRoute.tsx";
-import { UserProvider } from "@/utils/providers/UserProvider.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -37,26 +36,24 @@ function App() {
   return (
     <Fragment>
       <Toaster />
-      <UserProvider>
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+        </Route>
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/update" element={<UpdateUser />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
-            <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
-            <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
-          </Route>
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/update" element={<UpdateUser />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
+          <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
+          <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+        </Route>
 
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      </UserProvider>
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
     </Fragment>
   );
 }
