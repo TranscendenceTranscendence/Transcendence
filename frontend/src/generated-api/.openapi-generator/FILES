@@ -14,11 +14,11 @@ apis/UsersApi.ts
 apis/index.ts
 index.ts
 models/Achievement.ts
+models/AchievementsResponse.ts
 models/Blocked.ts
 models/ChatMessage.ts
 models/ChatParticipant.ts
 models/ChatRoom.ts
-models/CreateAchievementDto.ts
 models/CreateBlockedDto.ts
 models/CreateChatMessageDto.ts
 models/CreateChatParticipantDto.ts
@@ -29,7 +29,7 @@ models/FileUploadResponseSuccess.ts
 models/Friend.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
-models/UpdateAchievementDto.ts
+models/MeResponseSuccess.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserDto.ts
 models/UpdateUserResponse.ts
