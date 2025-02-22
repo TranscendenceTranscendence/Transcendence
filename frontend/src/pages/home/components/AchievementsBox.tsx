@@ -22,7 +22,7 @@ export const AchievementBox = ({ achievements }: AchievementBoxProps) => {
             {achievements.map((achievement) => (
               <div
                 key={achievement.userId + achievement.type}
-                className="flex items-center gap-4 p-4 rounded-lg"
+                className="flex items-center gap-4 px-4 py-1 rounded-lg"
               >
                 <div>
                   <p className="font-bold text-xl">{achievement.type}</p>
