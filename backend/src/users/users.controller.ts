@@ -100,7 +100,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'User fetched successfully.',
-    type: MeResponseSuccess,
+    type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @UseGuards(JwtAccessAuthGuard)

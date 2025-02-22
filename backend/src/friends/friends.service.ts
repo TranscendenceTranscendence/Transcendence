@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Friend } from './friend.entity';
+import { Friend, FriendStatus } from './friend.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 
@@ -28,54 +28,48 @@ export class FriendsService {
   ) {}
 
   async sendFriendRequest(request: SendFriendRequestDto) {
-    const { senderId, receiverId } = request;
-
-    // Prevent self-friendship
-    if (senderId === receiverId) {
-      throw new HttpException(
-        'Sender and receiver cannot be the same user.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // Validate sender and receiver existence
-    const [receiver, sender] = await Promise.all([
-      this.usersRepository.findOneBy({ id: receiverId }),
-      this.usersRepository.findOneBy({ id: senderId }),
-    ]);
-
-    if (!receiver) {
-      throw new HttpException('Receiver not found.', HttpStatus.NOT_FOUND);
-    }
-
-    if (!sender) {
-      throw new HttpException('Sender not found.', HttpStatus.NOT_FOUND);
-    }
-
-    // Check for existing friend request
-    const existingRequest = await this.friendsRepository.findOne({
-      where: { sender, receiver },
-    });
-
-    if (existingRequest) {
-      throw new HttpException(
-        'Friend request already exists.',
-        HttpStatus.CONFLICT,
-      );
-    }
-
-    // Create and save friend request
-    const newFriendRequest = this.friendsRepository.create({
-      receiver,
-      sender,
-    });
-
     try {
+      const { senderId, receiverId } = request;
+
+      // Check if receiver exists
+      const receiver = await this.usersRepository.findOne({
+        where: { id: receiverId },
+      });
+
+      if (!receiver) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      // Check existing request
+      const existingRequest = await this.friendsRepository.findOne({
+        where: [
+          { sender_id: senderId, receiver_id: receiverId },
+          { sender_id: receiverId, receiver_id: senderId },
+        ],
+      });
+
+      if (existingRequest) {
+        throw new HttpException(
+          'Friend request already exists',
+          HttpStatus.CONFLICT,
+        );
+      }
+
+      const newFriendRequest = this.friendsRepository.create({
+        sender_id: senderId,
+        receiver_id: receiverId,
+        status: FriendStatus.PENDING,
+      });
+
       await this.friendsRepository.save(newFriendRequest);
-      return { message: 'Friend request sent successfully.' };
-    } catch {
+      return { message: 'Friend request sent successfully' };
+    } catch (error) {
+      console.error('Error in sendFriendRequest:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException(
-        'Failed to send friend request.',
+        'Failed to send friend request',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
