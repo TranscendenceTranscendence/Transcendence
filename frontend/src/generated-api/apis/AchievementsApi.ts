@@ -19,7 +19,7 @@ import {
   AchievementsResponseToJSON,
 } from "../models/index";
 
-export interface AchievementsControllerFindAllRequest {
+export interface AchievementsControllerFindAllbyUserIdRequest {
   userId: number;
 }
 
@@ -30,14 +30,14 @@ export class AchievementsApi extends runtime.BaseAPI {
   /**
    * Get all achievements for a user
    */
-  async achievementsControllerFindAllRaw(
-    requestParameters: AchievementsControllerFindAllRequest,
+  async achievementsControllerFindAllbyUserIdRaw(
+    requestParameters: AchievementsControllerFindAllbyUserIdRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<AchievementsResponse>> {
     if (requestParameters["userId"] == null) {
       throw new runtime.RequiredError(
         "userId",
-        'Required parameter "userId" was null or undefined when calling achievementsControllerFindAll().',
+        'Required parameter "userId" was null or undefined when calling achievementsControllerFindAllbyUserId().',
       );
     }
 
@@ -67,11 +67,11 @@ export class AchievementsApi extends runtime.BaseAPI {
   /**
    * Get all achievements for a user
    */
-  async achievementsControllerFindAll(
-    requestParameters: AchievementsControllerFindAllRequest,
+  async achievementsControllerFindAllbyUserId(
+    requestParameters: AchievementsControllerFindAllbyUserIdRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<AchievementsResponse> {
-    const response = await this.achievementsControllerFindAllRaw(
+    const response = await this.achievementsControllerFindAllbyUserIdRaw(
       requestParameters,
       initOverrides,
     );

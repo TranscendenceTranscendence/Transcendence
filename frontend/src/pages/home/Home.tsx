@@ -8,12 +8,16 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Friend } from "@/generated-api";
+import { Achievement, Friend } from "@/generated-api";
 import { FriendsBox } from "./components/FriendsBox";
+import { AchievementBox } from "./components/AchievementsBox";
+import { useUser } from "@/utils/providers/UserProvider";
 
 export default function Page() {
   const api = useApi();
+  const me = useUser();
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -24,8 +28,18 @@ export default function Page() {
         console.error("Failed to fetch friends list:", error);
       }
     };
-
-    fetchFriends();
+    const fetchAchievements = async () => {
+      try {
+        const response =
+          await api.Achievements.achievementsControllerFindAllbyUserId({
+            userId: me.user.id,
+          });
+        setAchievements(response.achievements);
+      } catch (error) {
+        console.error("Failed to fetch achievements list:", error);
+      }
+    };
+    Promise.all([fetchFriends(), fetchAchievements()]);
   }, []);
 
   return (
@@ -48,9 +62,7 @@ export default function Page() {
           <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
             <p className="font-bold text-3xl m-8">CHAT ROOMS</p>
           </div>
-          <div className="row-span-3 w-full rounded-xl bg-gray-200 ...">
-            <p className="font-bold text-3xl m-8">ACHIEVEMENTS</p>
-          </div>
+          <AchievementBox achievements={achievements} />
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  NotFoundException,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { AchievementsService } from './achievements.service';
 import { GetAchievementsByUserIdRequestDto } from './dto/get-achievements-by-user-id-request.dto';
@@ -23,7 +17,7 @@ export class AchievementsController {
     type: AchievementsResponse,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async findAll(
+  async findAllbyUserId(
     @Query() query: GetAchievementsByUserIdRequestDto,
   ): Promise<AchievementsResponse> {
     try {
