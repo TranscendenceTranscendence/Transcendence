@@ -14,7 +14,6 @@ import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
 
-
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const navigate = useNavigate(); // Hook to navigate
