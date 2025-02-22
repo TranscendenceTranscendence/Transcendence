@@ -37,26 +37,24 @@ function App() {
   return (
     <Fragment>
       <Toaster />
-      <UserProvider>
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
+      <Routes>
+        {/* Public Routes */}
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<Login />} />
+        </Route>
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/update" element={<UpdateUser />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
-            <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
-            <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
-          </Route>
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/update" element={<UpdateUser />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
+          <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
+          <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+        </Route>
 
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      </UserProvider>
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
     </Fragment>
   );
 }
