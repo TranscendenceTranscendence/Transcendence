@@ -1,7 +1,7 @@
 import { Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 
-enum AchievementType {
+export enum AchievementType {
   FIRST_LOGIN = 'FIRST_LOGIN',
   FIRST_PROFILE_UPDATE = 'FIRST_PROFILE_UPDATE',
 }

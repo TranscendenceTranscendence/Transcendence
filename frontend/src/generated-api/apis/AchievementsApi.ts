@@ -13,32 +13,14 @@
  */
 
 import * as runtime from "../runtime";
-import type {
-  CreateAchievementDto,
-  UpdateAchievementDto,
-} from "../models/index";
+import type { AchievementsResponse } from "../models/index";
 import {
-  CreateAchievementDtoFromJSON,
-  CreateAchievementDtoToJSON,
-  UpdateAchievementDtoFromJSON,
-  UpdateAchievementDtoToJSON,
+  AchievementsResponseFromJSON,
+  AchievementsResponseToJSON,
 } from "../models/index";
 
-export interface AchievementsControllerCreateRequest {
-  createAchievementDto: CreateAchievementDto;
-}
-
-export interface AchievementsControllerFindOneRequest {
-  id: number;
-}
-
-export interface AchievementsControllerRemoveRequest {
-  id: number;
-}
-
-export interface AchievementsControllerUpdateRequest {
-  id: number;
-  updateAchievementDto: UpdateAchievementDto;
+export interface AchievementsControllerFindAllRequest {
+  userId: number;
 }
 
 /**
@@ -46,61 +28,24 @@ export interface AchievementsControllerUpdateRequest {
  */
 export class AchievementsApi extends runtime.BaseAPI {
   /**
-   * Create an achievement
-   */
-  async achievementsControllerCreateRaw(
-    requestParameters: AchievementsControllerCreateRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["createAchievementDto"] == null) {
-      throw new runtime.RequiredError(
-        "createAchievementDto",
-        'Required parameter "createAchievementDto" was null or undefined when calling achievementsControllerCreate().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    headerParameters["Content-Type"] = "application/json";
-
-    const response = await this.request(
-      {
-        path: `/achievements`,
-        method: "POST",
-        headers: headerParameters,
-        query: queryParameters,
-        body: CreateAchievementDtoToJSON(
-          requestParameters["createAchievementDto"],
-        ),
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Create an achievement
-   */
-  async achievementsControllerCreate(
-    requestParameters: AchievementsControllerCreateRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.achievementsControllerCreateRaw(
-      requestParameters,
-      initOverrides,
-    );
-  }
-
-  /**
-   * Retrieve all achievements
+   * Get all achievements for a user
    */
   async achievementsControllerFindAllRaw(
+    requestParameters: AchievementsControllerFindAllRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<AchievementsResponse>> {
+    if (requestParameters["userId"] == null) {
+      throw new runtime.RequiredError(
+        "userId",
+        'Required parameter "userId" was null or undefined when calling achievementsControllerFindAll().',
+      );
+    }
+
     const queryParameters: any = {};
+
+    if (requestParameters["userId"] != null) {
+      queryParameters["userId"] = requestParameters["userId"];
+    }
 
     const headerParameters: runtime.HTTPHeaders = {};
 
@@ -114,168 +59,22 @@ export class AchievementsApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      AchievementsResponseFromJSON(jsonValue),
+    );
   }
 
   /**
-   * Retrieve all achievements
+   * Get all achievements for a user
    */
   async achievementsControllerFindAll(
+    requestParameters: AchievementsControllerFindAllRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.achievementsControllerFindAllRaw(initOverrides);
-  }
-
-  /**
-   * Retrieve a specific achievement by ID
-   */
-  async achievementsControllerFindOneRaw(
-    requestParameters: AchievementsControllerFindOneRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
-      throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling achievementsControllerFindOne().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/achievements/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Retrieve a specific achievement by ID
-   */
-  async achievementsControllerFindOne(
-    requestParameters: AchievementsControllerFindOneRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.achievementsControllerFindOneRaw(
+  ): Promise<AchievementsResponse> {
+    const response = await this.achievementsControllerFindAllRaw(
       requestParameters,
       initOverrides,
     );
-  }
-
-  /**
-   * Delete a specific achievement by ID
-   */
-  async achievementsControllerRemoveRaw(
-    requestParameters: AchievementsControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
-      throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling achievementsControllerRemove().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/achievements/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "DELETE",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Delete a specific achievement by ID
-   */
-  async achievementsControllerRemove(
-    requestParameters: AchievementsControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.achievementsControllerRemoveRaw(
-      requestParameters,
-      initOverrides,
-    );
-  }
-
-  /**
-   * Update a specific achievement by ID
-   */
-  async achievementsControllerUpdateRaw(
-    requestParameters: AchievementsControllerUpdateRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
-      throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling achievementsControllerUpdate().',
-      );
-    }
-
-    if (requestParameters["updateAchievementDto"] == null) {
-      throw new runtime.RequiredError(
-        "updateAchievementDto",
-        'Required parameter "updateAchievementDto" was null or undefined when calling achievementsControllerUpdate().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    headerParameters["Content-Type"] = "application/json";
-
-    const response = await this.request(
-      {
-        path: `/achievements/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "PATCH",
-        headers: headerParameters,
-        query: queryParameters,
-        body: UpdateAchievementDtoToJSON(
-          requestParameters["updateAchievementDto"],
-        ),
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Update a specific achievement by ID
-   */
-  async achievementsControllerUpdate(
-    requestParameters: AchievementsControllerUpdateRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.achievementsControllerUpdateRaw(
-      requestParameters,
-      initOverrides,
-    );
+    return await response.value();
   }
 }
