@@ -117,6 +117,12 @@ export interface User {
    */
   userStatus: UserUserStatusEnum;
   /**
+   * The last active date of the user.
+   * @type {Date}
+   * @memberof User
+   */
+  lastActive: Date;
+  /**
    *
    * @type {Array<Achievement>}
    * @memberof User
@@ -211,6 +217,8 @@ export function instanceOfUser(value: object): value is User {
     return false;
   if (!("userStatus" in value) || value["userStatus"] === undefined)
     return false;
+  if (!("lastActive" in value) || value["lastActive"] === undefined)
+    return false;
   return true;
 }
 
@@ -235,6 +243,7 @@ export function UserFromJSONTyped(
     email: json["email"],
     ladderLevel: json["ladder_level"],
     userStatus: json["user_status"],
+    lastActive: json["lastActive"],
     achievements:
       json["achievements"] == null
         ? undefined
@@ -300,6 +309,7 @@ export function UserToJSONTyped(
     email: value["email"],
     ladder_level: value["ladderLevel"],
     user_status: value["userStatus"],
+    lastActive: value["lastActive"],
     achievements:
       value["achievements"] == null
         ? undefined

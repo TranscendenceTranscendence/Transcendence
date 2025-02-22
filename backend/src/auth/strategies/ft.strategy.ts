@@ -17,7 +17,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
     private httpService: HttpService,
     private usersService: UsersService,
   ) {
-    console.log('TEEEEESSSTTTTT');
     super({
       authorizationURL: `https://api.intra.42.fr/oauth/authorize?client_id=${fortyTwoConfiguration.clientID}&redirect_uri=${fortyTwoConfiguration.callbackURL}&response_type=code`,
       tokenURL: 'https://api.intra.42.fr/oauth/token',
@@ -26,7 +25,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
       callbackURL: fortyTwoConfiguration.callbackURL,
     });
 
-    // console.log("Exists: " + fs.existsSync(path.join(__dirname, '../../../img/cute_dog.jpeg')));
     this.defaultAvatar = '/uploads/cute_dog.jpeg';
   }
 

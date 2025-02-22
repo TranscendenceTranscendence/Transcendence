@@ -4,3 +4,4 @@ node_modules/
 *.pem
 backend/uploads/*
 *.subject.pdf
+backend/openapi.json

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './user.entity';
+import { User, UserStatus } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import JwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
@@ -116,5 +116,49 @@ export class UsersService {
       two_factor_auth_secret: null,
       two_factor_enabled: false,
     });
+  }
+
+  async setLastActive(
+    userId: number,
+    lastActive: Date = new Date(),
+  ): Promise<UserStatus> {
+    const user = await this.findOne(userId);
+
+    if (typeof lastActive !== 'object') {
+      lastActive = new Date(lastActive);
+    }
+
+    user.lastActive = lastActive;
+    const twoMinutesAgo = Date.now() - 120000; // compute once
+
+    if (
+      user.user_status === UserStatus.Offline &&
+      lastActive.getTime() > twoMinutesAgo
+    ) {
+      user.user_status = UserStatus.Online;
+    }
+
+    await this.usersRepository.save(user);
+    return user.user_status;
+  }
+
+  async setStatus(userId: number, status: UserStatus): Promise<UserStatus> {
+    const user = await this.findOne(userId);
+    if (
+      status === UserStatus.Offline &&
+      user.user_status !== UserStatus.Online
+    ) {
+      return user.user_status;
+    }
+    if (
+      status === UserStatus.Online &&
+      user.user_status !== UserStatus.Offline
+    ) {
+      return user.user_status;
+    }
+
+    user.user_status = status;
+    await this.usersRepository.save(user);
+    return user.user_status;
   }
 }

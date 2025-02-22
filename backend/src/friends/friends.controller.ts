@@ -9,11 +9,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { GetFriendRequestsDto } from './dto/get-friend-requests.dto';
-import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 
 @ApiTags('Friends') // Groups the endpoints under "Friends" in Swagger
 @Controller('friends')
@@ -33,7 +35,7 @@ export class FriendsController {
   @UseGuards(JwtAccessAuthGuard)
   async sendFriendRequest(
     @Param('id', ParseIntPipe) receiverId: number,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
     const senderId = req.user?.id; // Type safety assumed for `req.user`
     if (!senderId) {
@@ -55,9 +57,8 @@ export class FriendsController {
     type: GetFriendRequestsDto,
   })
   @UseGuards(JwtAccessAuthGuard)
-  async getFriendRequests(@Req() req: Request) {
+  async getFriendRequests(@Req() req: AuthenticatedRequest) {
     const receiverId = req.user?.id; // Ensure type safety for `req.user`
-    console.log(receiverId);
     if (!receiverId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
@@ -80,7 +81,7 @@ export class FriendsController {
     type: GetFriendRequestsDto,
   })
   @UseGuards(JwtAccessAuthGuard)
-  async getFriends(@Req() req: Request) {
+  async getFriends(@Req() req: AuthenticatedRequest) {
     const userId = req.user?.id; // Ensure type safety for `req.user`
     if (!userId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
