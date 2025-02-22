@@ -37,8 +37,8 @@ import { MulterModule } from '@nestjs/platform-express';
       entities: [],
       autoLoadEntities: true,
       synchronize: true,
-      logging: true,
-      logger: 'advanced-console', // Makes the logs easier to read
+      // logging: true,
+      // logger: 'advanced-console', // Makes the logs easier to read
     }),
     ChatModule,
     UsersModule,
