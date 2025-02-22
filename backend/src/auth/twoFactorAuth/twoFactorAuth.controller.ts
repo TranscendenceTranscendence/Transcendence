@@ -12,7 +12,10 @@ import {
   ForbiddenException,
   StreamableFile,
 } from '@nestjs/common';
-import { JwtAccessAuthGuard } from '../guards/jwt-access.guard';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../guards/jwt-access.guard';
 import { UsersService } from '../../users/users.service';
 import { AuthService } from '../auth.service';
 import { toFileStream } from 'qrcode';
@@ -23,7 +26,6 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 
 @ApiTags('Two-Factor Authentication')
 @Controller('2fa')
@@ -38,7 +40,7 @@ export class TwoFactorAuthController {
   @Get('generate')
   @UseGuards(JwtAccessAuthGuard)
   @ApiBearerAuth()
-  async generate(@Req() req: Request) {
+  async generate(@Req() req: AuthenticatedRequest) {
     const user = req.user;
     if (user.two_factor_enabled)
       return { msg: 'TwoFactorAuthentication already turned on' };
@@ -63,7 +65,7 @@ export class TwoFactorAuthController {
   @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
   @ApiBearerAuth()
   async turnOnTwoFactorAuthentication(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string,
   ) {
     const user = req.user;
@@ -98,7 +100,7 @@ export class TwoFactorAuthController {
   @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
   @ApiBearerAuth()
   async turnOffTwoFactorAuthentication(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string,
   ) {
     const user = req.user;
@@ -131,7 +133,7 @@ export class TwoFactorAuthController {
   @ApiResponse({ status: 401, description: 'Invalid Authentication-Code' })
   @ApiBearerAuth()
   async authenticate(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Body('twoFactorAuthenticationCode') twoFactorAuthenticationCode: string,
   ) {
     const user = req.user;

@@ -12,7 +12,10 @@ import { UsersService } from '../users/users.service';
 import { AchievementsService } from '../achievements/achievements.service';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { JwtAccessAuthGuard } from './guards/jwt-access.guard';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from './guards/jwt-access.guard';
 import { AchievementType } from '../achievements/achievement.entity';
 
 @ApiTags('Auth') // Grouping for Swagger
@@ -95,8 +98,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout user' })
   @ApiResponse({ status: 200, description: 'User logged out successfully' })
   @ApiBearerAuth()
-  async logout(@Req() req: Request) {
-    const user: Express.User = req.user;
+  async logout(@Req() req: AuthenticatedRequest) {
+    const user = req.user;
     await this.usersService.update(user.id, {
       nickname: user.nickname,
       avatar: user.avatar,

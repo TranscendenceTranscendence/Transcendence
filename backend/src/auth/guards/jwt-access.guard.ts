@@ -8,6 +8,17 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/users.service';
 
+import { Socket } from 'socket.io';
+import { User } from '../../users/user.entity';
+
+export interface AuthenticatedSocket extends Socket {
+  user: User;
+}
+
+export interface AuthenticatedRequest extends Request {
+  user: User;
+}
+
 @Injectable()
 export class JwtAccessAuthGuard implements CanActivate {
   constructor(
