@@ -97,11 +97,11 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'User fetched successfully.',
-    type: MeResponseSuccess,
+    type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @UseGuards(JwtAccessAuthGuard)
-  async me(@Req() req: Request): Promise<MeResponseSuccess> {
+  async me(@Req() req: Request): Promise<User> {
     console.log('req.user.id', req.user.id);
     try {
       const user = req.user;

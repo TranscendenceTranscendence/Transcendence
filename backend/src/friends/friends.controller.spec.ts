@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FriendsController } from './friends.controller';
 import { FriendsService } from './friends.service';
-import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
+import { JwtAccessAuthGuard } from 'auth/guards/jwt-access.guard';
 import { Request } from 'express';
 
 describe('FriendsController', () => {
@@ -12,7 +12,7 @@ describe('FriendsController', () => {
     getFriendRequests: jest.fn(),
   };
 
-  const mockJwtAuthGuard = {
+  const mockJwtAccessAuthGuard = {
     canActivate: jest.fn(() => true),
   };
 
@@ -26,8 +26,8 @@ describe('FriendsController', () => {
         },
       ],
     })
-      .overrideGuard(JwtAuthGuard)
-      .useValue(mockJwtAuthGuard)
+      .overrideGuard(JwtAccessAuthGuard)
+      .useValue(mockJwtAccessAuthGuard)
       .compile();
 
     controller = module.get<FriendsController>(FriendsController);
