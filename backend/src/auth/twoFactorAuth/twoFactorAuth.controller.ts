@@ -39,8 +39,6 @@ export class TwoFactorAuthController {
   @UseGuards(JwtAccessAuthGuard)
   @ApiBearerAuth()
   async generate(@Req() req: Request) {
-    console.log('generate');
-
     const user = req.user;
     if (user.two_factor_enabled)
       return { msg: 'TwoFactorAuthentication already turned on' };

@@ -57,7 +57,6 @@ export class FriendsController {
   @UseGuards(JwtAccessAuthGuard)
   async getFriendRequests(@Req() req: Request) {
     const receiverId = req.user?.id; // Ensure type safety for `req.user`
-    console.log(receiverId);
     if (!receiverId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
