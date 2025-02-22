@@ -12,7 +12,6 @@ import { Toaster } from "./components/ui/sonner.tsx";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./utils/middleware/ProtectedRoute.tsx";
 import PublicRoute from "./utils/middleware/PublicRoute.tsx";
-import { UserProvider } from "@/utils/providers/UserProvider.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);

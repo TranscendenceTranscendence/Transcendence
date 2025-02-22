@@ -1,7 +1,6 @@
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Achievement } from "@/generated-api";
 import { formatDate } from "@/utils/formatters/date";
-import { useUser } from "@/utils/providers/UserProvider";
 
 interface AchievementBoxProps {
   achievements: Achievement[];
