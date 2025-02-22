@@ -7,12 +7,15 @@ import { User } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import JwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
+import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementType } from '../achievements/achievement.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly achievementsService: AchievementsService,
     private jwt: JwtService,
     @Inject(JwtConfig.KEY)
     private jwtConfig: ConfigType<typeof JwtConfig>,
@@ -38,6 +41,11 @@ export class UsersService {
   ): Promise<User | false> {
     const existingUser = await this.findOne(id);
     const userData = this.usersRepository.merge(existingUser, UpdateUserDto);
+
+    this.achievementsService.addAchievementToUser(
+      id,
+      AchievementType.FIRST_PROFILE_UPDATE,
+    );
 
     // check if nickname is already taken
     const userWithSameNickname = await this.usersRepository.findOne({

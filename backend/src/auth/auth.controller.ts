@@ -9,9 +9,11 @@ import {
 import { Request, Response } from 'express';
 import { FortyTwoAuthGuard } from './guards/ft-auth.guard';
 import { UsersService } from '../users/users.service';
+import { AchievementsService } from '../achievements/achievements.service';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { JwtAccessAuthGuard } from './guards/jwt-access.guard';
+import { AchievementType } from '../achievements/achievement.entity';
 
 @ApiTags('Auth') // Grouping for Swagger
 @Controller('auth')
@@ -20,6 +22,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly achievementsService: AchievementsService,
   ) {}
 
   @Get('42/login')
@@ -48,27 +51,42 @@ export class AuthController {
   })
   @UseGuards(FortyTwoAuthGuard)
   async fortyTwoCallback(@Req() req: Request, @Res() res: Response) {
+    // Extract the user ID from the request object (set by your auth guard)
     const userId = req.user['id'];
+
+    // Retrieve the user from the database
     const user = await this.usersService.findOne(userId);
+
+    // Award the FIRST_LOGIN achievement.
+    // The achievement service can handle checking if the achievement was already awarded.
+    await this.achievementsService.addAchievementToUser(
+      user.id,
+      AchievementType.FIRST_LOGIN,
+    );
+
+    // Generate an access token for the user
     const accessToken = await this.authService.generateAccessToken(user, false);
 
+    // Set the token header and determine the appropriate redirect
     res.setHeader('Authorization', `Bearer ${accessToken}`);
 
     let redirectUrl = null;
-
     if (
       req.user['nickname'] === null ||
-      (req.user['nickname'] as string).trim().length == 0
+      (req.user['nickname'] as string).trim().length === 0
     ) {
       redirectUrl = '/update';
-    } else if (user.two_factor_enabled == true)
+    } else if (user.two_factor_enabled === true) {
       redirectUrl = '/2fa/authenticate';
+    }
 
-    if (redirectUrl)
+    if (redirectUrl) {
       req.res.redirect(
         `http://localhost:3001?access_token=${accessToken}&redirect=${redirectUrl}`,
       );
-    else req.res.redirect(`http://localhost:3001?access_token=${accessToken}`);
+    } else {
+      req.res.redirect(`http://localhost:3001?access_token=${accessToken}`);
+    }
     return;
   }
 
