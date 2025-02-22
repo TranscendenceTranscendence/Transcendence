@@ -40,7 +40,7 @@ export default function Page() {
       }
     };
     Promise.all([fetchFriends(), fetchAchievements()]);
-  }, []);
+  }, [me]);
 
   return (
     <SidebarProvider>

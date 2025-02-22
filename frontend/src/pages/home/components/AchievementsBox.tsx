@@ -7,8 +7,6 @@ interface AchievementBoxProps {
 }
 
 export const AchievementBox = ({ achievements }: AchievementBoxProps) => {
-  const me = useUser();
-
   return (
     <div className="row-span-3 w-full">
       <Card>
