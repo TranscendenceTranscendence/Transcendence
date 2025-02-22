@@ -8,11 +8,14 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import {
   AuthenticatedSocket,
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
+import { UsersService } from './users.service';
+import { JwtService } from '@nestjs/jwt';
+import { UserStatus } from './user.entity';
 
 @UseGuards(JwtAccessAuthGuard)
 @WebSocketGateway({
@@ -25,23 +28,74 @@ import {
 export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  handleConnection(client: AuthenticatedSocket) {
-    console.log(`Client connected: ${client.id}`);
-    // The UnifiedJwtAuthGuard attaches the user to the client after authentication.
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  handleConnection(@ConnectedSocket() client: AuthenticatedSocket): void {
+    try {
+      const token = client.handshake.auth.token;
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      // Attach the decoded token to the socket
+      client.data.user = decoded;
+      client.user = { ...decoded, id: decoded.sub }; // Ensure client.user is available
+
+      // Mark the user as active upon connection
+      this.usersService
+        .setLastActive(client.user.id)
+        .catch((err) =>
+          console.error(
+            `Error setting last active on connection for user ${client.user.id}:`,
+            err,
+          ),
+        );
+
+      console.log(`Client connected: ${client.id} (User: ${decoded.sub})`);
+    } catch (error) {
+      console.error('Error during token verification on connection:', error);
+      client.disconnect();
+    }
   }
 
-  handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
-    // Here you can mark the user as offline in your system.
+  async handleDisconnect(
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ): Promise<void> {
+    const user = client.data?.user;
+    if (!user || !user.sub) {
+      console.warn(`User info missing on disconnect for socket ${client.id}`);
+      return;
+    }
+    console.log(`Disconnecting user ${user.sub} (Socket: ${client.id})`);
+    try {
+      await this.usersService.setStatus(user.sub, UserStatus.Offline);
+    } catch (error) {
+      console.error(
+        `Error setting status to offline for user ${user.sub}:`,
+        error,
+      );
+    }
   }
 
   @SubscribeMessage('heartbeat')
-  handleHeartbeat(
+  async handleHeartbeat(
     @MessageBody() data: any,
     @ConnectedSocket() client: AuthenticatedSocket,
-  ): void {
-    console.log(`Heartbeat received from ${client.id}`, data);
-    console.log(`Authenticated user: ${client.user?.id}`);
-    // Update user's last active timestamp or perform other presence tracking logic.
+  ): Promise<void> {
+    const user = client.data?.user;
+    if (!user || !user.sub) {
+      console.warn(
+        `Heartbeat received from unauthenticated socket ${client.id}`,
+      );
+      return;
+    }
+    console.log(`Heartbeat received from ${client.id}:`, data);
+    try {
+      await this.usersService.setLastActive(user.sub, new Date(data.timestamp));
+    } catch (error) {
+      console.error(`Error updating last active for user ${user.sub}:`, error);
+    }
   }
 }

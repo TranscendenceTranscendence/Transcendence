@@ -67,10 +67,17 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserStatus,
-    default: 'offline',
+    default: UserStatus.Offline,
   })
   @IsOptional()
   user_status: UserStatus;
+
+  @ApiProperty({
+    type: 'date',
+    description: 'The last active date of the user.',
+  })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  lastActive: Date;
 
   // Relationships
   @IsOptional()
@@ -112,4 +119,6 @@ export class User {
   @IsOptional()
   @OneToMany(() => Game, (game) => game.winner_user_id)
   gamesWon?: Game[];
+
+  // METHODS
 }

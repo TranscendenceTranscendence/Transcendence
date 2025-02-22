@@ -27,6 +27,7 @@ import {
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
 import { PartialType } from '@nestjs/mapped-types';
+import { UserDto } from './dto/user.dto';
 
 class MeResponseSuccess extends PartialType(User) {
   @ApiProperty()
@@ -122,7 +123,7 @@ export class UsersController {
     type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async findOne(@Param('id') id: number): Promise<User> {
+  async findOne(@Param('id') id: number): Promise<UserDto> {
     try {
       const data = await this.usersService.findOne(+id);
       if (data === undefined) {
