@@ -3,6 +3,7 @@ import {
   Post,
   UseInterceptors,
   UploadedFile,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadService } from './file-upload.service';
@@ -12,6 +13,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
+class FileUploadDto {
+  @ApiProperty({ type: 'string', format: 'binary' })
+  file: Express.Multer.File;
+  @ApiProperty({ required: false })
+  filename?: string;
+  @ApiProperty({ required: false })
+  category?: string;
+}
 
 class FileUploadResponseSuccess {
   @ApiProperty()
@@ -34,7 +44,11 @@ export class FileUploadController {
     type: FileUploadResponseSuccess,
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: FileUploadDto,
+  ) {
+    console.log(body);
     return this.fileUploadService.handleFileUpload(file);
   }
 }
