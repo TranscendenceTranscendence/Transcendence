@@ -1,8 +1,19 @@
 // Games Controller
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateGameDto } from './dto/create-game.dto';
 import { GamesService } from './games.service';
+import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
+import { AuthenticatedRequest } from '../auth/guards/jwt-access.guard';
 
 @ApiTags('Games') // Groups the endpoints under "Games" in Swagger
 @Controller('games')
@@ -10,6 +21,7 @@ export class GamesController {
   constructor(private readonly gamesService: GamesService) {}
 
   @Post()
+  @UseGuards(JwtAccessAuthGuard)
   @ApiOperation({ summary: 'Create a new game' })
   @ApiResponse({
     status: 201,
@@ -19,18 +31,24 @@ export class GamesController {
     status: 400,
     description: 'Bad Request.',
   })
-  async create(@Body() createGameDto: CreateGameDto) {
+  async create(
+    @Body() createGameDto: CreateGameDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     try {
-      await this.gamesService.create(createGameDto);
+      // Set the current user as player1
+      createGameDto.player1_user_id = req.user.id;
+      console.log(createGameDto.player1_user_id);
+      const game = await this.gamesService.create(createGameDto);
+
       return {
         success: true,
+        data: game,
         message: 'Game Created Successfully',
       };
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      // Re-throw the error to be handled by NestJS exception filters
+      throw error;
     }
   }
 
