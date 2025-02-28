@@ -1,10 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity'; // Adjust the import path as necessary
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+  ) {}
+
+  async getTokenByUserId(userId: number): Promise<string> {
+    const user = await this.usersRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      needsTwoFactorAuthentication: false,
+      isSecondFactorAuthenticated: true,
+    };
+    return this.jwtService.signAsync(payload);
+  }
 
   async generateAccessToken(
     user: User,
