@@ -36,9 +36,7 @@ export class GamesController {
     @Req() req: AuthenticatedRequest,
   ) {
     try {
-      // Set the current user as player1
       createGameDto.player1_user_id = req.user.id;
-      console.log(createGameDto.player1_user_id);
       const game = await this.gamesService.create(createGameDto);
 
       return {
@@ -47,7 +45,6 @@ export class GamesController {
         message: 'Game Created Successfully',
       };
     } catch (error) {
-      // Re-throw the error to be handled by NestJS exception filters
       throw error;
     }
   }

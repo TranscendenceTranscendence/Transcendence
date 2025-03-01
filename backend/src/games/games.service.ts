@@ -28,19 +28,16 @@ export class GamesService {
 
       return !!activeGame;
     } catch (error: unknown) {
-      console.error('Error checking player game status:', error);
+      void error;
       throw new HttpException('Error checking player game status', 500);
     }
   }
 
   async create(createGameDto: CreateGameDto): Promise<Game> {
-    // Check if player is already in a game before creating new one
     const isInGame = await this.isPlayerInGame(createGameDto.player1_user_id);
     if (isInGame) {
       throw new HttpException('Player is already in an active game', 400);
     }
-
-    console.log('createGameDto', createGameDto);
     const gameData = await this.gamesRepository.create(createGameDto);
     return this.gamesRepository.save(gameData);
   }
@@ -56,19 +53,6 @@ export class GamesService {
     if (!gameData) throw new HttpException('Game Not Found', 404);
     return gameData;
   }
-
-  // async update(
-  //   id: number,
-  //   UpdateGameDto: UpdateGameDto,): Promise<Game[]> {
-  //   const existingGame = await this.findByPersonUserId(id);
-  //   const gameData = this.gamesRepository.merge(
-  //       existingGame,
-  //       UpdateGameDto,
-  //   );
-  //   return await this.gamesRepository.save(
-  //       gameData,
-  //   );
-  // }
 
   async remove(id: number): Promise<Game[]> {
     const existingGame = await this.findByUserId(id);

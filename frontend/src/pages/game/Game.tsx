@@ -11,15 +11,15 @@ const Game = () => {
   const handleCreateGame = async () => {
     try {
       setIsLoading(true);
-      setMessage(null); // Clear any previous messages
+      setMessage(null);
 
       const createGameDto: CreateGameDto = {
         roomIdentifier: uuidv4(),
         status: CreateGameDtoStatusEnum.Pending,
         score: [0, 0],
-        player1UserId: 0, // This will be set by backend from JWT
-        player2UserId: 0, // Will be set when player 2 joins
-        winnerUserId: 0, // Will be set when game ends
+        player1UserId: 0,
+        player2UserId: 0,
+        winnerUserId: 0,
         createdAt: new Date(),
       };
 
@@ -30,7 +30,6 @@ const Game = () => {
           " Waiting for opponent...",
       );
     } catch (error) {
-      console.error("Error creating game:", error);
       setMessage("Failed to create game. You might already be in a game.");
     } finally {
       setIsLoading(false);
