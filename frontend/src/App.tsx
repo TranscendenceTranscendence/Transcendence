@@ -13,6 +13,7 @@ import ProtectedRoute from "./utils/middleware/ProtectedRoute.tsx";
 import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
+import Game from "./pages/game/Game.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -49,6 +50,7 @@ function App() {
           <Route path="/update" element={<UpdateUser />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/profile/:id" element={<VisitingProfile />} />
+          <Route path="/game" element={<Game />} />
           <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
           <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
           <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />

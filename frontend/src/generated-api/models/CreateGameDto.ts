@@ -60,7 +60,7 @@ export interface CreateGameDto {
    * @type {Date}
    * @memberof CreateGameDto
    */
-  endedAt: Date;
+  endedAt?: Date;
   /**
    * Game creation time
    * @type {Date}
@@ -95,7 +95,6 @@ export function instanceOfCreateGameDto(value: object): value is CreateGameDto {
   if (!("winnerUserId" in value) || value["winnerUserId"] === undefined)
     return false;
   if (!("score" in value) || value["score"] === undefined) return false;
-  if (!("endedAt" in value) || value["endedAt"] === undefined) return false;
   if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
   return true;
 }
@@ -118,7 +117,7 @@ export function CreateGameDtoFromJSONTyped(
     player2UserId: json["player2_user_id"],
     winnerUserId: json["winner_user_id"],
     score: json["score"],
-    endedAt: new Date(json["ended_at"]),
+    endedAt: json["ended_at"] == null ? undefined : new Date(json["ended_at"]),
     createdAt: new Date(json["created_at"]),
   };
 }
@@ -142,7 +141,8 @@ export function CreateGameDtoToJSONTyped(
     player2_user_id: value["player2UserId"],
     winner_user_id: value["winnerUserId"],
     score: value["score"],
-    ended_at: value["endedAt"].toISOString(),
+    ended_at:
+      value["endedAt"] == null ? undefined : value["endedAt"].toISOString(),
     created_at: value["createdAt"].toISOString(),
   };
 }
