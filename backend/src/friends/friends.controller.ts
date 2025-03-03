@@ -9,11 +9,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { GetFriendRequestsDto } from './dto/get-friend-requests.dto';
-import { JwtAuthGuard } from '../common/gaurds/jwt-auth.gaurd';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 
 @ApiTags('Friends') // Groups the endpoints under "Friends" in Swagger
 @Controller('friends')
@@ -30,10 +32,10 @@ export class FriendsController {
     status: 404,
     description: 'User not found.',
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAccessAuthGuard)
   async sendFriendRequest(
     @Param('id', ParseIntPipe) receiverId: number,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
     const senderId = req.user?.id; // Type safety assumed for `req.user`
     if (!senderId) {
@@ -54,10 +56,9 @@ export class FriendsController {
     description: 'Successfully fetched friend requests.',
     type: GetFriendRequestsDto,
   })
-  @UseGuards(JwtAuthGuard)
-  async getFriendRequests(@Req() req: Request) {
+  @UseGuards(JwtAccessAuthGuard)
+  async getFriendRequests(@Req() req: AuthenticatedRequest) {
     const receiverId = req.user?.id; // Ensure type safety for `req.user`
-    console.log(receiverId);
     if (!receiverId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
@@ -69,6 +70,28 @@ export class FriendsController {
     return {
       success: true,
       data: friendRequests,
+    };
+  }
+
+  @Get('/')
+  @ApiOperation({ summary: 'Get all friends for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully fetched friends.',
+    type: GetFriendRequestsDto,
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async getFriends(@Req() req: AuthenticatedRequest) {
+    const userId = req.user?.id; // Ensure type safety for `req.user`
+    if (!userId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    const data = await this.friendsService.getFriends(userId);
+
+    return {
+      success: true,
+      ...data,
     };
   }
 }

@@ -39,7 +39,7 @@ export class CreateGameDto {
   @ApiProperty({ description: 'Game end time' })
   @IsDate()
   @IsOptional()
-  ended_at: Date;
+  ended_at?: Date;
 
   @ApiProperty({ description: 'Game creation time' })
   @IsDate()

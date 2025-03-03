@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import getAuthData from "./isAuthenticated";
+import { UserProvider } from "../providers/UserProvider";
 
 const ProtectedRoute: React.FC = () => {
   const location = useLocation();
@@ -23,7 +24,11 @@ const ProtectedRoute: React.FC = () => {
     return <Navigate to="/" />;
   }
 
-  return <Outlet />;
+  return (
+    <UserProvider>
+      <Outlet />
+    </UserProvider>
+  );
 };
 
 export default ProtectedRoute;

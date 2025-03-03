@@ -1,6 +1,6 @@
 import {
   Entity,
-  OneToOne,
+  ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
   Column,
@@ -30,11 +30,11 @@ export class Friend {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
-  @OneToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'sender_id' })
   sender: User;
 
-  @OneToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'receiver_id' })
   receiver: User;
 }

@@ -17,15 +17,17 @@ import {
   ApiResponse,
   ApiProperty,
 } from '@nestjs/swagger';
-import { Request } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { JwtService } from '@nestjs/jwt';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 import { PartialType } from '@nestjs/mapped-types';
+import { UserDto } from './dto/user.dto';
 
 class MeResponseSuccess extends PartialType(User) {
   @ApiProperty()
@@ -34,20 +36,24 @@ class MeResponseSuccess extends PartialType(User) {
   avatar: string;
   @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
   nickname: string;
+  @ApiProperty({ type: 'string', description: 'The email of the user.' })
+  email: string;
   @ApiProperty({
     type: 'boolean',
     description: 'The two factor authentication status of the user.',
   })
-  enable_two_factor: boolean;
+  two_factor_enabled: boolean;
+  @ApiProperty({
+    type: 'number',
+    description: 'The ladder level of the user.',
+  })
+  ladder_level: number;
 }
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -94,24 +100,16 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'User fetched successfully.',
-    type: MeResponseSuccess,
+    type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @UseGuards(JwtAccessAuthGuard)
-  async me(@Req() req: Request): Promise<MeResponseSuccess> {
-    console.log('req.user.id', req.user.id);
+  async me(@Req() req: AuthenticatedRequest): Promise<MeResponseSuccess> {
     try {
       const user = req.user;
 
       // user to me response
-      return {
-        id: user.id,
-        avatar: user.avatar,
-        email: user.email,
-        nickname: user.nickname,
-        ladder_level: user.ladder_level,
-        enable_two_factor: user.two_factor_enabled,
-      };
+      return user;
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -125,7 +123,7 @@ export class UsersController {
     type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  async findOne(@Param('id') id: number): Promise<User> {
+  async findOne(@Param('id') id: number): Promise<UserDto> {
     try {
       const data = await this.usersService.findOne(+id);
       if (data === undefined) {
@@ -152,7 +150,7 @@ export class UsersController {
   @UseGuards(JwtAccessAuthGuard)
   async update(
     @Body() body: UpdateUserDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ): Promise<UpdateUserResponse> {
     try {
       const nicknameTaken = !(await this.usersService.update(

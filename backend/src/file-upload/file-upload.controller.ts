@@ -46,9 +46,9 @@ export class FileUploadController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   uploadFile(
     @UploadedFile() file: Express.Multer.File,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Body() body: FileUploadDto,
   ) {
-    console.log(body);
     return this.fileUploadService.handleFileUpload(file);
   }
 }

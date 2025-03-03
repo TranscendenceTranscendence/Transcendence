@@ -14,10 +14,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TwoFactorAuthService } from './twoFactorAuth/twoFactorAuth.service';
 import { TwoFactorAuthController } from './twoFactorAuth/twoFactorAuth.controller';
+import { AchievementsService } from '../achievements/achievements.service';
+import { Achievement } from '../achievements/achievement.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Achievement]),
     ConfigModule.forFeature(FortyTwoOauthConfig),
     PassportModule.register({ defaultStrategy: 'ft' }),
     HttpModule,
@@ -38,6 +40,7 @@ import { TwoFactorAuthController } from './twoFactorAuth/twoFactorAuth.controlle
   providers: [
     AuthService,
     ConfigService,
+    AchievementsService,
     FortyTwoStrategy,
     FortyTwoAuthGuard,
     JwtStrategy,
