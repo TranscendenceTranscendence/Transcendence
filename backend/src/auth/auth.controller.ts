@@ -1,5 +1,13 @@
 // Auth Controller
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -17,6 +25,7 @@ import {
   JwtAccessAuthGuard,
 } from './guards/jwt-access.guard';
 import { AchievementType } from '../achievements/achievement.entity';
+import { DevLoginResponseDto } from './dto/devLogin.dto';
 
 @ApiTags('Auth') // Grouping for Swagger
 @Controller('auth')
@@ -107,5 +116,45 @@ export class AuthController {
       is_second_auth_done: false,
     });
     return { msg: 'User logged out successfully' };
+  }
+
+  @Get('dev/login/:userId')
+  @ApiOperation({ summary: 'Login with to any account by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'User logged in successfully.',
+    type: DevLoginResponseDto,
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirect to 42 OAuth login page.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized.',
+  })
+  async devLogin(
+    @Param('userId') userId: number,
+  ): Promise<DevLoginResponseDto> {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('This endpoint is only available in development mode');
+    }
+
+    // Retrieve the user from the database
+    const user = await this.usersService.findOne(+userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Generate an access token for the user
+    const accessToken = await this.authService.getTokenByUserId(user.id);
+
+    console.log('dev login', userId);
+    console.log('access token', accessToken);
+
+    return {
+      accessToken,
+    };
   }
 }

@@ -10,7 +10,7 @@ export class ConfigService {
     this.envConfig = process.env;
   }
 
-  get(key: string): string {
+  get(key: string): string | undefined {
     return this.envConfig[key];
   }
 }
