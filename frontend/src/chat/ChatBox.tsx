@@ -3,7 +3,11 @@ import { handleSubmitMessages } from "../utils/PostRequest.tsx";
 import { ChatNode } from "./ChatNode.tsx";
 import React from "react";
 import { KickUser, PromoteUser } from "./utils.ts";
-import { useActiveParticipantbyChatroomId, useAddMessage, useMessages } from "./ChatApiCalls.tsx";
+import {
+  useActiveParticipantbyChatroomId,
+  useAddMessage,
+  useMessages,
+} from "./ChatApiCalls.tsx";
 import { ChatMessage } from "@/generated-api/index.ts";
 
 enum chat_participant_roles {
@@ -11,7 +15,6 @@ enum chat_participant_roles {
   Admin = "admin",
   Guest = "guest",
 }
-
 
 const addStyle = (value: boolean) => {
   return value == true ? "chatUser" : "chatContact";
@@ -27,9 +30,11 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
   const { fetchedMessages } = useMessages(chatRoomId);
   const { activeParticipants } = useActiveParticipantbyChatroomId(chatRoomId);
   const localParticipant = activeParticipants?.chatParticipants.find(
-    (participant) => participant.userId?.toString() == userId.toString()
+    (participant) => participant.userId?.toString() == userId.toString(),
   );
-  const [messages, setMessages] = useState<ChatMessage[]>(fetchedMessages?.data || []);
+  const [messages, setMessages] = useState<ChatMessage[]>(
+    fetchedMessages?.data || [],
+  );
   const [input, setInput] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<{
     userId: number;
@@ -70,7 +75,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
         "https://localhost:3000/chatMessages",
         input,
         userId,
-        chatRoomId
+        chatRoomId,
       );
       setInput("");
     }
@@ -116,7 +121,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
             <div
               key={index}
               className={addStyle(
-                message.userId?.toString() === userId.toString()
+                message.userId?.toString() === userId.toString(),
               )}
               onClick={(e) => handleMessageClick(e, message.userId)}
             >
@@ -124,7 +129,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 key={index}
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
-                  (participant) => participant.userId == message.userId
+                  (participant) => participant.userId == message.userId,
                 )}
                 loading={false}
               />

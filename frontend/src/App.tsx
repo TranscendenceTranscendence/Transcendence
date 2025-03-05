@@ -55,6 +55,7 @@ function App() {
           <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
           <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
           <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+          <Route path="/chat" element={<Chat />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" />} />

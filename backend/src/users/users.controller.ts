@@ -105,6 +105,7 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found.' })
   @UseGuards(JwtAccessAuthGuard)
   async me(@Req() req: AuthenticatedRequest): Promise<MeResponseSuccess> {
+    
     try {
       const user = req.user;
 

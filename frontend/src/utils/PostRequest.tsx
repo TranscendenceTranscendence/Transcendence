@@ -10,14 +10,14 @@ export const handleSubmitMessages = async (
   url,
   message,
   userId,
-  chatRoomId
+  chatRoomId,
 ) => {
   try {
     const res = await axios.post(url, {
       content: message,
       user_id: userId,
       chat_room_id: chatRoomId,
-    }); 
+    });
     return res.data;
   } catch (error) {
     console.error("Error:", error);

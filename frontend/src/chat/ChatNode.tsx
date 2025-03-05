@@ -7,11 +7,9 @@ interface ChatNodeProps {
 }
 
 export const ChatNode = ({ message, user, loading }: ChatNodeProps) => {
-  if (loading)
-    return <li>Loading user data...</li>;
+  if (loading) return <li>Loading user data...</li>;
 
-  if (!user || user.length === 0)
-    return <li>User not found</li>;
+  if (!user || user.length === 0) return <li>User not found</li>;
 
   return (
     <li>

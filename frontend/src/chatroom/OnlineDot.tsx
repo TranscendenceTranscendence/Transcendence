@@ -1,4 +1,4 @@
-import '../css/ChatDot.css'
+import "../css/ChatDot.css";
 
 export const OnlineDot = ({ status }: { status: boolean }) => {
   console.log("deze --> " + status);

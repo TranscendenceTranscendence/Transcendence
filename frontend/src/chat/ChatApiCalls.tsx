@@ -1,63 +1,76 @@
-import { MeResponseSuccess, ChatRoomsResponse, MessagesResponse, ChatParticipantsResponse } from '@/generated-api/index.ts';
-import { useApi } from '@/utils/api/index.ts';
-import { useEffect, useState } from 'react';
+import {
+  MeResponseSuccess,
+  ChatRoomsResponse,
+  MessagesResponse,
+  ChatParticipantsResponse,
+} from "@/generated-api/index.ts";
+import { useApi } from "@/utils/api/index.ts";
+import { useEffect, useState } from "react";
 
 export const useUserDetails = () => {
-    const [userDetails, setUserDetails] = useState<MeResponseSuccess | null>(null);
-    const api = useApi();
+  const [userDetails, setUserDetails] = useState<MeResponseSuccess | null>(
+    null,
+  );
+  const api = useApi();
 
-    const fetchUserDetails = async () => {
-        try {
-            const userDetails: MeResponseSuccess = await api.Users.usersControllerMe();
-            console.log("User details:", userDetails);
-            if (userDetails?.id) {
-                setUserDetails(userDetails);
-                localStorage.setItem('localUserId', JSON.stringify(userDetails.id));
-            }
-        } catch (error) {
-            console.error("Failed to fetch user details:", error);
-        }
-    };
+  const fetchUserDetails = async () => {
+    try {
+      const userDetails: MeResponseSuccess =
+        await api.Users.usersControllerMe();
+      console.log("User details:", userDetails);
+      if (userDetails?.id) {
+        setUserDetails(userDetails);
+        localStorage.setItem("localUserId", JSON.stringify(userDetails.id));
+      }
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
+    }
+  };
 
-    useEffect(() => {
-        fetchUserDetails();
-    }, []);
-    return { userDetails, fetchUserDetails };
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+  return { userDetails, fetchUserDetails };
 };
 
 export const useChatRooms = () => {
-    const api = useApi();
-    const [chatRooms, setChatRooms] = useState<ChatRoomsResponse | null>(null);
+  const api = useApi();
+  const [chatRooms, setChatRooms] = useState<ChatRoomsResponse | null>(null);
 
-    const fetchChatRooms = async () => {
-      try {
-        const response: ChatRoomsResponse = await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
-        console.log("ChatRoomsResponse:", response);
+  const fetchChatRooms = async () => {
+    try {
+      const response: ChatRoomsResponse =
+        await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
+      console.log("ChatRoomsResponse:", response);
 
-        if (response.success) {
-          setChatRooms(response);
-        } else {
-          console.error("Failed to fetch chat rooms:", response.message);
-        }
-      } catch (error) {
-        console.error("Error fetching chat rooms:", error);
+      if (response.success) {
+        setChatRooms(response);
+      } else {
+        console.error("Failed to fetch chat rooms:", response.message);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+    }
+  };
 
-    useEffect(() => {
-      fetchChatRooms();
-    }, []);
+  useEffect(() => {
+    fetchChatRooms();
+  }, []);
 
-    return { chatRooms, fetchChatRooms };
+  return { chatRooms, fetchChatRooms };
 };
 
-export const useMessages = ( chatroomId ) => {
+export const useMessages = (chatroomId) => {
   const api = useApi();
-  const [fetchedMessages, setFetchedMessages] = useState<MessagesResponse | null>(null);
+  const [fetchedMessages, setFetchedMessages] =
+    useState<MessagesResponse | null>(null);
 
   const fetchMessages = async () => {
     try {
-      const response: MessagesResponse = await api.ChatMessages.chatMessagesControllerFindOne({ id: chatroomId });
+      const response: MessagesResponse =
+        await api.ChatMessages.chatMessagesControllerFindOne({
+          id: chatroomId,
+        });
       console.log("MessagesResponse:", response);
 
       if (response.success) {
@@ -77,13 +90,17 @@ export const useMessages = ( chatroomId ) => {
   return { fetchedMessages, fetchMessages };
 };
 
-export const useActiveParticipantbyChatroomId = (chatRoomId : number) =>  {
+export const useActiveParticipantbyChatroomId = (chatRoomId: number) => {
   const api = useApi();
-  const [activeParticipants, setActiveParticipants] = useState<ChatParticipantsResponse | null>(null);
+  const [activeParticipants, setActiveParticipants] =
+    useState<ChatParticipantsResponse | null>(null);
 
   const fetchActiveParticipants = async () => {
     try {
-      const response : ChatParticipantsResponse = await api.ChatParticipants.chatParticipantsControllerFindParticipantByChatRoom({ chatRoomId });
+      const response: ChatParticipantsResponse =
+        await api.ChatParticipants.chatParticipantsControllerFindParticipantByChatRoom(
+          { chatRoomId },
+        );
       console.log("MessagesResponse:", response);
 
       if (response.success) {
@@ -103,14 +120,19 @@ export const useActiveParticipantbyChatroomId = (chatRoomId : number) =>  {
   return { activeParticipants, fetchActiveParticipants };
 };
 
-export const useAddMessage = async (input: string, userId: number, chatRoomId: number) => {
+export const useAddMessage = async (
+  input: string,
+  userId: number,
+  chatRoomId: number,
+) => {
   const api = useApi();
 
   try {
-    const response = await api.ChatMessages.chatMessagesControllerCreate({ 
-       content: input,
-       user_id: userId,
-       chat_room_id: chatRoomId });
+    const response = await api.ChatMessages.chatMessagesControllerCreate({
+      content: input,
+      user_id: userId,
+      chat_room_id: chatRoomId,
+    });
     console.log("Participant added:", response);
   } catch (error) {
     console.error("Error adding participant:", error);

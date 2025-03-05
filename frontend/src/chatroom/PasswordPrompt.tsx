@@ -3,7 +3,7 @@ import "../css/PasswordPrompt.css";
 import { useState } from "react";
 
 interface PasswordPromptProps {
-    onSubmit: (password: string) => void;
+  onSubmit: (password: string) => void;
 }
 
 export const PasswordPrompt: React.FC<PasswordPromptProps> = ({ onSubmit }) => {

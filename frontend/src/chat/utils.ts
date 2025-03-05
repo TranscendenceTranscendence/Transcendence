@@ -1,42 +1,58 @@
-import { deleteItem } from "../utils/DeleteRequest.tsx";
 import { useApi } from "@/utils/api/index.ts";
-import { ChatParticipant, UpdateChatParticipantDto, UpdateChatParticipantDtoChatParticipantRoleEnum } from "@/generated-api/index.ts";
+import {
+  ChatParticipant,
+  UpdateChatParticipantDto,
+  UpdateChatParticipantDtoChatParticipantRoleEnum,
+} from "@/generated-api/index.ts";
 
-
-export const KickUser = (chatRoomId, userId) => {
-    console.log(userId);
-    deleteItem(chatRoomId, userId);
-}
+export const KickUser = async (chatRoomId, id) => {
+  const api = useApi();
+  try {
+    await api.ChatParticipants.chatParticipantsControllerRemove({
+      chatRoomId,
+      id,
+    });
+    console.log("Item deleted successfully");
+  } catch (error) {
+    console.error("Error deleting item:", error);
+  }
+};
 
 export const PromoteUser = async (chatRoomId, id) => {
-  const api = useApi(); 
+  const api = useApi();
   const updateDto: UpdateChatParticipantDto = {
     chatParticipantRole: UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
   };
   try {
-    const response: ChatParticipant = await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
-      chatRoomId,
-      id,
-      updateChatParticipantDto: updateDto,
-    });
-    console.log('Update Successful:', response);
+    const response: ChatParticipant =
+      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+        chatRoomId,
+        id,
+        updateChatParticipantDto: updateDto,
+      });
+    console.log("Update Successful:", response);
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error("Error updating user:", error);
   }
-}
+};
 
 export const MuteUser = async (chatRoomId, id) => {
   const api = useApi();
-  const updateDto : UpdateChatParticipantDto = {
-    chatParticipantRole : UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
+  const updateDto: UpdateChatParticipantDto = {
+    chatParticipantRole: UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
   };
-    try {
-      const response : ChatParticipant = await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({ chatRoomId, id, updateChatParticipantDto: updateDto });
-      console.log('Update Successful:', response);
-    } catch (error) {
-      console.error('Error updating user:', error);
-    }
-}
+  try {
+    const response: ChatParticipant =
+      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+        chatRoomId,
+        id,
+        updateChatParticipantDto: updateDto,
+      });
+    console.log("Update Successful:", response);
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+};
 
 export const BlockUser = async (chatRoomId, id) => {
   const api = useApi();
@@ -44,13 +60,14 @@ export const BlockUser = async (chatRoomId, id) => {
     chatParticipantRole: UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
   };
   try {
-    const response: ChatParticipant = await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
-      chatRoomId,
-      id,
-      updateChatParticipantDto: updateDto,
-    });
-    console.log('Update Successful:', response);
+    const response: ChatParticipant =
+      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+        chatRoomId,
+        id,
+        updateChatParticipantDto: updateDto,
+      });
+    console.log("Update Successful:", response);
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error("Error updating user:", error);
   }
-}
+};

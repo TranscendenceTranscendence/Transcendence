@@ -1,8 +1,12 @@
-import {useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { PostChatRoom } from "./PostChatRoom.tsx";
-import  ChatRoomList from "./ChatRoomList.tsx";
+import ChatRoomList from "./ChatRoomList.tsx";
 import ChatContainer from "../chat/ChatContainer.tsx";
-import { MeResponseSuccess, ChatRoom, ChatParticipantChatParticipantRoleEnum  } from '@/generated-api/index.ts';
+import {
+  MeResponseSuccess,
+  ChatRoom,
+  ChatParticipantChatParticipantRoleEnum,
+} from "@/generated-api/index.ts";
 import { useChatRooms, UseaddParticipant } from "./ApiRequest.tsx";
 
 interface ChatRoomContainerProps {
@@ -35,22 +39,19 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
 
   const addParticipant = async (userId: number, chatRoomId: number) => {
     console.log(
-      "Participant is being added to the chatroom" + userId + chatRoomId
+      "Participant is being added to the chatroom" + userId + chatRoomId,
     );
     UseaddParticipant(userId, chatRoomId);
   };
 
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
     console.log("handleChatRoomChange", newChatRoom);
-    if (newChatRoom != null)
-    {
+    if (newChatRoom != null) {
       localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
       setChatRoomId(newChatRoom?.id);
       console.log("addParticipant");
       addParticipant(userDetails.id, newChatRoom.id);
-    }
-    else 
-      console.log("Failed to change ChatRoom probably null!!");
+    } else console.log("Failed to change ChatRoom probably null!!");
     console.log("Chat room ID changed to:", newChatRoom?.id);
   };
   return (
