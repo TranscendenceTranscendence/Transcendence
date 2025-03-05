@@ -13,11 +13,70 @@
  */
 
 import * as runtime from "../runtime";
+import type { DevLoginResponseDto } from "../models/index";
+import {
+  DevLoginResponseDtoFromJSON,
+  DevLoginResponseDtoToJSON,
+} from "../models/index";
+
+export interface AuthControllerDevLoginRequest {
+  userId: number;
+}
 
 /**
  *
  */
 export class AuthApi extends runtime.BaseAPI {
+  /**
+   * Login with to any account by id
+   */
+  async authControllerDevLoginRaw(
+    requestParameters: AuthControllerDevLoginRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<DevLoginResponseDto>> {
+    if (requestParameters["userId"] == null) {
+      throw new runtime.RequiredError(
+        "userId",
+        'Required parameter "userId" was null or undefined when calling authControllerDevLogin().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/auth/dev/login/{userId}`.replace(
+          `{${"userId"}}`,
+          encodeURIComponent(String(requestParameters["userId"])),
+        ),
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      DevLoginResponseDtoFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Login with to any account by id
+   */
+  async authControllerDevLogin(
+    requestParameters: AuthControllerDevLoginRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<DevLoginResponseDto> {
+    const response = await this.authControllerDevLoginRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
+  }
+
   /**
    * 42 OAuth callback
    */

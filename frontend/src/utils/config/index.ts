@@ -8,6 +8,7 @@ export const useConfig = () => {
       process.env.REACT_APP_BACKEND_URL ||
       (console.error("REACT_APP_BACKEND_URL not set"),
       "https://localhost:3000"),
+    developmentMode: process.env.NODE_ENV === "development",
   };
   return config;
 };

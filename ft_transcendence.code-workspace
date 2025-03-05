@@ -23,6 +23,18 @@
 				"database": "postgres",
 				"connectionTimeout": 30
 			}
-		]
+		],
+		"biome.enabled": false,
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"[typescript][javascript][json][typescriptreact]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.formatOnSave": true,
+			"editor.codeActionsOnSave": {
+				"source.fixAll": "always"
+			},
+			"diffEditor.ignoreTrimWhitespace": false,
+			"editor.formatOnType": true,
+			"editor.wordBasedSuggestions": "off"
+		},
 	}
 }
