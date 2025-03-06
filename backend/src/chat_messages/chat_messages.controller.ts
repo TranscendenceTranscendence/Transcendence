@@ -1,24 +1,22 @@
 // Chat Messages Controller
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Param,
-    Delete,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
-import {  ChatMessage } from './chat_message.entity';
+import { ChatMessage } from './chat_message.entity';
 
 class MessagesResponse {
-    @ApiProperty()
-    success: boolean;
-    @ApiProperty({ type: [ChatMessage], required: false })
-    data?: ChatMessage[];
-    @ApiProperty()
-    message?: string;
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty({ type: [ChatMessage], required: false })
+  data?: ChatMessage[];
+  @ApiProperty()
+  message?: string;
 }
 
 @ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
@@ -77,32 +75,32 @@ export class ChatMessagesController {
     }
   }
 
-    @Get(':id')
-    @ApiOperation({ summary: 'Retrieve chat messages by chat room ID' })
-    @ApiResponse({
-        status: 200,
-        description: 'Chat messages fetched successfully.',
-        type: MessagesResponse,
-    })
-    @ApiResponse({
-        status: 404,
-        description: 'Chat room not found.',
-    })
-    async findOne(@Param('id') id: string): Promise<MessagesResponse> {
-        try {
-            const data = await this.chatMessagesService.findByChatRoomId(+id);
-            return {
-                success: true,
-                data,
-                message: 'ChatMessage Fetched Successfully',
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
-        }
+  @Get(':id')
+  @ApiOperation({ summary: 'Retrieve chat messages by chat room ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Chat room not found.',
+  })
+  async findOne(@Param('id') id: string): Promise<MessagesResponse> {
+    try {
+      const data = await this.chatMessagesService.findByChatRoomId(+id);
+      return {
+        success: true,
+        data,
+        message: 'ChatMessage Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
+  }
 
   @Delete(':chatRoomId')
   @ApiOperation({ summary: 'Delete all chat messages for a chat room' })

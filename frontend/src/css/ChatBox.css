@@ -7,27 +7,27 @@
 .chatBox {
   min-width: 30%;
   max-width: fit-content;
-  border-style: solid;   
-  border-width: 1mm;     
-  border-color: black;   
+  border-style: solid;
+  border-width: 1mm;
+  border-color: black;
   display: flex;
   overflow-y: scroll;
   flex-direction: column; /* Stack children vertically */
-  height: 75vh;          /* Set height for the chat box */
-  width: 75vh;           /* Set width for the chat box */
+  height: 75vh; /* Set height for the chat box */
+  width: 75vh; /* Set width for the chat box */
 }
 
 .chatMessages {
   display: flex;
   flex-direction: column; /* Arrange messages in a column */
-  gap: 10px;              /* Space between messages */
-  flex: 1;                /* Allow this section to grow and fill available space */
-  overflow-y: auto;       /* Enable scrolling if messages exceed height */
+  gap: 10px; /* Space between messages */
+  flex: 1; /* Allow this section to grow and fill available space */
+  overflow-y: auto; /* Enable scrolling if messages exceed height */
 }
 
 .formMessages {
-  margin-top: auto;       /* Push this section to the bottom of the chat box */
-  display: flex;          /* Use flex to align children if necessary */
+  margin-top: auto; /* Push this section to the bottom of the chat box */
+  display: flex; /* Use flex to align children if necessary */
   /* Add padding or margins as needed */
 }
 

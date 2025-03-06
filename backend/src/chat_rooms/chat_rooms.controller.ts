@@ -7,19 +7,24 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import { ChatRoom } from './chat_room.entity';
 
 class ChatRoomsResponse {
-    @ApiProperty()
-    success: boolean;
-    @ApiProperty()
-    chatRooms?: ChatRoom[];
-    @ApiProperty()
-    message?: string;
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty()
+  chatRooms?: ChatRoom[];
+  @ApiProperty()
+  message?: string;
 }
 
 @ApiTags('ChatRooms')
@@ -27,31 +32,33 @@ class ChatRoomsResponse {
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
 
-    @Post()
-    @ApiOperation({ summary: 'Create a new chat room and add the creator as an owner' })
-    @ApiResponse({
-        status: 201,
-        description: 'Chat room created successfully.',
-    })
-    @ApiResponse({
-        status: 400,
-        description: 'Invalid input data.',
-    })
-    async create(@Body() createChatRoomDto: CreateChatRoomDto) {
-        try {
-            const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
-            return {
-                success: true,
-                message: 'ChatRoom Created Successfully',
-                chatRoom,
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
-        }
+  @Post()
+  @ApiOperation({
+    summary: 'Create a new chat room and add the creator as an owner',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Chat room created successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  async create(@Body() createChatRoomDto: CreateChatRoomDto) {
+    try {
+      const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
+      return {
+        success: true,
+        message: 'ChatRoom Created Successfully',
+        chatRoom,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get a list of all chat rooms' })
@@ -97,28 +104,28 @@ export class ChatRoomsController {
     }
   }
 
-    @Get('includeParticipant')
-    @ApiOperation({ summary: 'Get all chat rooms including participants' })
-    @ApiResponse({
-        status: 200,
-        description: 'Chat rooms with participants fetched successfully.',
-        type: ChatRoomsResponse
-    })
-    async findAllincludeParticipant() : Promise<ChatRoomsResponse> {
-        try {
-            const data = await this.chatRoomsService.findAllincludeParticipant();
-            return {
-                success: true,
-                chatRooms: data,
-                message: 'ChatRoom Fetched Successfully',
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message,
-            };
-        }
+  @Get('includeParticipant')
+  @ApiOperation({ summary: 'Get all chat rooms including participants' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat rooms with participants fetched successfully.',
+    type: ChatRoomsResponse,
+  })
+  async findAllincludeParticipant(): Promise<ChatRoomsResponse> {
+    try {
+      const data = await this.chatRoomsService.findAllincludeParticipant();
+      return {
+        success: true,
+        chatRooms: data,
+        message: 'ChatRoom Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
+  }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific chat room by ID' })
