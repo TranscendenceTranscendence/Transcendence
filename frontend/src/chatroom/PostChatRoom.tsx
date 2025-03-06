@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useApi } from "@/utils/api/index.ts";
 import {
   ChatParticipantChatParticipantRoleEnum,
@@ -9,9 +9,9 @@ import {
 export const PostChatRoom = (userId) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [response, setResponse] = useState<{ data?: any; error?: any } | null>(
-    null,
-  );
+  const [response, setResponse] = useState<{
+    error?: string;
+  } | null>(null);
   const [type, setType] = useState<CreateChatRoomDtoChatRoomTypeEnum>("public");
   const api = useApi();
 
@@ -29,9 +29,7 @@ export const PostChatRoom = (userId) => {
       };
       console.log("Chat Room Data:", chatRoomData);
 
-      const res = await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
-      console.log("Chat Room Created:", res);
-      setResponse({ data: res });
+      await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
     } catch (error) {
       console.error("Error creating chat room:", error);
       setResponse({ error });

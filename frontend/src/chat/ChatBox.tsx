@@ -5,7 +5,6 @@ import React from "react";
 import { KickUser, PromoteUser } from "./utils.ts";
 import {
   useActiveParticipantbyChatroomId,
-  useAddMessage,
   useMessages,
 } from "./ChatApiCalls.tsx";
 import { ChatMessage } from "@/generated-api/index.ts";
@@ -21,7 +20,7 @@ const addStyle = (value: boolean) => {
 };
 
 interface ChatBoxProps {
-  socket: any;
+  socket: number;
   chatRoomId: number;
   userId: number;
 }

@@ -14,7 +14,7 @@ import ProtectedRoute from "./utils/middleware/ProtectedRoute.tsx";
 import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
-import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
+// import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
 import Game from "./pages/game/Game.tsx";
 
 function App() {
