@@ -115,7 +115,6 @@ export class GamesService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     } finally {
-      // Release resources
       if (!queryRunner.isReleased) {
         await queryRunner.release();
       }
