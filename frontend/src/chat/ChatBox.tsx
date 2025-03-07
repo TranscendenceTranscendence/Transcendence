@@ -7,6 +7,7 @@ import {
   useActiveParticipantbyChatroomId,
   useMessages,
 } from "./ChatApiCalls.tsx";
+import { Socket } from "socket.io-client";
 import { ChatMessage } from "@/generated-api/index.ts";
 
 enum chat_participant_roles {
@@ -20,7 +21,7 @@ const addStyle = (value: boolean) => {
 };
 
 interface ChatBoxProps {
-  socket: number;
+  socket: Socket;
   chatRoomId: number;
   userId: number;
 }

@@ -2,18 +2,21 @@ import { ChatMessage, ChatParticipant } from "@/generated-api/index.ts";
 
 interface ChatNodeProps {
   message: ChatMessage;
-  user: ChatParticipant[];
+  user: ChatParticipant;
   loading: boolean;
 }
 
 export const ChatNode = ({ message, user, loading }: ChatNodeProps) => {
   if (loading) return <li>Loading user data...</li>;
 
-  if (!user || user.length === 0) return <li>User not found</li>;
+  console.log("User:", user);
+  console.log("Message:", message);
+
+  if (!user) return <li>User not found</li>;
 
   return (
     <li>
-      {message.content} - Sent by: {user[0]?.userId}
+      {message.content} - Sent by: {user?.userId}
     </li>
   );
 };
