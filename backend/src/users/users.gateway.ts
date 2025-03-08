@@ -43,6 +43,12 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.data.user = decoded;
       client.user = { ...decoded, id: decoded.sub }; // Ensure client.user is available
 
+      // emit the user's status to the client (online)
+      this.server.to(`user_${client.user.id}`).emit('userStatus', {
+        userId: client.user.id,
+        status: UserStatus.Online,
+      });
+
       // Mark the user as active upon connection
       this.usersService
         .setLastActive(client.user.id)
@@ -69,6 +75,10 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
     console.log(`Disconnecting user ${user.sub} (Socket: ${client.id})`);
+    this.server.to(`user_${user.sub}`).emit('userStatus', {
+      userId: user.sub,
+      status: UserStatus.Offline,
+    });
     try {
       await this.usersService.setStatus(user.sub, UserStatus.Offline);
     } catch (error) {
@@ -77,6 +87,23 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
         error,
       );
     }
+  }
+
+  @SubscribeMessage('subscribeToUser')
+  handleJoinRoom(
+    @MessageBody() userId: number,
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ): void {
+    const user = client.data?.user;
+    const targetRoom = `user_${userId}`;
+    if (!user || !user.sub) {
+      console.warn(
+        `Unauthenticated socket ${client.id} tried to join room ${targetRoom}`,
+      );
+      return;
+    }
+    client.join(targetRoom);
+    console.log(`User ${user.sub} joined room ${targetRoom}`);
   }
 
   @SubscribeMessage('heartbeat')

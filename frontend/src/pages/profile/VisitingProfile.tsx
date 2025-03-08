@@ -71,7 +71,7 @@ export default function VisitingProfile() {
       <h1>User Profile</h1>
       <p>Status: {visitingUser.userStatus}</p>
       <div style={{ maxWidth: "300px", maxHeight: "300px" }}>
-        <AvatarDisplay avatarUrl={visitingUser.avatar} />
+        <AvatarDisplay user={visitingUser} />
       </div>
       <UserDetails user={visitingUser} />
       <FriendRequest user={visitingUser} />

@@ -32,9 +32,11 @@ export default function Page() {
     };
     const fetchAchievements = async () => {
       try {
+        const userId = me.user?.id;
+        if (!userId) return;
         const response =
           await api.Achievements.achievementsControllerFindAllbyUserId({
-            userId: me.user.id,
+            userId,
           });
         setAchievements(response.achievements);
       } catch (error) {
@@ -42,7 +44,7 @@ export default function Page() {
       }
     };
     Promise.all([fetchFriends(), fetchAchievements()]);
-  }, [me]);
+  }, [me.user]);
 
   const handlePlayClick = () => {
     navigate("/game");
