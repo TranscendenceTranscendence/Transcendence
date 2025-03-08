@@ -130,7 +130,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }}
     >
       {children}
-      <pre>{JSON.stringify(subscribedToUsersSet, null, 2)}</pre>
     </UserContext.Provider>
   );
 };
