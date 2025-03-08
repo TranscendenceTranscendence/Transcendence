@@ -32,8 +32,7 @@ export default function AvatarDisplay({
   }, [me.subscribedToUsersSet, user]);
 
   useEffect(() => {
-    // if (!user || !me.user) return;
-
+    if (!user) return;
     me.subscribeToUser(user.id);
   }, [me.user?.id, user?.id]);
 
