@@ -43,7 +43,7 @@ export default function UserProfile() {
       <h1>User Profile</h1>
       <p>Status: {currentUser.userStatus}</p>
       <div style={{ maxWidth: "300px", maxHeight: "300px" }}>
-        <AvatarDisplay avatarUrl={currentUser.avatar} />
+        <AvatarDisplay user={currentUser} />
       </div>
       <UserDetails user={currentUser} />
     </div>
