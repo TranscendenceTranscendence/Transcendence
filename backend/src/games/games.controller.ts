@@ -14,6 +14,7 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { GamesService } from './games.service';
 import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
 import { AuthenticatedRequest } from '../auth/guards/jwt-access.guard';
+import { Game } from './game.entity';
 
 @ApiTags('Games') // Groups the endpoints under "Games" in Swagger
 @Controller('games')
@@ -49,29 +50,72 @@ export class GamesController {
     }
   }
 
+  @Post(':id/join')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Join an existing game' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game joined successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Game is full or player already in a game.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Game not found.',
+  })
+  async joinGame(
+    @Param('id') gameId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    try {
+      const game = await this.gamesService.joinGame(+gameId, req.user.id);
+      return {
+        success: true,
+        data: game,
+        message: 'Game Joined Successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   @Get()
+  @UseGuards(JwtAccessAuthGuard)
   @ApiOperation({ summary: 'Retrieve all games' })
   @ApiResponse({
     status: 200,
     description: 'Games fetched successfully.',
+    type: [Game],
+  })
+  async findAll(): Promise<Game[]> {
+    try {
+      const games = await this.gamesService.findAll();
+      return games || [];
+    } catch (error) {
+      console.error('Error fetching games:', error);
+      return [];
+    }
+  }
+
+  @Get('available')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({
+    summary: "Retrieve all available games except current user's",
   })
   @ApiResponse({
-    status: 500,
-    description: 'Internal server error.',
+    status: 200,
+    description: 'Games fetched successfully.',
+    type: [Game],
   })
-  async findAll() {
+  async findAllExceptUser(@Req() req: AuthenticatedRequest): Promise<Game[]> {
     try {
-      const data = await this.gamesService.findAll();
-      return {
-        success: true,
-        data,
-        message: 'Games Fetched Successfully',
-      };
+      const games = await this.gamesService.findAllExceptUser(req.user.id);
+      return games;
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      console.error('Error fetching available games:', error);
+      throw error;
     }
   }
 

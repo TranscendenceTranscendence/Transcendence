@@ -12,8 +12,10 @@ import { Achievement, Friend } from "@/generated-api";
 import { FriendsBox } from "./components/FriendsBox";
 import { AchievementBox } from "./components/AchievementsBox";
 import { useUser } from "@/utils/providers/UserProvider";
+import { useNavigate } from "react-router-dom";
 
 export default function Page() {
+  const navigate = useNavigate();
   const api = useApi();
   const me = useUser();
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -42,6 +44,10 @@ export default function Page() {
     Promise.all([fetchFriends(), fetchAchievements()]);
   }, [me]);
 
+  const handlePlayClick = () => {
+    navigate("/game");
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -55,7 +61,10 @@ export default function Page() {
         <div className="grid grid-flow-col grid-rows-3 gap-8 m-16 ">
           <FriendsBox friends={friends} />
           <div className="col-span-2 w-full ...">
-            <Button className="p-16 font-bold text-5xl rounded-xl w-full">
+            <Button
+              onClick={handlePlayClick}
+              className="p-16 font-bold text-5xl rounded-xl w-full hover:bg-primary/90"
+            >
               P L A Y
             </Button>
           </div>

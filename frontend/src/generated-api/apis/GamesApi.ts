@@ -13,14 +13,23 @@
  */
 
 import * as runtime from "../runtime";
-import type { CreateGameDto } from "../models/index";
-import { CreateGameDtoFromJSON, CreateGameDtoToJSON } from "../models/index";
+import type { CreateGameDto, Game } from "../models/index";
+import {
+  CreateGameDtoFromJSON,
+  CreateGameDtoToJSON,
+  GameFromJSON,
+  GameToJSON,
+} from "../models/index";
 
 export interface GamesControllerCreateRequest {
   createGameDto: CreateGameDto;
 }
 
 export interface GamesControllerFindOneRequest {
+  id: string;
+}
+
+export interface GamesControllerJoinGameRequest {
   id: string;
 }
 
@@ -81,7 +90,7 @@ export class GamesApi extends runtime.BaseAPI {
    */
   async gamesControllerFindAllRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<Array<Game>>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -96,7 +105,9 @@ export class GamesApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      jsonValue.map(GameFromJSON),
+    );
   }
 
   /**
@@ -104,8 +115,45 @@ export class GamesApi extends runtime.BaseAPI {
    */
   async gamesControllerFindAll(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.gamesControllerFindAllRaw(initOverrides);
+  ): Promise<Array<Game>> {
+    const response = await this.gamesControllerFindAllRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * Retrieve all available games except current user\'s
+   */
+  async gamesControllerFindAllExceptUserRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<Array<Game>>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/games/available`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      jsonValue.map(GameFromJSON),
+    );
+  }
+
+  /**
+   * Retrieve all available games except current user\'s
+   */
+  async gamesControllerFindAllExceptUser(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Array<Game>> {
+    const response =
+      await this.gamesControllerFindAllExceptUserRaw(initOverrides);
+    return await response.value();
   }
 
   /**
@@ -150,6 +198,50 @@ export class GamesApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<void> {
     await this.gamesControllerFindOneRaw(requestParameters, initOverrides);
+  }
+
+  /**
+   * Join an existing game
+   */
+  async gamesControllerJoinGameRaw(
+    requestParameters: GamesControllerJoinGameRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters["id"] == null) {
+      throw new runtime.RequiredError(
+        "id",
+        'Required parameter "id" was null or undefined when calling gamesControllerJoinGame().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/games/{id}/join`.replace(
+          `{${"id"}}`,
+          encodeURIComponent(String(requestParameters["id"])),
+        ),
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.VoidApiResponse(response);
+  }
+
+  /**
+   * Join an existing game
+   */
+  async gamesControllerJoinGame(
+    requestParameters: GamesControllerJoinGameRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<void> {
+    await this.gamesControllerJoinGameRaw(requestParameters, initOverrides);
   }
 
   /**
