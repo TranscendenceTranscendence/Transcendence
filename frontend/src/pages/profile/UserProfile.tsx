@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { User } from "../../generated-api/models";
 import { useApi } from "@/utils/api";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import UserDetails from "./components/UserDetails";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
 
@@ -38,14 +47,44 @@ export default function UserProfile() {
     return <div>Loading...</div>;
   }
 
+  // Determine the status color
+  const statusColor = (() => {
+    switch (currentUser.userStatus) {
+      case "online":
+        return "bg-emerald-500";
+      case "offline":
+        return "bg-gray-500";
+      case "waiting":
+        return "bg-yellow-500";
+      case "playing":
+        return "bg-blue-500";
+      default:
+        return "bg-gray-500";
+    }
+  })();
+
   return (
-    <div>
-      <h1>User Profile</h1>
-      <p>Status: {currentUser.userStatus}</p>
-      <div style={{ maxWidth: "300px", maxHeight: "300px" }}>
-        <AvatarDisplay user={currentUser} />
-      </div>
-      <UserDetails user={currentUser} />
+    <div className="flex flex-row justify-center items-center min-h-screen">
+      <Card>
+        <CardContent className="flex flex-row items-center bg-gray-50/50">
+          <div
+            style={{ maxWidth: "500px", maxHeight: "500px", margin: "50px" }}
+          >
+            <AvatarDisplay user={currentUser} />
+          </div>
+          <div className="flex flex-col pr-[50px]">
+            <div className="flex items-end gap-2 justify-end">
+              <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
+              <h3 className="text-xl font-semibold text-right align-bottom">
+                {currentUser.userStatus}
+              </h3>
+            </div>
+            <br />
+            <br />
+            <UserDetails user={currentUser} />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
