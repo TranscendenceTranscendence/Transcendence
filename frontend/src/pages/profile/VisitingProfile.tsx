@@ -6,6 +6,14 @@ import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
 import { jwtDecode } from "jwt-decode";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface JwtPayload {
   sub: number;
@@ -66,15 +74,47 @@ export default function VisitingProfile() {
     return <div>Loading...</div>;
   }
 
+  // Determine the status color
+  const statusColor = (() => {
+    switch (visitingUser.userStatus) {
+      case "online":
+        return "bg-emerald-500";
+      case "offline":
+        return "bg-gray-500";
+      case "waiting":
+        return "bg-yellow-500";
+      case "playing":
+        return "bg-blue-500";
+      default:
+        return "bg-gray-500";
+    }
+  })();
+
   return (
-    <div>
-      <h1>User Profile</h1>
-      <p>Status: {visitingUser.userStatus}</p>
-      <div style={{ maxWidth: "300px", maxHeight: "300px" }}>
-        <AvatarDisplay user={visitingUser} />
-      </div>
-      <UserDetails user={visitingUser} />
-      <FriendRequest user={visitingUser} />
+    <div className="flex flex-row justify-center items-center min-h-screen">
+      <Card>
+        <CardContent className="flex items-start bg-gray-50/50">
+          <div
+            style={{ maxWidth: "500px", maxHeight: "500px", margin: "50px" }}
+          >
+            <AvatarDisplay user={visitingUser} />
+          </div>
+          <div className="flex flex-col pr-[50px] pt-[50px]">
+            <div className="flex items-end gap-2 justify-end">
+              <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
+              <h3 className="text-xl font-semibold text-right align-bottom">
+                {visitingUser.userStatus}
+              </h3>
+            </div>
+            <br />
+            <br />
+            <UserDetails user={visitingUser} />
+            <div className="pt-16">
+              <FriendRequest user={visitingUser} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

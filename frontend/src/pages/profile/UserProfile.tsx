@@ -64,15 +64,15 @@ export default function UserProfile() {
   })();
 
   return (
-    <div className="flex flex-row justify-center items-center min-h-screen">
+    <div className="flex flex-column justify-center items-center min-h-screen">
       <Card>
-        <CardContent className="flex flex-row items-center bg-gray-50/50">
+        <CardContent className="flex items-start bg-gray-50/50">
           <div
             style={{ maxWidth: "500px", maxHeight: "500px", margin: "50px" }}
           >
             <AvatarDisplay user={currentUser} />
           </div>
-          <div className="flex flex-col pr-[50px]">
+          <div className="flex flex-col pr-[50px] pt-[50px]">
             <div className="flex items-end gap-2 justify-end">
               <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
               <h3 className="text-xl font-semibold text-right align-bottom">
