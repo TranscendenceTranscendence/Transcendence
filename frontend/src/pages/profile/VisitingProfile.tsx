@@ -6,6 +6,8 @@ import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
 import { jwtDecode } from "jwt-decode";
+import { Achievement } from "@/generated-api";
+import { AchievementBox } from "../home/components/AchievementsBox";
 import {
   Card,
   CardContent,
@@ -26,6 +28,7 @@ export default function VisitingProfile() {
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   useEffect(() => {
     const userIdNumber = Number(id);
@@ -64,6 +67,20 @@ export default function VisitingProfile() {
       console.error("Failed to decode token:", error);
       setError("Authentication error");
     }
+    const fetchAchievements = async () => {
+      try {
+        const userId = visitingUser?.id;
+        if (!userId) return;
+        const response =
+          await api.Achievements.achievementsControllerFindAllbyUserId({
+            userId,
+          });
+        setAchievements(response.achievements);
+      } catch (error) {
+        console.error("Failed to fetch achievements list:", error);
+      }
+    };
+    Promise.all([fetchAchievements()]);
   }, [id, navigate, api.Users]);
 
   if (error) {
@@ -94,23 +111,29 @@ export default function VisitingProfile() {
     <div className="flex flex-row justify-center items-center min-h-screen">
       <Card>
         <CardContent className="flex items-start bg-gray-50/50">
-          <div
-            style={{ maxWidth: "500px", maxHeight: "500px", margin: "50px" }}
-          >
-            <AvatarDisplay user={visitingUser} />
+          <div className="flex flex-col">
+            <div
+              style={{ maxWidth: "500px", maxHeight: "500px", margin: "50px" }}
+            >
+              <AvatarDisplay user={visitingUser} />
+            </div>
           </div>
           <div className="flex flex-col pr-[50px] pt-[50px]">
-            <div className="flex items-end gap-2 justify-end">
-              <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
-              <h3 className="text-xl font-semibold text-right align-bottom">
-                {visitingUser.userStatus}
-              </h3>
+            <div className="flex flex-col items-end gap-2 justify-end">
+              <div>
+                <FriendRequest user={visitingUser} />
+              </div>
+              <div className="flex items-end gap-2">
+                <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
+                <h3 className="text-xl font-semibold text-right align-bottom">
+                  {visitingUser.userStatus}
+                </h3>
+              </div>
             </div>
             <br />
-            <br />
             <UserDetails user={visitingUser} />
-            <div className="pt-16">
-              <FriendRequest user={visitingUser} />
+            <div className="pt-8">
+              <AchievementBox achievements={achievements} />
             </div>
           </div>
         </CardContent>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { User } from "../../generated-api/models";
 import { useApi } from "@/utils/api";
+import { Achievement } from "@/generated-api";
 import {
   Card,
   CardContent,
@@ -12,12 +13,14 @@ import {
 
 import UserDetails from "./components/UserDetails";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
+import { AchievementBox } from "../home/components/AchievementsBox";
 
 export default function UserProfile() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
   const apiUsersRef = useRef(api.Users);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -35,8 +38,22 @@ export default function UserProfile() {
         setError("Failed to fetch user data");
       }
     };
+    const fetchAchievements = async () => {
+      try {
+        const userId = me.user?.id;
+        if (!userId) return;
+        const response =
+          await api.Achievements.achievementsControllerFindAllbyUserId({
+            userId,
+          });
+        setAchievements(response.achievements);
+      } catch (error) {
+        console.error("Failed to fetch achievements list:", error);
+      }
+    };
 
     fetchUserData();
+    Promise.all([fetchAchievements()]);
   }, []);
 
   if (error) {
@@ -80,8 +97,10 @@ export default function UserProfile() {
               </h3>
             </div>
             <br />
-            <br />
             <UserDetails user={currentUser} />
+            <div className="pt-8">
+              <AchievementBox achievements={achievements} />
+            </div>
           </div>
         </CardContent>
       </Card>
