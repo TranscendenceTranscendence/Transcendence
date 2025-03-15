@@ -81,7 +81,7 @@ export default function VisitingProfile() {
       }
     };
     Promise.all([fetchAchievements()]);
-  }, [id, navigate, api.Users]);
+  }, [id, navigate, api.Users, visitingUser]);
 
   if (error) {
     return <div>Error: {error}</div>;

@@ -5,12 +5,16 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Delete, UseGuards, Req,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 
 @ApiTags('ChatRooms') // Groups the endpoints under "ChatRooms" in Swagger
 @Controller('chatroom')
@@ -77,6 +81,29 @@ export class ChatRoomsController {
         success: true,
         data,
         message: 'ChatRoom Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Get('overview')
+  @ApiOperation({ summary: 'Get all chat rooms the user can see' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat rooms fetched successfully.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async findOverview(@Req() req: AuthenticatedRequest) {
+    try {
+      const data = await this.chatRoomsService.findOverview(req.user.id);
+      return {
+        success: true,
+        data,
+        message: 'ChatRooms Fetched Successfully',
       };
     } catch (error) {
       return {

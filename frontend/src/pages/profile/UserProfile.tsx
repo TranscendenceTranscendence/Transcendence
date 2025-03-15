@@ -2,23 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { User } from "../../generated-api/models";
 import { useApi } from "@/utils/api";
 import { Achievement } from "@/generated-api";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Card, CardContent } from "@/components/ui/card";
 import UserDetails from "./components/UserDetails";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
 import { AchievementBox } from "../home/components/AchievementsBox";
+import { useUser } from "@/utils/providers/UserProvider";
 
 export default function UserProfile() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
+  const me = useUser();
   const apiUsersRef = useRef(api.Users);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
@@ -54,7 +48,7 @@ export default function UserProfile() {
 
     fetchUserData();
     Promise.all([fetchAchievements()]);
-  }, []);
+  }, [me.user]);
 
   if (error) {
     return <div>Error: {error}</div>;
