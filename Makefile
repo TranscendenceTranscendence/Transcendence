@@ -37,6 +37,9 @@ lint:
 	cd backend && npm run format:write
 	cd backend && npm run lint:write
 
+repl:
+	docker exec -it nestjs  npm run start:repl
+
 ./backend/secrets/cert.pem ./backend/secrets/cert-key.pem:
 	@mkdir -p ./backend/secrets
 	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./backend/secrets/cert-key.pem -out ./backend/secrets/cert.pem

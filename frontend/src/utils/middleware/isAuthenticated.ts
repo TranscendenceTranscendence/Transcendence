@@ -22,7 +22,6 @@ const getAuthData = (): DecodedToken & { isAuthenticated: boolean } => {
   try {
     const decoded: DecodedToken = jwtDecode(token);
     const isTokenValid = decoded.exp * 1000 > Date.now();
-    console.log("decode -->", decoded);
     return {
       isAuthenticated: isTokenValid,
       ...(isTokenValid && decoded),

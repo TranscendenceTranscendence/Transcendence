@@ -30,11 +30,7 @@ export const FriendsBox = ({ friends }: FriendBoxProps) => {
                     navigate(`/profile/${friend.id}`);
                   }}
                 >
-                  <AvatarDisplay
-                    avatarUrl={friend.avatar}
-                    className="w-14"
-                    status={friend.userStatus}
-                  />
+                  <AvatarDisplay user={friend} className="w-14" />
                   <div>
                     <p className="font-bold text-xl">{friend.nickname}</p>
                     <p className="text-lg text-gray-600">
