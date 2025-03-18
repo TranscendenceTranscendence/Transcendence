@@ -11,7 +11,7 @@ export class GamesService {
     private readonly gamesRepository: Repository<Game>,
   ) {}
 
-  async isPlayerInGame(playerId: number): Promise<boolean> {
+  async isPlayerInGame(playerId: number): Promise<Game> {
     try {
       const activeGame = await this.gamesRepository.findOne({
         where: [
@@ -25,8 +25,8 @@ export class GamesService {
           },
         ],
       });
-
-      return !!activeGame;
+      if (!activeGame) return null;
+      return activeGame;
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new HttpException(
@@ -92,15 +92,17 @@ export class GamesService {
         );
       }
       gameData.player2_user_id = playerId;
-      gameData.status = GameStatus.OPEN;
 
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
 
-      setTimeout(() => {
-        this.startGame(gameId).catch((err) => {
-          if (err instanceof HttpException) throw err;
-        });
+      setTimeout(async () => {
+        try {
+          await this.startGame(gameId);
+          console.log(`Game ${gameId} started successfully after delay`);
+        } catch (error) {
+          console.error(`Failed to start game ${gameId}:`, error);
+        }
       }, 10000);
 
       return updatedGame;
@@ -121,9 +123,22 @@ export class GamesService {
     }
   }
 
-  async startGame(gameId: number) {
-    // Game start logic here
-    void gameId;
+  async startGame(gameId: number): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { id: gameId },
+      });
+
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+
+      game.status = GameStatus.OPEN;
+      return this.gamesRepository.save(game);
+    } catch (error) {
+      console.error(`Error starting game ${gameId}:`, error);
+      throw error;
+    }
   }
 
   async findAll(): Promise<Game[]> {
@@ -191,6 +206,63 @@ export class GamesService {
         'Error finding available games',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  async findByRoomIdentifier(roomIdentifier: string): Promise<Game> {
+    try {
+      const gameData = await this.gamesRepository.findOne({
+        where: { room_identifier: roomIdentifier },
+      });
+
+      if (!gameData) {
+        throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+      }
+
+      return gameData;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Failed to fetch game by room identifier',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async checkIfUserInCurrentGame(
+    userId: number,
+    roomIdentifier: string,
+  ): Promise<boolean> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: {
+          room_identifier: roomIdentifier,
+          // Check if user is either player 1 or player 2
+          player1_user_id: userId,
+        },
+      });
+
+      if (!game) {
+        // Check if user is player 2
+        const gamePlayer2 = await this.gamesRepository.findOne({
+          where: {
+            room_identifier: roomIdentifier,
+            player2_user_id: userId,
+          },
+        });
+
+        if (!gamePlayer2) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error(
+        `Error checking if user ${userId} is in game ${roomIdentifier}:`,
+        error,
+      );
+      return false;
     }
   }
 }

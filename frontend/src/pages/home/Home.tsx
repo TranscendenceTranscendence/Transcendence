@@ -47,7 +47,7 @@ export default function Page() {
   }, [me.user]);
 
   const handlePlayClick = () => {
-    navigate("/game");
+    navigate("/matchmaking");
   };
 
   return (

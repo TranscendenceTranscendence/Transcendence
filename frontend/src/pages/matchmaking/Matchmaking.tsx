@@ -6,20 +6,45 @@ import {
   CreateGameDtoStatusEnum,
 } from "../../generated-api";
 import { v4 as uuidv4 } from "uuid";
-import "./Game.css";
+import "./Matchmaking.css";
+import { useNavigate } from "react-router-dom";
 
-const Game = () => {
-  const [isLoading, setIsLoading] = useState(false);
+const Matchmaking = () => {
+  const [isLoading, setIsLoading] = useState(true); // Start with loading true
   const [message, setMessage] = useState<string | null>(null);
   const [availableGames, setAvailableGames] = useState<GameType[]>([]);
   const api = useApi();
+  const navigate = useNavigate();
+
+  // Check for current game first, before showing the page
+  const checkCurrentGame = async () => {
+    try {
+      const response = await api.Games.gamesControllerFindCurrentGame();
+      if (!response || !response.roomIdentifier) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Error checking current game:", error);
+      return false;
+    }
+  };
 
   const fetchAvailableGames = async () => {
     try {
+      // First check if user is in a current game
+      const isInGame = await checkCurrentGame();
+      if (isInGame) {
+        const response = await api.Games.gamesControllerFindCurrentGame();
+        if (response) {
+          navigate(`/lobby/${response.roomIdentifier}`);
+        }
+        return;
+      }
+      // Fetch available games only if user is not in a game
       const games = await api.Games.gamesControllerFindAllExceptUser();
       if (games && Array.isArray(games)) {
         setAvailableGames(games);
-        console.log("games: ", games);
       } else {
         setAvailableGames([]);
       }
@@ -27,12 +52,18 @@ const Game = () => {
       console.error("Error fetching games:", error);
       setMessage("Failed to fetch available games");
       setAvailableGames([]);
+    } finally {
+      setIsLoading(false); // Set loading to false after fetch completes
     }
   };
 
   useEffect(() => {
+    // On component mount, fetch everything
     fetchAvailableGames();
+
+    // Set up polling interval
     const interval = setInterval(fetchAvailableGames, 5000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -56,6 +87,9 @@ const Game = () => {
       setMessage(
         `Game created successfully! Room ID: ${createGameDto.roomIdentifier}. Waiting for opponent...`,
       );
+      setTimeout(() => {
+        navigate(`/lobby/${createGameDto.roomIdentifier}`);
+      }, 1500);
     } catch (error) {
       console.error("Error creating game:", error);
       setMessage("Failed to create game. You might already be in a game.");
@@ -73,14 +107,27 @@ const Game = () => {
       }
       await api.Games.gamesControllerJoinGame({ id: gameIdString });
       setMessage("Successfully joined the game!");
-      fetchAvailableGames();
+
+      // Check for current game after joining
+      checkCurrentGame();
     } catch (error) {
       console.error("Error joining game:", error);
       setMessage("Failed to join game");
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // Show loading indicator while initial check is happening
+  if (isLoading && availableGames.length === 0) {
+    return (
+      <div className="game-page">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Checking game status...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="game-page">
@@ -131,7 +178,7 @@ const Game = () => {
 
       {message && (
         <div
-          className={`message ${message.includes("error") ? "error" : "success"}`}
+          className={`message ${message.includes("Failed") ? "error" : "success"}`}
         >
           {message}
         </div>
@@ -140,4 +187,4 @@ const Game = () => {
   );
 };
 
-export default Game;
+export default Matchmaking;

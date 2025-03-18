@@ -119,6 +119,27 @@ export class GamesController {
     }
   }
 
+  @Get('current')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Retrieve current game for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game fetched successfully or null if no game found.',
+    type: Game,
+  })
+  async findCurrentGame(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<{ game: Game | null }> {
+    try {
+      const game = await this.gamesService.isPlayerInGame(req.user.id);
+      // Always return an object with a game property that can be null
+      return { game };
+    } catch (error) {
+      console.error('Error finding current game:', error);
+      return { game: null };
+    }
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a game by ID' })
   @ApiResponse({
@@ -167,6 +188,62 @@ export class GamesController {
         success: false,
         message: error.message,
       };
+    }
+  }
+
+  @Get('room/:roomIdentifier') // Changed from 'lobby/:roomIdentifier' to avoid conflict with :id param
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Retrieve a game by room identifier' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game fetched successfully.',
+    type: Game,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied: You are not a participant in this game',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Game not found.',
+  })
+  async findByRoomIdentifier(
+    @Param('roomIdentifier') roomIdentifier: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<Game | { success: boolean; message: string; status: number }> {
+    try {
+      const game = await this.gamesService.findByRoomIdentifier(roomIdentifier);
+
+      try {
+        const isUserInGame = await this.gamesService.checkIfUserInCurrentGame(
+          req.user.id,
+          roomIdentifier,
+        );
+
+        if (!isUserInGame) {
+          console.warn(`User ${req.user.id} is not in game ${roomIdentifier}`);
+          return {
+            success: false,
+            message: 'Access denied: You are not a participant in this game',
+            status: 403,
+          };
+        }
+      } catch (error) {
+        console.warn(
+          `Error checking if user ${req.user.id} is in game ${roomIdentifier}:`,
+          error,
+        );
+        return {
+          success: false,
+          message: 'Error checking game access',
+          status: 500,
+        };
+      }
+
+      return game;
+    } catch (error) {
+      console.error(`Error finding game by room ID ${roomIdentifier}:`, error);
+      throw error;
     }
   }
 }
