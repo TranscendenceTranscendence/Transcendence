@@ -1,8 +1,23 @@
 // Chat Messages Controller
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
+import { ChatMessage } from './chat_message.entity';
+
+class MessagesResponse {
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty({ type: [ChatMessage], required: false })
+  data?: ChatMessage[];
+  @ApiProperty()
+  message?: string;
+}
 
 @ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
 @Controller('chatMessages')
@@ -65,12 +80,13 @@ export class ChatMessagesController {
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat room not found.',
   })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.findByChatRoomId(+id);
       return {
