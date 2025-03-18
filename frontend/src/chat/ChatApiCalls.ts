@@ -1,5 +1,4 @@
 import {
-  MeResponseSuccess,
   ChatRoomsResponse,
   MessagesResponse,
   ChatParticipantsResponse,

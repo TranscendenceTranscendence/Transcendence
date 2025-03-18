@@ -1,7 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ChatMessage, ChatParticipant } from "@/generated-api/index.ts";
-
 interface ChatNodeProps {
   message: { content: string };
   user: { userId: number } | null;
