@@ -35,7 +35,7 @@ export function AppSidebar() {
       <Sidebar>
         <SidebarContent className="flex flex-col items-center">
           <Avatar className="w-60 h-60 p-4">
-            <AvatarDisplay avatarUrl={me.user.avatar} />
+            <AvatarDisplay user={me.user} />
           </Avatar>
           <div className="flex flex-col items-center gap-4">
             <p className="font-bold text-3xl">{me.user.nickname}</p>
