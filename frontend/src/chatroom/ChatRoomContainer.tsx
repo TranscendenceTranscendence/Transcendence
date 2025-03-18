@@ -7,7 +7,7 @@ import {
   ChatRoom,
   ChatParticipantChatParticipantRoleEnum,
 } from "@/generated-api/index.ts";
-import { useChatRooms, UseaddParticipant } from "./ApiRequest.tsx";
+import { useChatRooms, UseaddParticipant } from "./ApiRequest.ts";
 
 interface ChatRoomContainerProps {
   userDetails: MeResponseSuccess;

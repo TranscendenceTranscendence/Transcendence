@@ -6,7 +6,7 @@ import { KickUser, PromoteUser } from "./utils.ts";
 import {
   useActiveParticipantbyChatroomId,
   useMessages,
-} from "./ChatApiCalls.tsx";
+} from "./ChatApiCalls.ts";
 import { Socket } from "socket.io-client";
 import { ChatMessage } from "@/generated-api/index.ts";
 

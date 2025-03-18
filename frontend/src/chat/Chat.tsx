@@ -1,16 +1,17 @@
 import { ChatRoomContainer } from "../chatroom/ChatRoomContainer.tsx";
-import { useUserDetails } from "./ChatApiCalls.tsx";
+// import { useUserDetails } from "./ChatApiCalls.tsx";
+import { useUser } from "@/utils/providers/UserProvider";
 
 export const Chat = () => {
-  const { userDetails } = useUserDetails();
+  const me = useUser();
 
-  if (!userDetails) {
+  if (!me) {
     return <div>Loading user data...</div>;
   }
 
   return (
     <div>
-      <ChatRoomContainer userDetails={userDetails} />
+      <ChatRoomContainer userDetails={me} />
     </div>
   );
 };
