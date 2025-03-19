@@ -49,7 +49,6 @@ export default function Page() {
   const handlePlayClick = () => {
     navigate("/game");
   };
-
   return (
     <SidebarProvider>
       <AppSidebar />

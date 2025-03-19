@@ -8,15 +8,16 @@ import {
   ChatParticipantChatParticipantRoleEnum,
 } from "@/generated-api/index.ts";
 import { useChatRooms, UseaddParticipant } from "./ApiRequest.ts";
+import { UserContextType } from "@/utils/providers/UserProvider.tsx";
 
 interface ChatRoomContainerProps {
-  userDetails: MeResponseSuccess;
+  userDetails: UserContextType;
 }
 
 export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
   const [askPassword, setAskPassword] = useState<boolean>(false);
   const { chatRooms } = useChatRooms();
-
+  let userId;
   const [chatRoomId, setChatRoomId] = useState(() => {
     try {
       const savedId = localStorage.getItem("chatRoomId");
@@ -50,22 +51,29 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
       localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
       setChatRoomId(newChatRoom?.id);
       console.log("addParticipant");
-      addParticipant(userDetails.id, newChatRoom.id);
+      addParticipant(userDetails?.user.id, newChatRoom.id);
     } else console.log("Failed to change ChatRoom probably null!!");
     console.log("Chat room ID changed to:", newChatRoom?.id);
   };
+  if (userDetails == null || userDetails.user == null) {
+    console.log("ChatRoomContainer userDetails is null");
+    userId = -1;
+  } else {
+    console.log("ChatRoomContainer userDetails:", userDetails.user.id);
+    userId = userDetails.user.id;
+  }
   return (
     <div className="chatRoomBox">
       <ChatRoomList
         chatRooms={chatRooms}
-        userId={userDetails.id}
+        userId={userId}
         onChatRoomChange={handleChatRoomChange}
         askPassword={askPassword}
         setAskPassword={setAskPassword}
       />
-      <ChatContainer chatRoomId={chatRoomId} userId={userDetails.id} />
+      <ChatContainer chatRoomId={chatRoomId} userId={userId} />
       <PostChatRoom
-        userId={userDetails.id}
+        userId={userId}
         role={ChatParticipantChatParticipantRoleEnum.Owner}
       />
     </div>
