@@ -68,14 +68,10 @@ export class GamesController {
   async joinGame(
     @Param('id') gameId: string,
     @Req() req: AuthenticatedRequest,
-  ) {
+  ): Promise<Game> {
     try {
       const game = await this.gamesService.joinGame(+gameId, req.user.id);
-      return {
-        success: true,
-        data: game,
-        message: 'Game Joined Successfully',
-      };
+      return game;
     } catch (error) {
       throw error;
     }
@@ -129,14 +125,16 @@ export class GamesController {
   })
   async findCurrentGame(
     @Req() req: AuthenticatedRequest,
-  ): Promise<{ game: Game | null }> {
+  ): Promise<Game | null> {
     try {
       const game = await this.gamesService.isPlayerInGame(req.user.id);
-      // Always return an object with a game property that can be null
-      return { game };
+      if (!game) {
+        return null;
+      }
+      return game;
     } catch (error) {
       console.error('Error finding current game:', error);
-      return { game: null };
+      return null;
     }
   }
 
@@ -214,6 +212,8 @@ export class GamesController {
     try {
       const game = await this.gamesService.findByRoomIdentifier(roomIdentifier);
 
+      // Optional: Check if user is in this game
+      // Remove this block if you want any authenticated user to view game details
       try {
         const isUserInGame = await this.gamesService.checkIfUserInCurrentGame(
           req.user.id,
@@ -225,7 +225,7 @@ export class GamesController {
           return {
             success: false,
             message: 'Access denied: You are not a participant in this game',
-            status: 403,
+            status: 403, // Using 403 Forbidden instead of 203 Non-Authoritative Information
           };
         }
       } catch (error) {

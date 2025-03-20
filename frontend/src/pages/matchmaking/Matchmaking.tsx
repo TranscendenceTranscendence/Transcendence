@@ -98,18 +98,25 @@ const Matchmaking = () => {
     }
   };
 
-  const handleJoinGame = async (gameId: number) => {
+  const handleJoinGame = async (userId: number) => {
     try {
       setIsLoading(true);
-      const gameIdString = gameId.toString();
-      if (gameIdString === "" || gameIdString == undefined) {
+      const userIdString = userId.toString();
+      if (userIdString === "" || userIdString == undefined) {
         throw new Error("Game ID is required");
       }
-      await api.Games.gamesControllerJoinGame({ id: gameIdString });
+      await api.Games.gamesControllerJoinGame({
+        id: userIdString,
+      });
       setMessage("Successfully joined the game!");
 
-      // Check for current game after joining
-      checkCurrentGame();
+      const currentGame = await api.Games.gamesControllerFindCurrentGame();
+
+      if (currentGame && currentGame.roomIdentifier) {
+        setTimeout(() => {
+          navigate(`/lobby/${currentGame.roomIdentifier}`);
+        }, 1500);
+      }
     } catch (error) {
       console.error("Error joining game:", error);
       setMessage("Failed to join game");
