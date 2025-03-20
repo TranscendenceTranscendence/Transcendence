@@ -52,15 +52,13 @@ const Matchmaking = () => {
       setMessage("Failed to fetch available games");
       setAvailableGames([]);
     } finally {
-      setIsLoading(false); // Set loading to false after fetch completes
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    // On component mount, fetch everything
     fetchAvailableGames();
 
-    // Set up polling interval
     const interval = setInterval(fetchAvailableGames, 5000);
 
     return () => clearInterval(interval);

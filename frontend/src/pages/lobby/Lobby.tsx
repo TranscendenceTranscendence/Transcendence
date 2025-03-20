@@ -43,7 +43,7 @@ const Lobby = () => {
     fetchGame();
     const intervalId = setInterval(() => {
       fetchGame();
-    }, 1500);
+    }, 3000);
     return () => {
       clearInterval(intervalId);
     };
