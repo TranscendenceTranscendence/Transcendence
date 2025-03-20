@@ -125,16 +125,16 @@ export class GamesController {
   })
   async findCurrentGame(
     @Req() req: AuthenticatedRequest,
-  ): Promise<Game | null> {
+  ): Promise<Game | []> {
     try {
       const game = await this.gamesService.isPlayerInGame(req.user.id);
       if (!game) {
-        return null;
+        return [];
       }
       return game;
     } catch (error) {
       console.error('Error finding current game:', error);
-      return null;
+      return [];
     }
   }
 
@@ -189,7 +189,7 @@ export class GamesController {
     }
   }
 
-  @Get('room/:roomIdentifier') // Changed from 'lobby/:roomIdentifier' to avoid conflict with :id param
+  @Get('room/:roomIdentifier')
   @UseGuards(JwtAccessAuthGuard)
   @ApiOperation({ summary: 'Retrieve a game by room identifier' })
   @ApiResponse({
@@ -208,12 +208,10 @@ export class GamesController {
   async findByRoomIdentifier(
     @Param('roomIdentifier') roomIdentifier: string,
     @Req() req: AuthenticatedRequest,
-  ): Promise<Game | { success: boolean; message: string; status: number }> {
+  ): Promise<Game | []> {
     try {
       const game = await this.gamesService.findByRoomIdentifier(roomIdentifier);
 
-      // Optional: Check if user is in this game
-      // Remove this block if you want any authenticated user to view game details
       try {
         const isUserInGame = await this.gamesService.checkIfUserInCurrentGame(
           req.user.id,
@@ -222,22 +220,14 @@ export class GamesController {
 
         if (!isUserInGame) {
           console.warn(`User ${req.user.id} is not in game ${roomIdentifier}`);
-          return {
-            success: false,
-            message: 'Access denied: You are not a participant in this game',
-            status: 403, // Using 403 Forbidden instead of 203 Non-Authoritative Information
-          };
+          return [];
         }
       } catch (error) {
         console.warn(
           `Error checking if user ${req.user.id} is in game ${roomIdentifier}:`,
           error,
         );
-        return {
-          success: false,
-          message: 'Error checking game access',
-          status: 500,
-        };
+        return [];
       }
 
       return game;

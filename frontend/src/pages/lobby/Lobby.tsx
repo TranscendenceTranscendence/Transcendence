@@ -19,35 +19,21 @@ const Lobby = () => {
     }
 
     try {
+      console.log("Fetching game data...");
       const gameData = await api.Games.gamesControllerFindByRoomIdentifier({
         roomIdentifier: roomIdentifier,
       });
-
-      // Check if the response indicates access denied (user not in game)
-      if (gameData && "success" in gameData && gameData.success === false) {
-        console.warn("Access denied:", gameData);
-        // Redirect to matchmaking if user is not a participant
+      console.log("Game data fetched:", gameData);
+      if (gameData.id == undefined) {
+        console.log("You're not in this lobby, redirecting to matchmaking...");
         navigate("/matchmaking");
         return;
       }
-
-      if (!gameData || ("success" in gameData && gameData.success === false)) {
-        setError("Game not found or access denied");
-        setLoading(false);
-        return;
-      }
-
       setGame(gameData as GameType);
-      setError(""); // Clear any previous errors
+      setError("");
     } catch (err) {
       console.error("Failed to fetch game:", err);
       setError("Failed to load game information");
-
-      // If we get a 403 error (Forbidden), redirect to matchmaking
-      if (err.status === 403) {
-        navigate("/matchmaking");
-        return;
-      }
     } finally {
       setLoading(false);
     }

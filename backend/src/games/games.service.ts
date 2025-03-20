@@ -237,13 +237,11 @@ export class GamesService {
       const game = await this.gamesRepository.findOne({
         where: {
           room_identifier: roomIdentifier,
-          // Check if user is either player 1 or player 2
           player1_user_id: userId,
         },
       });
 
       if (!game) {
-        // Check if user is player 2
         const gamePlayer2 = await this.gamesRepository.findOne({
           where: {
             room_identifier: roomIdentifier,
@@ -252,10 +250,11 @@ export class GamesService {
         });
 
         if (!gamePlayer2) {
+          console.log(`User ${userId} is not in game ${roomIdentifier}`);
           return false;
         }
       }
-
+      console.log('User is in game');
       return true;
     } catch (error) {
       console.error(

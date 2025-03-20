@@ -16,11 +16,10 @@ const Matchmaking = () => {
   const api = useApi();
   const navigate = useNavigate();
 
-  // Check for current game first, before showing the page
   const checkCurrentGame = async () => {
     try {
       const response = await api.Games.gamesControllerFindCurrentGame();
-      if (!response || !response.roomIdentifier) {
+      if (response.id == undefined) {
         return false;
       }
       return true;
