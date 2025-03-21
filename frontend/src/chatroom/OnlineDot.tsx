@@ -1,7 +1,6 @@
 import "../css/ChatDot.css";
 
 export const OnlineDot = ({ status }: { status: boolean }) => {
-  console.log("deze --> " + status);
   if (status) {
     return (
       <div className="StatusOnline">

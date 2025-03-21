@@ -1,8 +1,9 @@
 import React from "react";
 import "../css/PasswordPrompt.css";
 import { useState } from "react";
-
+import { ChatRoomsResponse } from "@/generated-api";
 interface PasswordPromptProps {
+  chatRoom: ChatRoomsResponse;
   onSubmit: (password: string) => void;
 }
 
