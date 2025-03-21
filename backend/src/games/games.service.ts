@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Not } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
-import EventEmitter from 'events';
-
+import { EventEmitter } from 'events';
 @Injectable()
 export class GamesService {
   constructor(
@@ -69,12 +68,19 @@ export class GamesService {
           HttpStatus.BAD_REQUEST,
         );
       }
+
       gameData.player2_user_id = playerId;
 
+      gameData.status = GameStatus.COUNTDOWN;
+
+      // Save changes in the transaction
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
 
       try {
+        console.log('Now starting game...');
+        // No need for Redirect here - the frontend will handle redirection
+        // based on the game status change
         await this.startGame(gameId);
       } catch (error) {
         console.error(`Failed to start game ${gameId}:`, error);
@@ -109,7 +115,6 @@ export class GamesService {
       }
       const savedGame = await this.gamesRepository.save(game);
 
-      // This event will be handled by the gateway
       const eventEmitter = new EventEmitter();
       eventEmitter.emit('gameCountdown', game.room_identifier);
 

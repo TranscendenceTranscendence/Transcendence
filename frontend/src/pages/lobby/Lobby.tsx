@@ -9,54 +9,71 @@ const Lobby = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const api = useApi();
-  const navigate = useNavigate(); // Added for navigation
+  const navigate = useNavigate();
   const hasFetchedRef = useRef(false);
+  const pollingIntervalRef = useRef<number | null>(null);
+
+  const fetchGame = async () => {
+    if (!roomIdentifier) {
+      setError("No room identifier provided");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      console.log("Fetching game data...");
+      const gameData = await api.Games.gamesControllerFindByRoomIdentifier({
+        roomIdentifier: roomIdentifier,
+      });
+      console.log("Game data fetched:", gameData);
+
+      if (gameData.id == undefined) {
+        console.log("You're not in this lobby, redirecting to matchmaking...");
+        navigate("/matchmaking");
+        return;
+      }
+
+      if (gameData.status == "ongoing") {
+        console.log("You're already in a game, hurry up!");
+        navigate("/game");
+        return;
+      }
+
+      if (gameData.status == "countdown") {
+        console.log("Game is in countdown, redirecting to game...");
+        navigate("/game");
+        return;
+      }
+
+      setGame(gameData as GameType);
+      setError("");
+    } catch (err) {
+      console.error("Failed to fetch game:", err);
+      setError("Failed to load game information");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    // Initial fetch when component mounts
     if (!hasFetchedRef.current) {
-      const fetchGame = async () => {
-        if (!roomIdentifier) {
-          setError("No room identifier provided");
-          setLoading(false);
-          return;
-        }
-
-        try {
-          console.log("Fetching game data...");
-          const gameData = await api.Games.gamesControllerFindByRoomIdentifier({
-            roomIdentifier: roomIdentifier,
-          });
-          console.log("Game data fetched:", gameData);
-          if (gameData.id == undefined) {
-            console.log(
-              "You're not in this lobby, redirecting to matchmaking...",
-            );
-            navigate("/matchmaking");
-            return;
-          }
-          if (gameData.status == "ongoing") {
-            console.log("You're already in a game, hurry up!");
-            navigate("/game");
-            return;
-          }
-          if (gameData.status == "countdown") {
-            console.log("Game is in countdown, redirecting to game...");
-            navigate;
-          }
-          setGame(gameData as GameType);
-          setError("");
-        } catch (err) {
-          console.error("Failed to fetch game:", err);
-          setError("Failed to load game information");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchGame();
       hasFetchedRef.current = true;
+      fetchGame();
     }
-  }, []);
+
+    // Set up polling every 3 seconds
+    pollingIntervalRef.current = window.setInterval(() => {
+      fetchGame();
+    }, 3000);
+
+    // Clean up interval when component unmounts
+    return () => {
+      if (pollingIntervalRef.current !== null) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [roomIdentifier, navigate, api]);
 
   if (loading && !game) {
     return <div className="text-center p-8">Loading game lobby...</div>;
