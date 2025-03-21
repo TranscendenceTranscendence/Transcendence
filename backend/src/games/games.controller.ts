@@ -123,9 +123,7 @@ export class GamesController {
     description: 'Game fetched successfully or null if no game found.',
     type: Game,
   })
-  async findCurrentGame(
-    @Req() req: AuthenticatedRequest,
-  ): Promise<Game | []> {
+  async findCurrentGame(@Req() req: AuthenticatedRequest): Promise<Game | []> {
     try {
       const game = await this.gamesService.isPlayerInGame(req.user.id);
       if (!game) {

@@ -31,7 +31,6 @@ const Matchmaking = () => {
 
   const fetchAvailableGames = async () => {
     try {
-      // First check if user is in a current game
       const isInGame = await checkCurrentGame();
       if (isInGame) {
         const response = await api.Games.gamesControllerFindCurrentGame();
@@ -40,7 +39,6 @@ const Matchmaking = () => {
         }
         return;
       }
-      // Fetch available games only if user is not in a game
       const games = await api.Games.gamesControllerFindAllExceptUser();
       if (games && Array.isArray(games)) {
         setAvailableGames(games);

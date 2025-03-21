@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // Added useNavigate
 import { useApi } from "@/utils/api";
 import { Game as GameType } from "@/generated-api";
@@ -10,44 +10,53 @@ const Lobby = () => {
   const [error, setError] = useState("");
   const api = useApi();
   const navigate = useNavigate(); // Added for navigation
-
-  const fetchGame = async () => {
-    if (!roomIdentifier) {
-      setError("No room identifier provided");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      console.log("Fetching game data...");
-      const gameData = await api.Games.gamesControllerFindByRoomIdentifier({
-        roomIdentifier: roomIdentifier,
-      });
-      console.log("Game data fetched:", gameData);
-      if (gameData.id == undefined) {
-        console.log("You're not in this lobby, redirecting to matchmaking...");
-        navigate("/matchmaking");
-        return;
-      }
-      setGame(gameData as GameType);
-      setError("");
-    } catch (err) {
-      console.error("Failed to fetch game:", err);
-      setError("Failed to load game information");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    fetchGame();
-    const intervalId = setInterval(() => {
+    if (!hasFetchedRef.current) {
+      const fetchGame = async () => {
+        if (!roomIdentifier) {
+          setError("No room identifier provided");
+          setLoading(false);
+          return;
+        }
+
+        try {
+          console.log("Fetching game data...");
+          const gameData = await api.Games.gamesControllerFindByRoomIdentifier({
+            roomIdentifier: roomIdentifier,
+          });
+          console.log("Game data fetched:", gameData);
+          if (gameData.id == undefined) {
+            console.log(
+              "You're not in this lobby, redirecting to matchmaking...",
+            );
+            navigate("/matchmaking");
+            return;
+          }
+          if (gameData.status == "ongoing") {
+            console.log("You're already in a game, hurry up!");
+            navigate("/game");
+            return;
+          }
+          if (gameData.status == "countdown") {
+            console.log("Game is in countdown, redirecting to game...");
+            navigate;
+          }
+          setGame(gameData as GameType);
+          setError("");
+        } catch (err) {
+          console.error("Failed to fetch game:", err);
+          setError("Failed to load game information");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       fetchGame();
-    }, 3000);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [roomIdentifier]); // Added roomIdentifier as a dependency
+      hasFetchedRef.current = true;
+    }
+  }, []);
 
   if (loading && !game) {
     return <div className="text-center p-8">Loading game lobby...</div>;

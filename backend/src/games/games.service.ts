@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Not } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
+import EventEmitter from 'events';
 
 @Injectable()
 export class GamesService {
@@ -10,31 +11,6 @@ export class GamesService {
     @InjectRepository(Game)
     private readonly gamesRepository: Repository<Game>,
   ) {}
-
-  async isPlayerInGame(playerId: number): Promise<Game> {
-    try {
-      const activeGame = await this.gamesRepository.findOne({
-        where: [
-          {
-            player1_user_id: playerId,
-            status: In([GameStatus.PENDING, GameStatus.OPEN]),
-          },
-          {
-            player2_user_id: playerId,
-            status: In([GameStatus.PENDING, GameStatus.OPEN]),
-          },
-        ],
-      });
-      if (!activeGame) return null;
-      return activeGame;
-    } catch (error) {
-      if (error instanceof HttpException) throw error;
-      throw new HttpException(
-        'Error checking player game status',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
 
   async create(createGameDto: CreateGameDto): Promise<Game> {
     try {
@@ -55,7 +31,6 @@ export class GamesService {
       );
     }
   }
-
   async joinGame(gameId: number, playerId: number): Promise<Game> {
     const queryRunner =
       this.gamesRepository.manager.connection.createQueryRunner();
@@ -85,7 +60,10 @@ export class GamesService {
         throw new HttpException('Game is already full', HttpStatus.BAD_REQUEST);
       }
 
-      if (gameData.status === GameStatus.OPEN) {
+      if (
+        gameData.status === GameStatus.COUNTDOWN ||
+        gameData.status === GameStatus.ONGOING
+      ) {
         throw new HttpException(
           'Game is already started',
           HttpStatus.BAD_REQUEST,
@@ -96,14 +74,11 @@ export class GamesService {
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
 
-      setTimeout(async () => {
-        try {
-          await this.startGame(gameId);
-          console.log(`Game ${gameId} started successfully after delay`);
-        } catch (error) {
-          console.error(`Failed to start game ${gameId}:`, error);
-        }
-      }, 10000);
+      try {
+        await this.startGame(gameId);
+      } catch (error) {
+        console.error(`Failed to start game ${gameId}:`, error);
+      }
 
       return updatedGame;
     } catch (error) {
@@ -132,12 +107,49 @@ export class GamesService {
       if (!game) {
         throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
       }
+      const savedGame = await this.gamesRepository.save(game);
 
-      game.status = GameStatus.OPEN;
-      return this.gamesRepository.save(game);
+      // This event will be handled by the gateway
+      const eventEmitter = new EventEmitter();
+      eventEmitter.emit('gameCountdown', game.room_identifier);
+
+      return savedGame;
     } catch (error) {
       console.error(`Error starting game ${gameId}:`, error);
       throw error;
+    }
+  }
+
+  async isPlayerInGame(playerId: number): Promise<Game> {
+    try {
+      const activeGame = await this.gamesRepository.findOne({
+        where: [
+          {
+            player1_user_id: playerId,
+            status: In([
+              GameStatus.PENDING,
+              GameStatus.COUNTDOWN,
+              GameStatus.ONGOING,
+            ]),
+          },
+          {
+            player2_user_id: playerId,
+            status: In([
+              GameStatus.PENDING,
+              GameStatus.COUNTDOWN,
+              GameStatus.ONGOING,
+            ]),
+          },
+        ],
+      });
+      if (!activeGame) return null;
+      return activeGame;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Error checking player game status',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -262,6 +274,28 @@ export class GamesService {
         error,
       );
       return false;
+    }
+  }
+  // Add this method to your GamesService class
+
+  async updateGameStatus(gameId: number, status: GameStatus): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { id: gameId },
+      });
+
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+
+      game.status = status;
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to update game status`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
