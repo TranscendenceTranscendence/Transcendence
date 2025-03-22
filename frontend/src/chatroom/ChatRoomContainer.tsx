@@ -3,7 +3,6 @@ import { PostChatRoom } from "./PostChatRoom.tsx";
 import ChatRoomList from "./ChatRoomList.tsx";
 import ChatContainer from "../chat/ChatContainer.tsx";
 import {
-  MeResponseSuccess,
   ChatRoom,
   ChatParticipantChatParticipantRoleEnum,
 } from "@/generated-api/index.ts";
