@@ -58,6 +58,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
     const handleReceiveMessage = (message) => {
       // setMessages((prevMessages) => [...prevMessages, message]);
+      void message;
     };
 
     socket.on("receiveMessage", handleReceiveMessage);

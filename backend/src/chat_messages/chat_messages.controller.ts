@@ -91,9 +91,7 @@ export class ChatMessagesController {
     status: 500,
     description: 'Internal server error.',
   })
-  async findAll(
-    @Body() createChatMessageDto: CreateChatMessageDto,
-  ): Promise<MessagesResponse> {
+  async findAll(): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.findAllAndSortByTime();
       return {
