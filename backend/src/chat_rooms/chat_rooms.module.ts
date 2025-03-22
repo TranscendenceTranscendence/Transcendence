@@ -8,9 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ChatRoom, ChatParticipant]),
-    UsersModule],
+  imports: [TypeOrmModule.forFeature([ChatRoom, ChatParticipant]), UsersModule],
   providers: [JwtService, ChatRoomsService],
   controllers: [ChatRoomsController],
 })
