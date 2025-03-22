@@ -85,6 +85,7 @@ export class ChatMessagesController {
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
   })
   @ApiResponse({
     status: 500,
