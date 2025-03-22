@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
-import { ChatRoomsService } from './chat_rooms.service'
+import { ChatRoomsService } from './chat_rooms.service';
 import { ChatRoom } from './chat_room.entity';
 
 class ChatRoomsResponse {
