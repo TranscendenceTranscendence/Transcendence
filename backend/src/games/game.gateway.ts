@@ -6,123 +6,128 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Worker } from 'worker_threads';
-import { GameStatus } from './game.entity';
-import { GamesService } from './games.service';
-import { Injectable } from '@nestjs/common';
+
+interface Player {
+  id: string;
+  y: number;
+}
+
+interface GameState {
+  id: string;
+  ball: { x: number; y: number; dx: number; dy: number };
+  players: Record<string, Player>;
+}
 
 @WebSocketGateway({ cors: true })
-@Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer()
-  server: Server;
-  private gameWorker: Worker;
+  @WebSocketServer() server: Server;
 
-  constructor(private readonly gamesService: GamesService) {
-    this.gameWorker = new Worker('./src/games/game.worker.js');
-
-    this.gameWorker.on('message', (gameState) => {
-      this.server.emit('gameUpdate', gameState);
-    });
-  }
+  private games = new Map<string, GameState>(); // Stores game states by gameId
+  private gameLoops = new Map<string, NodeJS.Timeout>(); // Stores game loops by gameId
 
   handleConnection(client: Socket) {
     console.log(`Player connected: ${client.id}`);
-    client.emit('message', 'Welcome to Pong!');
   }
 
   handleDisconnect(client: Socket) {
     console.log(`Player disconnected: ${client.id}`);
-  }
-
-  @SubscribeMessage('playerMove')
-  handlePlayerMove(client: Socket, moveData: any) {
-    this.gameWorker.postMessage({ type: 'playerMove', data: moveData });
-  }
-
-  @SubscribeMessage('startGame')
-  startTheGame() {
-    this.gameWorker.postMessage({ type: 'startGame' });
+    this.removePlayerFromGame(client);
   }
 
   @SubscribeMessage('joinGame')
-  async handleJoinGame(client: Socket, data: any): Promise<void> {
-    const { roomId } = data;
-    client.join(roomId);
+  handleJoinGame(client: Socket, { gameId }: { gameId: string }) {
+    client.join(gameId);
 
-    // Check if this is the second player (game can start)
-    const room = this.server.sockets.adapter.rooms.get(roomId);
+    let game = this.games.get(gameId);
 
-    if (room && room.size === 2) {
-      try {
-        // Get the game from the database to check its status
-        const game = await this.gamesService.findByRoomIdentifier(roomId);
+    if (!game) {
+      game = this.createGame(gameId);
+    }
 
-        if (game && game.status === GameStatus.PENDING) {
-          game.status = GameStatus.COUNTDOWN;
-          await this.gamesService.updateGameStatus(
-            game.id,
-            GameStatus.COUNTDOWN,
-          );
-          this.startCountdown(roomId);
+    game.players[client.id] = { id: client.id, y: 50 };
+
+    console.log(`Player ${client.id} joined game ${gameId}`);
+  }
+
+  @SubscribeMessage('move')
+  handleMove(client: Socket, { gameId, y }: { gameId: string; y: number }) {
+    const game = this.games.get(gameId);
+    if (game && game.players[client.id]) {
+      game.players[client.id].y = y;
+    }
+  }
+
+  private createGame(gameId: string): GameState {
+    const game: GameState = {
+      id: gameId,
+      ball: { x: 50, y: 50, dx: 1.5, dy: 1.5 },
+      players: {},
+    };
+
+    this.games.set(gameId, game);
+    this.startGameLoop(gameId);
+
+    return game;
+  }
+
+  private startGameLoop(gameId: string) {
+    const loop = setInterval(() => {
+      this.updateGame(gameId);
+      this.server.to(gameId).emit('update', this.games.get(gameId));
+    }, 1000 / 60);
+
+    this.gameLoops.set(gameId, loop);
+  }
+
+  private updateGame(gameId: string) {
+    const game = this.games.get(gameId);
+    if (!game) return;
+
+    const { ball, players } = game;
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    if (ball.y <= 0 || ball.y >= 100) ball.dy *= -1;
+
+    Object.values(players).forEach((player) => {
+      if (
+        (player.id === Object.keys(players)[0] &&
+          ball.x <= 5 &&
+          Math.abs(player.y - ball.y) < 10) ||
+        (player.id === Object.keys(players)[1] &&
+          ball.x >= 95 &&
+          Math.abs(player.y - ball.y) < 10)
+      ) {
+        ball.dx *= -1;
+      }
+    });
+
+    if (ball.x < 0 || ball.x > 100) {
+      ball.x = 50;
+      ball.y = 50;
+      ball.dx = ball.dx > 0 ? -1.5 : 1.5;
+    }
+  }
+
+  private removePlayerFromGame(client: Socket) {
+    for (const [gameId, game] of this.games) {
+      if (game.players[client.id]) {
+        delete game.players[client.id];
+        client.leave(gameId);
+        console.log(`Player ${client.id} left game ${gameId}`);
+
+        if (Object.keys(game.players).length === 0) {
+          this.cleanupGame(gameId);
         }
-      } catch (error) {
-        console.error(`Error checking game status for room ${roomId}:`, error);
+        break;
       }
     }
   }
 
-  private startCountdown(roomId: string): void {
-    let count = 5;
-
-    this.server.to(roomId).emit('countdown', count);
-
-    const interval = setInterval(async () => {
-      count--;
-
-      if (count > 0) {
-        this.server.to(roomId).emit('countdown', count);
-      } else {
-        clearInterval(interval);
-        this.server.to(roomId).emit('gameStart');
-
-        // Update game status in database
-        try {
-          const game = await this.gamesService.findByRoomIdentifier(roomId);
-
-          if (game) {
-            // Update status to ONGOING
-            game.status = GameStatus.ONGOING;
-            await this.gamesService.updateGameStatus(
-              game.id,
-              GameStatus.ONGOING,
-            );
-            console.log(`Game ${roomId} status updated to ONGOING`);
-          }
-        } catch (error) {
-          console.error(
-            `Error updating game status for room ${roomId}:`,
-            error,
-          );
-        }
-
-        // Start the game logic
-        this.startGame(roomId);
-      }
-    }, 1000);
-  }
-
-  private startGame(roomId: string): void {
-    const initialState = {
-      ball: { x: 400, y: 300, vx: 5, vy: 5 },
-      paddles: { player1: 150, player2: 150 },
-      score: [0, 0],
-    };
-
-    // Send initial game state
-    this.server.to(roomId).emit('gameState', initialState);
-
-    // Begin game loop
-    this.gameWorker.postMessage({ type: 'startGame', roomId });
+  private cleanupGame(gameId: string) {
+    clearInterval(this.gameLoops.get(gameId));
+    this.gameLoops.delete(gameId);
+    this.games.delete(gameId);
+    console.log(`Game ${gameId} removed`);
   }
 }

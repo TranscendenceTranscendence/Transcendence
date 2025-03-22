@@ -73,14 +73,10 @@ export class GamesService {
 
       gameData.status = GameStatus.COUNTDOWN;
 
-      // Save changes in the transaction
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
 
       try {
-        console.log('Now starting game...');
-        // No need for Redirect here - the frontend will handle redirection
-        // based on the game status change
         await this.startGame(gameId);
       } catch (error) {
         console.error(`Failed to start game ${gameId}:`, error);
@@ -116,7 +112,7 @@ export class GamesService {
       const savedGame = await this.gamesRepository.save(game);
 
       const eventEmitter = new EventEmitter();
-      eventEmitter.emit('gameCountdown', game.room_identifier);
+      eventEmitter.emit('countdown', game.room_identifier);
 
       return savedGame;
     } catch (error) {
@@ -271,7 +267,6 @@ export class GamesService {
           return false;
         }
       }
-      console.log('User is in game');
       return true;
     } catch (error) {
       console.error(
@@ -281,7 +276,6 @@ export class GamesService {
       return false;
     }
   }
-  // Add this method to your GamesService class
 
   async updateGameStatus(gameId: number, status: GameStatus): Promise<Game> {
     try {
