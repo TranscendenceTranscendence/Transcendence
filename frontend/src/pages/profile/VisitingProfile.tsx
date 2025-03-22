@@ -8,13 +8,7 @@ import AvatarDisplay from "../updateUser/components/AvatarDisplay";
 import { jwtDecode } from "jwt-decode";
 import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface JwtPayload {
   sub: number;
