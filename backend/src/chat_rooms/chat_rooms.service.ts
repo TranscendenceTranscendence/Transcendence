@@ -1,10 +1,9 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoom } from './chat_room.entity';
-import { In } from 'typeorm';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 
 export enum chat_room_types {
@@ -64,6 +63,20 @@ export class ChatRoomsService {
       where: {
         chat_room_type: In(['public', 'protected']),
       },
+    });
+  }
+
+  async findOverview(userId: number): Promise<ChatRoom[]> {
+    return await this.chatRoomsRepository.find({
+      where: [
+        {
+          chat_room_type: In(['public', 'protected']), // chat_room_type: In(['public', 'protected']),
+        },
+        {
+          chat_room_type: chat_room_types.Private,
+          chatParticipants: { user_id: userId }, // chatParticipants: { user: { id: userId } },
+        },
+      ],
     });
   }
 
