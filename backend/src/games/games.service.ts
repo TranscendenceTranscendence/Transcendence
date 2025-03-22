@@ -4,6 +4,7 @@ import { Repository, In, Not } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
 
+// test
 @Injectable()
 export class GamesService {
   constructor(
