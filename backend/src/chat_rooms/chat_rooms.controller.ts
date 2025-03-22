@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +19,10 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import { ChatRoom } from './chat_room.entity';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 
 class ChatRoomsResponse {
   @ApiProperty()
@@ -95,6 +101,29 @@ export class ChatRoomsController {
         success: true,
         data,
         message: 'ChatRoom Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Get('overview')
+  @ApiOperation({ summary: 'Get all chat rooms the user can see' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat rooms fetched successfully.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async findOverview(@Req() req: AuthenticatedRequest) {
+    try {
+      const data = await this.chatRoomsService.findOverview(req.user.id);
+      return {
+        success: true,
+        data,
+        message: 'ChatRooms Fetched Successfully',
       };
     } catch (error) {
       return {
