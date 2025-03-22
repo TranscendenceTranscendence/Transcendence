@@ -1,21 +1,18 @@
-.node
-{
-    list-style-type: none;
-    align-self: flex-start;
-    background-color: grey;
-    padding: 30px;
-    border-radius: 10px;
-    width: 100%;
+.node {
+  list-style-type: none;
+  align-self: flex-start;
+  background-color: grey;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
 }
 
-.rooms
-{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.chatRoomBox
-{
-    display: flex;
+.chatRoomBox {
+  display: flex;
 }

@@ -13,10 +13,12 @@
  */
 
 import * as runtime from "../runtime";
-import type { CreateChatMessageDto } from "../models/index";
+import type { CreateChatMessageDto, MessagesResponse } from "../models/index";
 import {
   CreateChatMessageDtoFromJSON,
   CreateChatMessageDtoToJSON,
+  MessagesResponseFromJSON,
+  MessagesResponseToJSON,
 } from "../models/index";
 
 export interface ChatMessagesControllerCreateRequest {
@@ -237,7 +239,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerFindOneRaw(
     requestParameters: ChatMessagesControllerFindOneRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<MessagesResponse>> {
     if (requestParameters["id"] == null) {
       throw new runtime.RequiredError(
         "id",
@@ -262,7 +264,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      MessagesResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -271,11 +275,12 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerFindOne(
     requestParameters: ChatMessagesControllerFindOneRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatMessagesControllerFindOneRaw(
+  ): Promise<MessagesResponse> {
+    const response = await this.chatMessagesControllerFindOneRaw(
       requestParameters,
       initOverrides,
     );
+    return await response.value();
   }
 
   /**
