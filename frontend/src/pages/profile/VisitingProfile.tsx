@@ -11,7 +11,6 @@ import { AchievementBox } from "../home/components/AchievementsBox";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
