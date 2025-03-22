@@ -75,7 +75,7 @@ export class ChatRoomsService {
         {
           chat_room_type: chat_room_types.Private,
           chatParticipants: { user_id: userId }, // chatParticipants: { user: { id: userId } },
-        }
+        },
       ],
     });
   }
