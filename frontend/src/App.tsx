@@ -40,12 +40,12 @@ function App() {
   return (
     <Fragment>
       <Toaster />
+      <DevBarLayout />
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
         </Route>
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DevBarLayout />}>
@@ -60,7 +60,6 @@ function App() {
             <Route path="/chat" element={<Chat />} />
           </Route>
         </Route>
-
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Fragment>
