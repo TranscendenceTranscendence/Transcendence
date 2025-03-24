@@ -50,21 +50,20 @@ export class ChatMessagesController {
     }
   }
 
-  @Post('find')
+  @Get('find')
   @ApiOperation({ summary: 'Find chat messages' })
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  async find(@Body() findChatMessageDto: findChatMessageDto): Promise<{
-    success: boolean;
-    data?: ChatMessage[];
-    message?: string;
-  }> {
+  async find(
+    @Body() findChatMessageDto: findChatMessageDto,
+  ): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.find(findChatMessageDto);
       return {
