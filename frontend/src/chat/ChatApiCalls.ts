@@ -41,18 +41,21 @@ export const useMessages = (chatroomId) => {
   const fetchMessages = async () => {
     try {
       const response: MessagesResponse =
-        await api.ChatMessages.chatMessagesControllerFindOne({
-          id: chatroomId,
+        await api.ChatMessages.chatMessagesControllerFind({
+          findChatMessageDto: {
+            chatRoomId: chatroomId,
+            daysAgo: 1,
+          },
         });
       console.log("MessagesResponse:", response);
 
       if (response.success) {
         setFetchedMessages(response);
       } else {
-        console.error("Failed to fetch chat rooms:", response.message);
+        console.error("Failed to fetch messages:", response.message);
       }
     } catch (error) {
-      console.error("Error fetching chat rooms:", error);
+      console.error("Error fetching messages:", error);
     }
   };
 
