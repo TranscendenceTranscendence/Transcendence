@@ -8,6 +8,7 @@ import {
 } from "@/generated-api/index.ts";
 import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
 import { UserContextType } from "@/utils/providers/UserProvider.tsx";
+// import { Dialog } from "@/components/ui/dialog.tsx";
 
 interface ChatRoomContainerProps {
   userDetails: UserContextType;
@@ -72,11 +73,11 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
         askPassword={askPassword}
         setAskPassword={setAskPassword}
       />
-      <ChatContainer chatRoomId={chatRoomId} userId={userId} />
+      {/* <ChatContainer chatRoomId={chatRoomId} userId={userId} />
       <PostChatRoom
         userId={userId}
         role={ChatParticipantChatParticipantRoleEnum.Owner}
-      />
+      /> */}
     </div>
   );
 };

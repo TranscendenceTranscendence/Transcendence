@@ -2,17 +2,20 @@ import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { useApi } from "@/utils/api";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+// import { SidebarTrigger } from "@/components/ui/sidebar/SidebarTrigger";
 import { Button } from "@/components/ui/button";
 import { Achievement, Friend } from "@/generated-api";
 import { FriendsBox } from "./components/FriendsBox";
 import { AchievementBox } from "./components/AchievementsBox";
 import { useUser } from "@/utils/providers/UserProvider";
 import { useNavigate } from "react-router-dom";
+import ChatRoomList from "@/chatroom/ChatRoomList";
+import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
+import { PostChatRoom } from "@/chatroom/PostChatRoom";
+import ChatContainer from "@/chat/ChatContainer";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogPostChatroom } from "@/chatroom/DialogPostChatroom";
 
 export default function Page() {
   const navigate = useNavigate();
@@ -55,7 +58,7 @@ export default function Page() {
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
+            {/* <SidebarTrigger className="-ml-1" /> */}
             <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
@@ -70,7 +73,11 @@ export default function Page() {
             </Button>
           </div>
           <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
-            <p className="font-bold text-3xl m-8">CHAT ROOMS</p>
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
+              <DialogPostChatroom />
+            </div>
+            <ChatRoomContainer userDetails={me} />
           </div>
           <AchievementBox achievements={achievements} />
         </div>
