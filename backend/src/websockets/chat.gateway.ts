@@ -13,6 +13,7 @@ import { Server } from 'socket.io';
     origin: '*',
     methods: ['GET', 'POST', 'OPTIONS', 'FETCH'],
   },
+  namespace: 'chat',
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
