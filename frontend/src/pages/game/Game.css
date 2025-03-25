@@ -13,14 +13,20 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-* {
+/* Replace the global * selector with a scoped .pong-game selector */
+.pong-game {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     background-color: black;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
 }
 
-#table {
+/* Scope all your IDs with the pong-game class */
+.pong-game #table {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(3, 1fr);
@@ -31,7 +37,8 @@
     min-height: 80vh;
     border: 5px solid white;
 }
-#player1 {
+
+.pong-game #player1 {
     background-color: white;
     min-width: 1vh;
     min-height: 8vh;
@@ -40,28 +47,28 @@
     margin-left: 2vh;
 }
 
-#line {
+.pong-game #line {
     background-color: white;
     height: 80vh;
     width: 1px;
-    grid-column: 3 ;
+    grid-column: 3;
     grid-row: 1 / 4;
     margin: auto;
-    left: 1px
+    left: 1px;
 }
 
-#ball {
+.pong-game #ball {
     background: white;
     border-radius: 50%;
     height: 1.5vh;
     width: 1.5vh;
     position: absolute;
-    left: 50%; 
+    left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
 }
 
-#player2 {
+.pong-game #player2 {
     display: grid;
     grid-column: 7;
     background-color: white;
@@ -72,8 +79,7 @@
     margin-right: 2vh;
 }
 
-
-#scored {
+.pong-game #scored {
     color: white;
     display: grid;
     grid-column: 2;
@@ -86,8 +92,7 @@
     font-size: 6vh;
 }
 
-#conceded 
-{
+.pong-game #conceded {
     color: white;
     grid-column: 4;
     grid-row: 1;
@@ -97,7 +102,8 @@
     font-style: normal;
     font-size: 6vh;
 }
-/* Add these to your existing Game.css */
+
+/* Keep these global since they're full-screen overlays */
 .countdown-overlay {
     position: fixed;
     top: 0;
@@ -109,16 +115,16 @@
     justify-content: center;
     align-items: center;
     z-index: 9999;
-  }
-  
-  .countdown-number {
+}
+
+.countdown-number {
     font-family: "Press Start 2P", system-ui;
     font-size: 15vh;
     color: white;
     animation: pulse 1s infinite;
-  }
-  
-  .loading-container {
+}
+
+.loading-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -128,10 +134,10 @@
     color: white;
     font-family: "Press Start 2P", system-ui;
     font-size: 4vh;
-  }
-  
-  @keyframes pulse {
+}
+
+@keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
-  }
+}

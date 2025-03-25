@@ -3,8 +3,8 @@ import { useConfig } from "@/utils/config";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import "./Game.css"; // Import your scoped CSS
 
-// Define proper types for game state
 interface Player {
   id: string;
   y: number;
@@ -14,6 +14,7 @@ interface GameState {
   id: string;
   ball: { x: number; y: number; dx: number; dy: number };
   players: Record<string, Player>;
+  score?: [number, number];
 }
 
 export default function Pong() {
@@ -21,148 +22,199 @@ export default function Pong() {
   const [gameId, setGameId] = useState<string>("");
   const [gameFetched, setGameFetched] = useState<boolean>(false);
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [socketConnected, setSocketConnected] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const api = useApi();
   const config = useConfig();
   const socketRef = useRef<Socket | null>(null);
   const navigate = useNavigate();
+  const isComponentMounted = useRef<boolean>(true);
 
+  // Create socket connection (only once)
   useEffect(() => {
-    // Create socket connection
+    console.log("Socket setup effect running");
+    // Create socket connection with authentication token
     if (!socketRef.current) {
-      socketRef.current = io(config.backendUrl);
+      console.log("Creating new socket connection");
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        setError("No authentication token found");
+        return;
+      }
+
+      socketRef.current = io(config.backendUrl, {
+        auth: { token },
+        transports: ["websocket"],
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+
+      // Set up socket event listeners
+      const socket = socketRef.current;
+
+      socket.on("connect", () => {
+        setSocketConnected(true);
+        setPlayerId(socket.id);
+      });
+
+      socket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err);
+        setError(`Connection error: ${err.message}`);
+        setSocketConnected(false);
+      });
+
+      socket.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+        setSocketConnected(false);
+      });
+
+      socket.on("update", (state) => {
+        setGameState(state);
+      });
+
+      socket.on("countdown", (count) => {
+        console.log("Game starting in:", count);
+      });
+
+      socket.on("gameStart", () => {
+        console.log("Game started!");
+      });
     }
 
-    const socket = socketRef.current;
+    // Clean up on component unmount
+    return () => {
+      console.log("Cleaning up socket setup effect");
+      isComponentMounted.current = false;
 
-    // Fetch the current game once
+      if (socketRef.current) {
+        // Keep the socket connection alive when navigating to other pages
+        // Don't disconnect the socket
+      }
+    };
+  }, [config.backendUrl]); // Only depend on config.backendUrl
+
+  // Handle game fetching and joining in a separate effect
+  useEffect(() => {
+    if (!socketConnected || gameFetched) return;
+
     const fetchGame = async () => {
       try {
         const game = await api.Games.gamesControllerFindCurrentGame();
-        console.log("Fetched game:", game);
-        if (game.roomIdentifier == undefined) {
-          navigate("/matchmaking");
+
+        if (!game || !game.roomIdentifier) {
+          setError("No active game found");
+          setTimeout(() => navigate("/matchmaking"), 1300);
           return;
         }
-        if (game && game.roomIdentifier) {
-          setGameId(game.roomIdentifier);
-          setGameFetched(true);
+        console.log("Fetched game:", game);
 
-          if (socket.connected) {
-            socket.emit("joinGame", { gameId: game.roomIdentifier });
-          }
-        }
+        setGameId(game.roomIdentifier);
+        setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
+        setError("Failed to fetch game data");
       }
     };
 
-    if (!gameFetched) {
-      fetchGame();
-    }
+    fetchGame();
+  }, [socketConnected, api, navigate]);
 
-    // Set up socket event listeners
-    socket.on("connect", () => {
-      console.log("Connected to game server");
-      setPlayerId(socket.id);
+  // Join game when both gameId and socket are ready
+  useEffect(() => {
+    console.log("joinGame effect running");
+    if (!socketConnected || !gameId || !socketRef.current) return;
 
-      // Only join game if we already have a gameId
-      if (gameId) {
-        console.log("Joining game:", gameId);
-        socket.emit("joinGame", { gameId });
-      }
-    });
+    console.log("Socket and gameId both ready, joining game:", gameId);
 
-    socket.on("update", (state) => {
-      setGameState(state);
-    });
+    // Make sure you're sending the correct structure
+    socketRef.current.emit("joinGame", { gameId });
 
-    // Countdown listener
-    socket.on("countdown", (count) => {
-      console.log("countdown", count);
-      console.log("Game starting in:", count);
-    });
-
-    // Game start listener
-    socket.on("gameStart", () => {
-      console.log("Game started!");
-    });
-
-    // Clean up
     return () => {
-      socket.off("connect");
-      socket.off("update");
-      socket.off("countdown");
-      socket.off("gameStart");
+      console.log("Cleaning up joinGame effect");
     };
-  }, [gameId, gameFetched, api, config.backendUrl]);
+  }, [socketConnected, gameId]);
 
   const movePaddle = (event: React.MouseEvent) => {
-    if (playerId && socketRef.current && gameId) {
-      // Calculate y position as percentage of screen height
+    if (playerId && socketRef.current && gameId && socketConnected) {
       const yPercent = (event.clientY / window.innerHeight) * 100;
       socketRef.current.emit("move", { gameId, y: yPercent });
     }
   };
 
-  // Show loading state when game state isn't available
   if (!gameState) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          background: "black",
-          color: "white",
-        }}
-      >
-        Loading game...
+      <div className="pong-game">
+        <div className="loading-container">
+          {error ? (
+            <div style={{ color: "red" }}>{error}</div>
+          ) : (
+            <>
+              <div>Loading game...</div>
+              <div style={{ fontSize: "12px" }}>
+                {socketConnected ? "Socket connected ✓" : "Connecting..."}
+              </div>
+              {gameId && (
+                <div style={{ fontSize: "12px" }}>Game ID: {gameId}</div>
+              )}
+              {socketConnected && gameId && !gameState && (
+                <button
+                  onClick={() => {
+                    if (socketRef.current && gameId) {
+                      console.log("Force joining game:", gameId);
+                      socketRef.current.emit("joinGame", { gameId });
+                    }
+                  }}
+                  style={{
+                    marginTop: "20px",
+                    padding: "8px 16px",
+                    background: "#333",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Force Join Game
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
     );
   }
 
+  // Game interface wrapped in the pong-game class for CSS scoping
   return (
-    <div
-      onMouseMove={movePaddle}
-      style={{
-        background: "black",
-        width: "100vw",
-        height: "100vh",
-        position: "relative",
-      }}
-    >
-      {/* Ball */}
-      <div
-        style={{
-          position: "absolute",
-          top: `${gameState.ball.y}%`,
-          left: `${gameState.ball.x}%`,
-          width: "10px",
-          height: "10px",
-          background: "white",
-          borderRadius: "50%",
-        }}
-      />
-
-      {/* Players/Paddles */}
-      {Object.values(gameState.players).map((player) => (
+    <div className="pong-game" onMouseMove={movePaddle}>
+      <div id="table">
+        {/* Ball */}
         <div
-          key={player.id}
+          id="ball"
           style={{
             position: "absolute",
-            top: `${player.y}%`,
-            left:
-              player.id === Object.keys(gameState.players)[0] ? "5%" : "90%",
-            width: "10px",
-            height: "50px",
-            background: "white",
-            borderRadius: "4px",
+            top: `${gameState.ball.y}%`,
+            left: `${gameState.ball.x}%`,
           }}
         />
-      ))}
 
-      {/* Score display could go here */}
+        {/* Players/Paddles */}
+        {Object.entries(gameState.players).map(([id, player], index) => (
+          <div
+            key={player.id}
+            id={index === 0 ? "player1" : "player2"}
+            style={{
+              position: "absolute",
+              top: `${player.y}%`,
+            }}
+          />
+        ))}
+
+        <div id="line"></div>
+        <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
+        <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
+      </div>
     </div>
   );
 }

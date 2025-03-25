@@ -59,7 +59,7 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
           ),
         );
 
-      console.log(`Client connected: ${client.id} (User: ${decoded.sub})`);
+      // console.log(`Client connected: ${client.id} (User: ${decoded.sub})`);
     } catch (error) {
       console.error('Error during token verification on connection:', error);
       client.disconnect();
@@ -74,7 +74,7 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.warn(`User info missing on disconnect for socket ${client.id}`);
       return;
     }
-    console.log(`Disconnecting user ${user.sub} (Socket: ${client.id})`);
+    // console.log(`Disconnecting user ${user.sub} (Socket: ${client.id})`);
     this.server.to(`user_${user.sub}`).emit('userStatus', {
       userId: user.sub,
       status: UserStatus.Offline,
