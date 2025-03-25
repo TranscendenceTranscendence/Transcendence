@@ -10,58 +10,61 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Replace the global * selector with a scoped .pong-game selector */
+/* Base container for the game - fully responsive */
 .pong-game {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     background-color: black;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Scope all your IDs with the pong-game class */
+/* Game table - adapts to screen size */
 .pong-game #table {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
     background-color: black;
-    min-width: 80vw;
-    min-height: 80vh;
-    border: 5px solid white;
+    width: min(90vw, 90vh * 1.33); /* Maintain aspect ratio */
+    height: min(80vh, 80vw / 1.33);
+    border: min(5px, 0.5vw) solid white;
+    position: relative;
+    margin: auto;
 }
 
+/* Responsive paddle sizing */
 .pong-game #player1 {
     background-color: white;
-    min-width: 1vh;
-    min-height: 8vh;
-    max-height: 8vh;
-    max-width: 1vh;
-    margin-left: 2vh;
+    width: min(1vh, 0.5vw);
+    height: min(8vh, 12vw);
+    position: absolute;
+    left: min(2vh, 1vw);
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .pong-game #line {
     background-color: white;
-    height: 80vh;
-    width: 1px;
+    height: 100%;
+    width: min(1px, 0.1vw);
     grid-column: 3;
     grid-row: 1 / 4;
     margin: auto;
-    left: 1px;
 }
 
 .pong-game #ball {
     background: white;
     border-radius: 50%;
-    height: 1.5vh;
-    width: 1.5vh;
+    height: min(1.5vh, 2vw);
+    width: min(1.5vh, 2vw);
     position: absolute;
     left: 50%;
     top: 50%;
@@ -69,41 +72,39 @@
 }
 
 .pong-game #player2 {
-    display: grid;
-    grid-column: 7;
     background-color: white;
-    min-width: 1vh;
-    min-height: 8vh;
-    max-height: 8vh;
-    max-width: 1vh;
-    margin-right: 2vh;
+    width: min(1vh, 0.5vw);
+    height: min(8vh, 12vw);
+    position: absolute;
+    right: min(2vh, 1vw);
+    top: 50%;
+    transform: translateY(-50%);
 }
 
+/* Score display - responsive text size */
 .pong-game #scored {
     color: white;
-    display: grid;
-    grid-column: 2;
-    grid-row: 1;
-    justify-content: right;
-    margin-top: 2vh;
+    position: absolute;
+    left: 25%;
+    top: min(2vh, 2vw);
     font-family: "Press Start 2P", system-ui;
     font-weight: 400;
-    font-style: normal;
-    font-size: 6vh;
+    font-size: min(6vh, 8vw);
+    transform: translateX(-50%);
 }
 
 .pong-game #conceded {
     color: white;
-    grid-column: 4;
-    grid-row: 1;
-    margin-top: 2vh;
+    position: absolute;
+    right: 25%;
+    top: min(2vh, 2vw);
     font-family: "Press Start 2P", system-ui;
     font-weight: 400;
-    font-style: normal;
-    font-size: 6vh;
+    font-size: min(6vh, 8vw);
+    transform: translateX(50%);
 }
 
-/* Keep these global since they're full-screen overlays */
+/* Overlay elements - these are already responsive */
 .countdown-overlay {
     position: fixed;
     top: 0;
@@ -119,7 +120,7 @@
 
 .countdown-number {
     font-family: "Press Start 2P", system-ui;
-    font-size: 15vh;
+    font-size: clamp(5rem, 15vh, 15rem); /* Responsive font size */
     color: white;
     animation: pulse 1s infinite;
 }
@@ -130,10 +131,49 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    width: 100%;
     background-color: black;
     color: white;
     font-family: "Press Start 2P", system-ui;
-    font-size: 4vh;
+    font-size: clamp(1rem, 4vh, 4rem); /* Responsive font size */
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Add media queries for specific screen types */
+@media (max-aspect-ratio: 1/1) {
+    /* Portrait mode - mobile devices */
+    .pong-game #table {
+        width: 90vw;
+        height: 70vh;
+    }
+    
+    .pong-game #player1,
+    .pong-game #player2 {
+        height: 15vw;
+        width: 1.5vw;
+    }
+    
+    .pong-game #ball {
+        height: 3vw;
+        width: 3vw;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Small phones */
+    .pong-game #scored,
+    .pong-game #conceded {
+        font-size: 2rem;
+    }
+    
+    .countdown-number {
+        font-size: 4rem;
+    }
+    
+    .loading-container {
+        font-size: 1.5rem;
+    }
 }
 
 @keyframes pulse {
