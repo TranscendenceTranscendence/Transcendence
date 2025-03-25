@@ -5,7 +5,6 @@ import {
 } from "@/generated-api/index.ts";
 import { useApi } from "@/utils/api/index.ts";
 import { useEffect, useState } from "react";
-import { findChatMessageDto } from "@/generated-api/index.ts";
 
 export const useChatRooms = () => {
   const api = useApi();
