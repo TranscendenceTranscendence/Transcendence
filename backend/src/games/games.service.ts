@@ -70,6 +70,7 @@ export class GamesService {
       }
 
       gameData.player2_user_id = playerId;
+      gameData.status = GameStatus.COUNTDOWN;
 
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
@@ -315,6 +316,27 @@ export class GamesService {
       if (error instanceof HttpException) throw error;
       throw new HttpException(
         `Failed to update game status`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async endGame(gameId: string): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { room_identifier: gameId },
+      });
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+      game.score[0] == 11 ? game.winner_user_id = game.player1_user_id : game.winner_user_id = game.player2_user_id;
+
+      game.status = GameStatus.CLOSED;
+      game.ended_at = new Date();
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to end game`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
