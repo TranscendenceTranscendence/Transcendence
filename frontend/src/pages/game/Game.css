@@ -14,6 +14,7 @@
 
 /* Base container for the game - fully responsive */
 .pong-game {
+    overflow: hidden;
     padding: 0;
     margin: 0;
     box-sizing: border-box;
@@ -21,10 +22,17 @@
     width: 100%;
     height: 100vh;
     position: relative;
-    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+html, body, #root {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
 }
 
 /* Game table - adapts to screen size */

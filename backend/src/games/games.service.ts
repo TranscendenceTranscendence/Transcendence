@@ -301,10 +301,10 @@ export class GamesService {
     }
   }
 
-  async updateGameStatus(gameId: number, status: GameStatus): Promise<Game> {
+  async updateGameStatus(gameId: string, status: GameStatus): Promise<Game> {
     try {
       const game = await this.gamesRepository.findOne({
-        where: { id: gameId },
+        where: { room_identifier: gameId },
       });
 
       if (!game) {

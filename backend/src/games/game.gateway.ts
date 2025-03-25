@@ -52,7 +52,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const gameId = typeof data === 'object' ? data.gameId : data;
 
       console.log('Received joinGame event with data:', data);
-
       // Check if gameId is valid
       if (!gameId || gameId === undefined) {
         console.error('No gameId provided');
@@ -238,6 +237,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clearInterval(this.gameLoops.get(gameId));
     this.gameLoops.delete(gameId);
     this.games.delete(gameId);
+    try {
+      this.gamesService.updateGameStatus(gameId, GameStatus.CANCELLED);
+    }
+    catch (error) {
+      console.error(`Error updating game status in database: ${error.message}`);
+    }
     console.log(`Game ${gameId} removed`);
   }
 }
