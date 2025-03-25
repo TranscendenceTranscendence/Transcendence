@@ -13,16 +13,10 @@
  */
 
 import * as runtime from "../runtime";
-import type {
-  CreateChatMessageDto,
-  FindChatMessageDto,
-  MessagesResponse,
-} from "../models/index";
+import type { CreateChatMessageDto, MessagesResponse } from "../models/index";
 import {
   CreateChatMessageDtoFromJSON,
   CreateChatMessageDtoToJSON,
-  FindChatMessageDtoFromJSON,
-  FindChatMessageDtoToJSON,
   MessagesResponseFromJSON,
   MessagesResponseToJSON,
 } from "../models/index";
@@ -32,7 +26,8 @@ export interface ChatMessagesControllerCreateRequest {
 }
 
 export interface ChatMessagesControllerFindRequest {
-  findChatMessageDto: FindChatMessageDto;
+  chatRoomId: number;
+  daysAgo: number;
 }
 
 export interface ChatMessagesControllerFindAllByUserAndChatRoomRequest {
@@ -112,18 +107,31 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     requestParameters: ChatMessagesControllerFindRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<MessagesResponse>> {
-    if (requestParameters["findChatMessageDto"] == null) {
+    if (requestParameters["chatRoomId"] == null) {
       throw new runtime.RequiredError(
-        "findChatMessageDto",
-        'Required parameter "findChatMessageDto" was null or undefined when calling chatMessagesControllerFind().',
+        "chatRoomId",
+        'Required parameter "chatRoomId" was null or undefined when calling chatMessagesControllerFind().',
+      );
+    }
+
+    if (requestParameters["daysAgo"] == null) {
+      throw new runtime.RequiredError(
+        "daysAgo",
+        'Required parameter "daysAgo" was null or undefined when calling chatMessagesControllerFind().',
       );
     }
 
     const queryParameters: any = {};
 
-    const headerParameters: runtime.HTTPHeaders = {};
+    if (requestParameters["chatRoomId"] != null) {
+      queryParameters["chatRoomId"] = requestParameters["chatRoomId"];
+    }
 
-    headerParameters["Content-Type"] = "application/json";
+    if (requestParameters["daysAgo"] != null) {
+      queryParameters["daysAgo"] = requestParameters["daysAgo"];
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {};
 
     const response = await this.request(
       {
@@ -131,7 +139,6 @@ export class ChatMessagesApi extends runtime.BaseAPI {
         method: "GET",
         headers: headerParameters,
         query: queryParameters,
-        body: FindChatMessageDtoToJSON(requestParameters["findChatMessageDto"]),
       },
       initOverrides,
     );
