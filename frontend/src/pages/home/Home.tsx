@@ -3,18 +3,13 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { useApi } from "@/utils/api";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-// import { SidebarTrigger } from "@/components/ui/sidebar/SidebarTrigger";
 import { Button } from "@/components/ui/button";
 import { Achievement, Friend } from "@/generated-api";
 import { FriendsBox } from "./components/FriendsBox";
 import { AchievementBox } from "./components/AchievementsBox";
 import { useUser } from "@/utils/providers/UserProvider";
 import { useNavigate } from "react-router-dom";
-import ChatRoomList from "@/chatroom/ChatRoomList";
 import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
-import { PostChatRoom } from "@/chatroom/PostChatRoom";
-import ChatContainer from "@/chat/ChatContainer";
-import { Dialog } from "@radix-ui/react-dialog";
 import { DialogPostChatroom } from "@/chatroom/DialogPostChatroom";
 
 export default function Page() {

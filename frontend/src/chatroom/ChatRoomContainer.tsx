@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
-import { PostChatRoom } from "./PostChatRoom.tsx";
 import ChatRoomList from "./ChatRoomList.tsx";
-import ChatContainer from "../chat/ChatContainer.tsx";
-import {
-  ChatRoom,
-  ChatParticipantChatParticipantRoleEnum,
-} from "@/generated-api/index.ts";
+import { ChatRoom } from "@/generated-api/index.ts";
 import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
 import { UserContextType } from "@/utils/providers/UserProvider.tsx";
 // import { Dialog } from "@/components/ui/dialog.tsx";

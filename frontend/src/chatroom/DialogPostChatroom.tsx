@@ -1,11 +1,9 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from "@radix-ui/react-dialog";
 import "../css/DialogChatRoom.css";
 import { Button } from "@/components/ui/button";
