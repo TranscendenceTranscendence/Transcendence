@@ -29,7 +29,6 @@ models/CreateGameDto.ts
 models/CreateUserDto.ts
 models/DevLoginResponseDto.ts
 models/FileUploadResponseSuccess.ts
-models/FindChatMessageDto.ts
 models/Friend.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts

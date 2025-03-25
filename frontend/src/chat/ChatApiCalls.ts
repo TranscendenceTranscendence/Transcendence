@@ -5,6 +5,7 @@ import {
 } from "@/generated-api/index.ts";
 import { useApi } from "@/utils/api/index.ts";
 import { useEffect, useState } from "react";
+import { findChatMessageDto } from "@/generated-api/index.ts";
 
 export const useChatRooms = () => {
   const api = useApi();
@@ -42,10 +43,8 @@ export const useMessages = (chatroomId) => {
     try {
       const response: MessagesResponse =
         await api.ChatMessages.chatMessagesControllerFind({
-          findChatMessageDto: {
-            chatRoomId: chatroomId,
-            daysAgo: 1,
-          },
+          chatRoomId: chatroomId,
+          daysAgo: 1,
         });
       console.log("MessagesResponse:", response);
 

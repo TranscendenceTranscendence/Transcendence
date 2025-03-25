@@ -17,7 +17,6 @@ export * from "./CreateGameDto";
 export * from "./CreateUserDto";
 export * from "./DevLoginResponseDto";
 export * from "./FileUploadResponseSuccess";
-export * from "./FindChatMessageDto";
 export * from "./Friend";
 export * from "./Game";
 export * from "./GetFriendRequestsDto";
