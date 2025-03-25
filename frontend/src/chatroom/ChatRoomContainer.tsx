@@ -7,21 +7,18 @@ import { UserContextType } from "@/utils/providers/UserProvider.tsx";
 
 interface ChatRoomContainerProps {
   userDetails: UserContextType;
+  chatRoomId: number;
+  setChatRoomId: (chatRoomId: number) => void;
 }
 
-export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
+export const ChatRoomContainer = ({
+  userDetails,
+  chatRoomId,
+  setChatRoomId,
+}: ChatRoomContainerProps) => {
   const [askPassword, setAskPassword] = useState<boolean>(false);
   const { chatRooms } = useChatRooms();
   let userId: number;
-  const [chatRoomId, setChatRoomId] = useState(() => {
-    try {
-      const savedId = localStorage.getItem("chatRoomId");
-      return savedId ? JSON.parse(savedId) : 1;
-    } catch (error) {
-      console.error("Failed to parse chatRoomId from localStorage:", error);
-      return 1;
-    }
-  });
 
   useEffect(() => {
     if (chatRoomId !== null) {

@@ -11,11 +11,21 @@ import { useUser } from "@/utils/providers/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
 import { DialogPostChatroom } from "@/chatroom/DialogPostChatroom";
+import ChatContainer from "@/chat/ChatContainer";
 
 export default function Page() {
   const navigate = useNavigate();
   const api = useApi();
   const me = useUser();
+  const [chatRoomId, setChatRoomId] = useState(() => {
+    try {
+      const savedId = localStorage.getItem("chatRoomId");
+      return savedId ? JSON.parse(savedId) : 1;
+    } catch (error) {
+      console.error("Failed to parse chatRoomId from localStorage:", error);
+      return 1;
+    }
+  });
   const [friends, setFriends] = useState<Friend[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
@@ -47,6 +57,7 @@ export default function Page() {
   const handlePlayClick = () => {
     navigate("/game");
   };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -72,9 +83,14 @@ export default function Page() {
               <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
               <DialogPostChatroom />
             </div>
-            <ChatRoomContainer userDetails={me} />
+            <ChatRoomContainer
+              userDetails={me}
+              chatRoomId={chatRoomId}
+              setChatRoomId={setChatRoomId}
+            />
           </div>
           <AchievementBox achievements={achievements} />
+          <ChatContainer chatRoomId={chatRoomId} userId={151953} />
         </div>
       </SidebarInset>
     </SidebarProvider>
