@@ -90,9 +90,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // Send initial game state to the client
         this.server.to(client.id).emit('update', game);
 
+        
         // If game is ready to start (two players), update status and start countdown
+        console.log('DB GAME',  Object.keys(game.players).length, dbGame, dbGame.status);
         if (
-          Object.keys(game.players).length >= 2 &&
+          Object.keys(game.players).length === 2 &&
           dbGame &&
           dbGame.status === GameStatus.PENDING
         ) {
@@ -115,6 +117,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Add countdown functionality
   private startCountdown(gameId: string) {
     let count = 3;
+    console.log("INSIDE START COUNTDOWN: ", gameId);
     const countdownInterval = setInterval(() => {
       this.server.to(gameId).emit('countdown', count);
 
@@ -194,6 +197,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.resetBall(ball);
       this.updateScoreInDatabase(gameId, game.score);
     }
+    if (game.score[0] == 11 || game.score[1] == 11) {
+      try {
+        this.gamesService.updateGameStatus(gameId, GameStatus.CLOSED);
+      }
+      catch (error) {
+        console.error(`Error updating game status in database: ${error.message}`);
+      }
+      this.cleanupGame(gameId);
+    }
   }
 
   private resetBall(ball: { x: number; y: number; dx: number; dy: number }) {
@@ -205,7 +217,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private async updateScoreInDatabase(gameId: string, score: [number, number]) {
     try {
       await this.gamesService.updateGameScore(gameId, score);
-      console.log(`Score updated in database for game ${gameId}: ${score}`);
+      // console.log(`Score updated in database for game ${gameId}: ${score}`);
     } catch (error) {
       console.error(`Error updating score in database: ${error.message}`);
     }
@@ -228,6 +240,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(`Player ${client.id} left game ${gameId}`);
 
       if (Object.keys(game.players).length === 0) {
+        try {
+          this.gamesService.updateGameStatus(gameId, GameStatus.CANCELLED);
+        }
+        catch (error) {
+          console.error(`Error updating game status in database: ${error.message}`);
+        }
         this.cleanupGame(gameId);
       }
     }
@@ -237,12 +255,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clearInterval(this.gameLoops.get(gameId));
     this.gameLoops.delete(gameId);
     this.games.delete(gameId);
-    try {
-      this.gamesService.updateGameStatus(gameId, GameStatus.CANCELLED);
-    }
-    catch (error) {
-      console.error(`Error updating game status in database: ${error.message}`);
-    }
     console.log(`Game ${gameId} removed`);
   }
 }

@@ -71,8 +71,6 @@ export class GamesService {
 
       gameData.player2_user_id = playerId;
 
-      gameData.status = GameStatus.COUNTDOWN;
-
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
 
