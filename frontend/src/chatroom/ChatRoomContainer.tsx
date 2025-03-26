@@ -1,31 +1,24 @@
 import { useState, useEffect } from "react";
-import { PostChatRoom } from "./PostChatRoom.tsx";
 import ChatRoomList from "./ChatRoomList.tsx";
-import ChatContainer from "../chat/ChatContainer.tsx";
-import {
-  ChatRoom,
-  ChatParticipantChatParticipantRoleEnum,
-} from "@/generated-api/index.ts";
+import { ChatRoom } from "@/generated-api/index.ts";
 import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
 import { UserContextType } from "@/utils/providers/UserProvider.tsx";
+// import { Dialog } from "@/components/ui/dialog.tsx";
 
 interface ChatRoomContainerProps {
   userDetails: UserContextType;
+  chatRoomId: number;
+  setChatRoomId: (chatRoomId: number) => void;
 }
 
-export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
+export const ChatRoomContainer = ({
+  userDetails,
+  chatRoomId,
+  setChatRoomId,
+}: ChatRoomContainerProps) => {
   const [askPassword, setAskPassword] = useState<boolean>(false);
   const { chatRooms } = useChatRooms();
   let userId: number;
-  const [chatRoomId, setChatRoomId] = useState(() => {
-    try {
-      const savedId = localStorage.getItem("chatRoomId");
-      return savedId ? JSON.parse(savedId) : 1;
-    } catch (error) {
-      console.error("Failed to parse chatRoomId from localStorage:", error);
-      return 1;
-    }
-  });
 
   useEffect(() => {
     if (chatRoomId !== null) {
@@ -72,11 +65,11 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
         askPassword={askPassword}
         setAskPassword={setAskPassword}
       />
-      <ChatContainer chatRoomId={chatRoomId} userId={userId} />
+      {/* <ChatContainer chatRoomId={chatRoomId} userId={userId} />
       <PostChatRoom
         userId={userId}
         role={ChatParticipantChatParticipantRoleEnum.Owner}
-      />
+      /> */}
     </div>
   );
 };
