@@ -48,15 +48,17 @@ function App() {
         </Route>
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/update" element={<UpdateUser />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/profile/:id" element={<VisitingProfile />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
-          <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
-          <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route element={<DevBarLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/update" element={<UpdateUser />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/profile/:id" element={<VisitingProfile />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
+            <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
+            <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+            <Route path="/chat" element={<Chat />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

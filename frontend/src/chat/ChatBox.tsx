@@ -57,8 +57,8 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     });
 
     const handleReceiveMessage = (message) => {
-      console.log("!!!!!!!!!!!!");
-      setMessages((prevMessages) => [...prevMessages, message]);
+      // setMessages((prevMessages) => [...prevMessages, message]);
+      void message;
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
@@ -69,7 +69,11 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
   const handleSendMessage = () => {
     if (input.trim()) {
-      const newMessage = { content: input, user_id: userId };
+      const newMessage = {
+        content: input,
+        userId: userId,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       socket.emit("sendMessage", newMessage);
       handleSubmitMessages(
         "https://localhost:3000/chatMessages",
@@ -77,6 +81,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
         userId,
         chatRoomId,
       );
+
       setInput("");
     }
   };
@@ -112,7 +117,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     console.log(`${action} user with ID: ${id}`);
     setSelectedMessage(null);
   };
-
+  console.log("active --->", activeParticipants, messages);
   return (
     <div>
       <ul className="chatMessages">
@@ -129,7 +134,13 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 key={index}
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
-                  (participant) => participant.userId == message.userId,
+                  (participant) => {
+                    console.log(
+                      index,
+                      `Comparing participant ${participant.userId} with message ${message.userId}`,
+                    );
+                    return participant.userId == message.userId;
+                  },
                 )}
                 loading={false}
               />
