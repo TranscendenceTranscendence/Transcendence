@@ -29,6 +29,7 @@ export default function Page() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
+  console.log("me", me);
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -78,19 +79,21 @@ export default function Page() {
               P L A Y
             </Button>
           </div>
-          <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
-              <DialogPostChatroom />
+          <div className="flex items-center justify-between gap-4">
+            <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
+                <DialogPostChatroom />
+              </div>
+              <ChatRoomContainer
+                userDetails={me}
+                chatRoomId={chatRoomId}
+                setChatRoomId={setChatRoomId}
+              />
             </div>
-            <ChatRoomContainer
-              userDetails={me}
-              chatRoomId={chatRoomId}
-              setChatRoomId={setChatRoomId}
-            />
+            <ChatContainer chatRoomId={chatRoomId} user={me.user} />
           </div>
           <AchievementBox achievements={achievements} />
-          <ChatContainer chatRoomId={chatRoomId} userId={151953} />
         </div>
       </SidebarInset>
     </SidebarProvider>

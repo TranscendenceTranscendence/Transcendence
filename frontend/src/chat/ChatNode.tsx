@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatParticipantResponse } from "@/generated-api";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatNodeProps {
   message: { content: string };
@@ -14,11 +15,11 @@ export const ChatNode: React.FC<ChatNodeProps> = ({
   loading,
 }) => {
   const navigate = useNavigate();
-  // console.log("info", message, user, loading);
   if (loading) return <li>Loading user data...</li>;
 
   if (!user || !user[0]) return <li>User not found</li>;
   const userId = user[0].userId;
+  const realUser = user[0].user.avatar;
   if (userId) {
     console.log("userId", userId);
   } else {
@@ -32,10 +33,16 @@ export const ChatNode: React.FC<ChatNodeProps> = ({
   const handleRedirect = () => {
     navigate(`/profile/${userId}`);
   };
-
+  if (realUser) console.log("chatNode", realUser);
+  else console.error("Werkt niet");
   return (
-    <li onClick={handleRedirect} style={{ cursor: "pointer" }}>
-      {message.content} - Sent by: {userId}
-    </li>
+    <div>
+      <li>
+        <p onClick={handleRedirect} style={{ cursor: "pointer" }}>
+          {userId}
+        </p>
+        <p> {message.content}</p>
+      </li>
+    </div>
   );
 };

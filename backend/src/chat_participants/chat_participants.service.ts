@@ -33,6 +33,7 @@ export class ChatParticipantsService {
   async findByChatRoomId(id: number): Promise<ChatParticipant[]> {
     const chatRoomData = await this.chatParticipantsRepository.find({
       where: { chatRoom: { id } },
+      relations: ['user'],
     });
     if (!chatRoomData)
       throw new HttpException('ChatParticipant Not Found', 404);

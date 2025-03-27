@@ -47,6 +47,8 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     }
   }, [fetchedMessages]);
 
+  console.log("chatboxUserID", userId);
+
   useEffect(() => {
     socket.on("connect", () => {
       console.log("WebSocket connected");
@@ -57,8 +59,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     });
 
     const handleReceiveMessage = (message) => {
-      // setMessages((prevMessages) => [...prevMessages, message]);
-      void message;
+      setMessages((prevMessages) => [...prevMessages, message]);
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
@@ -73,7 +74,9 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
         content: input,
         userId: userId,
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (newMessage.userId == userId) {
+        console.log("newMessage.userId == userId");
+      }
       socket.emit("sendMessage", newMessage);
       handleSubmitMessages(
         "https://localhost:3000/chatMessages",
@@ -95,10 +98,12 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
   const handleMessageClick = (e: React.MouseEvent, user_id: number) => {
     e.stopPropagation();
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
     setSelectedMessage({
       userId: user_id,
-      x: e.clientX,
-      y: e.clientY,
+      x: rect.left + window.scrollX - 175,
+      y: rect.top + window.scrollY - 125,
     });
   };
 
@@ -117,7 +122,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     console.log(`${action} user with ID: ${id}`);
     setSelectedMessage(null);
   };
-  console.log("active --->", activeParticipants, messages);
   return (
     <div>
       <ul className="chatMessages">
@@ -135,10 +139,10 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
                   (participant) => {
-                    console.log(
-                      index,
-                      `Comparing participant ${participant.userId} with message ${message.userId}`,
-                    );
+                    // console.log(
+                    //   index,
+                    //   `Comparing participant ${participant.userId} with message ${message.userId}`,
+                    // );
                     return participant.userId == message.userId;
                   },
                 )}
