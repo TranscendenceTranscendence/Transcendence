@@ -20,8 +20,8 @@ interface GameState {
   id: string;
   ball: { x: number; y: number; dx: number; dy: number };
   players: Record<string, Player>;
-  score: [number, number]; // Add score tracking
-  countdownActive?: boolean; // Add this flag
+  score: [number, number];
+  countdownActive?: boolean;
 }
 
 @WebSocketGateway({ cors: true })
@@ -232,6 +232,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
     if (game.score[0] == 11 || game.score[1] == 11) {
+      this.updateScoreInDatabase(roomId, game.score);
       try {
         this.gamesService.closeGame(roomId);
       } catch (error) {

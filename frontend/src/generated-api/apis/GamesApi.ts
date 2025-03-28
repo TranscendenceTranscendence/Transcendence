@@ -29,10 +29,6 @@ export interface GamesControllerFindByRoomIdentifierRequest {
   roomIdentifier: string;
 }
 
-export interface GamesControllerFindLastGameRequest {
-  userId: number;
-}
-
 export interface GamesControllerFindOneRequest {
   id: string;
 }
@@ -247,56 +243,6 @@ export class GamesApi extends runtime.BaseAPI {
   ): Promise<Game> {
     const response =
       await this.gamesControllerFindCurrentGameRaw(initOverrides);
-    return await response.value();
-  }
-
-  /**
-   * Retrieve the last game played by the current user
-   */
-  async gamesControllerFindLastGameRaw(
-    requestParameters: GamesControllerFindLastGameRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<Game>> {
-    if (requestParameters["userId"] == null) {
-      throw new runtime.RequiredError(
-        "userId",
-        'Required parameter "userId" was null or undefined when calling gamesControllerFindLastGame().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/games/lastgame`.replace(
-          `{${"userId"}}`,
-          encodeURIComponent(String(requestParameters["userId"])),
-        ),
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      GameFromJSON(jsonValue),
-    );
-  }
-
-  /**
-   * Retrieve the last game played by the current user
-   */
-  async gamesControllerFindLastGame(
-    requestParameters: GamesControllerFindLastGameRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<Game> {
-    const response = await this.gamesControllerFindLastGameRaw(
-      requestParameters,
-      initOverrides,
-    );
     return await response.value();
   }
 
