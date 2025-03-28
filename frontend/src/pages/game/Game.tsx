@@ -19,7 +19,7 @@ interface GameState {
 
 export default function Pong() {
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [gameId, setGameId] = useState<string>("");
+  const [roomId, setRoomId] = useState<string>("");
   const [gameFetched, setGameFetched] = useState<boolean>(false);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
@@ -114,7 +114,7 @@ export default function Pong() {
         }
         console.log("Fetched game:", game);
 
-        setGameId(game.roomIdentifier);
+        setRoomId(game.roomIdentifier);
         setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
@@ -125,25 +125,25 @@ export default function Pong() {
     fetchGame();
   }, [socketConnected, api, navigate]);
 
-  // Join game when both gameId and socket are ready
+  // Join game when both roomId and socket are ready
   useEffect(() => {
     console.log("joinGame effect running");
-    if (!socketConnected || !gameId || !socketRef.current) return;
+    if (!socketConnected || !roomId || !socketRef.current) return;
 
-    console.log("Socket and gameId both ready, joining game:", gameId);
+    console.log("Socket and roomId both ready, joining game:", roomId);
 
     // Make sure you're sending the correct structure
-    socketRef.current.emit("joinGame", { gameId, playerId });
+    socketRef.current.emit("joinGame", { roomId, playerId });
 
     return () => {
       console.log("Cleaning up joinGame effect");
     };
-  }, [socketConnected, gameId]);
+  }, [socketConnected, roomId]);
 
   const movePaddle = (event: React.MouseEvent) => {
-    if (playerId && socketRef.current && gameId && socketConnected) {
+    if (playerId && socketRef.current && roomId && socketConnected) {
       const yPercent = (event.clientY / window.innerHeight) * 100;
-      socketRef.current.emit("move", { gameId, y: yPercent });
+      socketRef.current.emit("move", { roomId, y: yPercent });
     }
   };
 
@@ -159,15 +159,15 @@ export default function Pong() {
               <div style={{ fontSize: "12px" }}>
                 {socketConnected ? "Socket connected ✓" : "Connecting..."}
               </div>
-              {gameId && (
-                <div style={{ fontSize: "12px" }}>Game ID: {gameId}</div>
+              {roomId && (
+                <div style={{ fontSize: "12px" }}>Game ID: {roomId}</div>
               )}
-              {socketConnected && gameId && !gameState && (
+              {socketConnected && roomId && !gameState && (
                 <button
                   onClick={() => {
-                    if (socketRef.current && gameId) {
-                      console.log("Force joining game:", gameId);
-                      socketRef.current.emit("joinGame", { gameId });
+                    if (socketRef.current && roomId) {
+                      console.log("Force joining game:", roomId);
+                      socketRef.current.emit("joinGame", { roomId });
                     }
                   }}
                   style={{

@@ -70,7 +70,7 @@ export class GamesController {
     @Req() req: AuthenticatedRequest,
   ): Promise<Game> {
     try {
-      const game = await this.gamesService.joinGame(+gameId, req.user.id);
+      const game = await this.gamesService.joinGame(gameId, req.user.id);
       return game;
     } catch (error) {
       throw error;

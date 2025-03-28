@@ -93,15 +93,14 @@ const Matchmaking = () => {
     }
   };
 
-  const handleJoinGame = async (userId: number) => {
+  const handleJoinGame = async (roomId: string) => {
     try {
       setIsLoading(true);
-      const userIdString = userId.toString();
-      if (userIdString === "" || userIdString == undefined) {
+      if (roomId === "" || roomId == undefined) {
         throw new Error("Game ID is required");
       }
       await api.Games.gamesControllerJoinGame({
-        id: userIdString,
+        id: roomId,
       });
       setMessage("Successfully joined the game!");
 
@@ -161,7 +160,7 @@ const Matchmaking = () => {
                 </div>
                 <button
                   className="join-btn"
-                  onClick={() => handleJoinGame(game.id)}
+                  onClick={() => handleJoinGame(game.roomIdentifier)}
                   disabled={
                     isLoading || game.status !== CreateGameDtoStatusEnum.Pending
                   }

@@ -30,7 +30,8 @@ export class GamesService {
       );
     }
   }
-  async joinGame(gameId: number, playerId: number): Promise<Game> {
+
+  async joinGame(gameId: string, playerId: number): Promise<Game> {
     const queryRunner =
       this.gamesRepository.manager.connection.createQueryRunner();
 
@@ -46,8 +47,9 @@ export class GamesService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      console.log(`Joining game with ID: ${gameId} for player ID: ${playerId}`);
       const gameData = await queryRunner.manager.findOne(Game, {
-        where: { id: gameId },
+        where: { room_identifier: gameId },
         lock: { mode: 'pessimistic_write' },
       });
 
@@ -99,25 +101,14 @@ export class GamesService {
     }
   }
 
-  async startGame(gameId: number): Promise<Game> {
-    try {
-      const game = await this.gamesRepository.findOne({
-        where: { id: gameId },
-      });
-
-      if (!game) {
-        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
-      }
-      const savedGame = await this.gamesRepository.save(game);
-
-      const eventEmitter = new EventEmitter();
-      eventEmitter.emit('countdown', game.room_identifier);
-
-      return savedGame;
-    } catch (error) {
-      console.error(`Error starting game ${gameId}:`, error);
-      throw error;
+  async startGame(roomId: string): Promise<Game> {
+    const game = await this.findByRoomIdentifier(roomId);
+    if (!game) {
+      throw new Error('Game not found');
     }
+    
+    game.status = GameStatus.ONGOING;
+    return this.gamesRepository.save(game);
   }
 
   async isPlayerInGame(playerId: number): Promise<Game> {
@@ -181,6 +172,24 @@ export class GamesService {
 
       throw new HttpException(
         `Failed to find games for user ${id}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findGameById(id: number): Promise<Game> {
+    try {
+      const gameData = await this.gamesRepository.findOne({
+        where: { id },
+      });
+      if (!gameData) {
+        throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+      }
+      return gameData;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to find game with id ${id}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
