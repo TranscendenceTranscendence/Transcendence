@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { handleSubmitMessages } from "../utils/PostRequest.tsx";
 import { ChatNode } from "./ChatNode.tsx";
 import React from "react";
-import { KickUser, PromoteUser } from "./utils.ts";
+import { KickUser, PromoteUser, MuteUser, BlockUser } from "./utils.ts";
 import {
   useActiveParticipantbyChatroomId,
   useMessages,
@@ -46,8 +46,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
       setMessages(fetchedMessages.data);
     }
   }, [fetchedMessages]);
-
-  console.log("chatboxUserID", userId);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -114,14 +112,15 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
   const handleAction = (action: string, id: number) => {
     if (action == "Kick") KickUser(chatRoomId, id);
     else if (action == "Promote") PromoteUser(chatRoomId, id);
-    // else if (action == 'Mute')
-    //   MuteUser(userId);
-    // else if (action == 'Block')
-    //   BlockUser(userId);
+    else if (action == "Mute") MuteUser(chatRoomId, userId);
+    else if (action == "Block") BlockUser(chatRoomId, userId);
 
     console.log(`${action} user with ID: ${id}`);
     setSelectedMessage(null);
   };
+  if (localParticipant == undefined) {
+    return <p>Chat not available</p>;
+  }
   return (
     <div>
       <ul className="chatMessages">
@@ -139,10 +138,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
                   (participant) => {
-                    // console.log(
-                    //   index,
-                    //   `Comparing participant ${participant.userId} with message ${message.userId}`,
-                    // );
                     return participant.userId == message.userId;
                   },
                 )}
@@ -165,7 +160,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
         <button onClick={handleSendMessage}>Send</button>
       </div>
 
-      {selectedMessage && (
+      {selectedMessage && selectedMessage.userId != userId && (
         <div
           className="messagePrompt"
           style={{
