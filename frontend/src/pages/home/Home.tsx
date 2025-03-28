@@ -10,7 +10,7 @@ import { AchievementBox } from "./components/AchievementsBox";
 import { useUser } from "@/utils/providers/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
-import { DialogPostChatroom } from "@/chatroom/DialogPostChatroom";
+import { DialogPostChatRoom } from "@/chatroom/DialogPostChatroom";
 import ChatContainer from "@/chat/ChatContainer";
 
 export default function Page() {
@@ -28,8 +28,6 @@ export default function Page() {
   });
   const [friends, setFriends] = useState<Friend[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-
-  console.log("me", me);
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -59,6 +57,9 @@ export default function Page() {
     navigate("/game");
   };
 
+  const userId = me.user?.id;
+  console.log("userId", userId);
+  console.log("me", me);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -83,7 +84,7 @@ export default function Page() {
             <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
               <div className="flex items-center gap-2">
                 <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
-                <DialogPostChatroom />
+                <DialogPostChatRoom userId={userId} />
               </div>
               <ChatRoomContainer
                 userDetails={me}

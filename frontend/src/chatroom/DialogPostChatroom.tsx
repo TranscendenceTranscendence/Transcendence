@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {
   Dialog,
   DialogTrigger,
@@ -9,7 +10,9 @@ import "../css/DialogChatRoom.css";
 import { Button } from "@/components/ui/button";
 import { PostChatRoom } from "./PostChatRoom";
 
-export const DialogPostChatroom: React.FC = () => {
+export const DialogPostChatRoom = ({ userId }) => {
+  if (typeof userId !== "number") return null; // Ensure userId is a number
+  console.log("sadfdsf", userId);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -21,9 +24,14 @@ export const DialogPostChatroom: React.FC = () => {
           <DialogDescription>
             Please enter a name for your new chatroom.
           </DialogDescription>
-          <PostChatRoom userId={1} />
+          <PostChatRoom userId={userId} />
         </DialogContent>
       </div>
     </Dialog>
   );
+};
+
+// ✅ Prop Validation: Ensure userId is a required number
+DialogPostChatRoom.propTypes = {
+  userId: PropTypes.number.isRequired,
 };

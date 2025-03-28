@@ -20,11 +20,11 @@ export const ChatNode: React.FC<ChatNodeProps> = ({
   if (!user || !user[0]) return <li>User not found</li>;
   const userId = user[0].userId;
   const realUser = user[0].user.avatar;
-  if (userId) {
-    console.log("userId", userId);
-  } else {
-    console.error("User ID is undefined");
-  }
+  // if (userId) {
+  //   console.log("userId", userId);
+  // } else {
+  //   console.error("User ID is undefined");
+  // }
   if (!userId) {
     console.error("User ID is undefined");
     return <li>Invalid user data</li>;
