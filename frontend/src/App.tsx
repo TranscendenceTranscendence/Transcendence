@@ -17,6 +17,7 @@ import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
 import Matchmaking from "./pages/matchmaking/Matchmaking.tsx";
 import Lobby from "./pages/lobby/Lobby.tsx";
 import Game from "./pages/game/Game.tsx";
+import Result from "./pages/result/result.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -57,6 +58,7 @@ function App() {
             <Route path="/Matchmaking" element={<Matchmaking />} />
             <Route path="/lobby/:roomIdentifier" element={<Lobby />} />
             <Route path="/game" element={<Game />} />
+            <Route path="/result" element={<Result />} />
             <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
             <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
             <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />

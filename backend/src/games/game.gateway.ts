@@ -210,6 +210,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         );
       }
       this.cleanupGame(gameId);
+      this.server.to(gameId).emit('removePlayer');
     }
   }
 
@@ -254,6 +255,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
         this.cleanupGame(gameId);
       }
+      this.server.to(gameId).emit('removePlayer');
     }
   }
 

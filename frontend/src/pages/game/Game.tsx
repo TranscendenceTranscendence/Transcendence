@@ -80,6 +80,11 @@ export default function Pong() {
       socket.on("gameStart", () => {
         console.log("Game started!");
       });
+
+      socket.on("removePlayer", (playerId) => {
+        console.log("Removing player:", playerId);
+        navigate("/result");
+      });
     }
 
     // Clean up on component unmount

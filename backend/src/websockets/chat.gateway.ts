@@ -18,6 +18,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   handleConnection(client: any) {
+    void client;
     // console.log('Client connected:', client.id);
   }
 
@@ -27,6 +28,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: any) {
+    void client;
     // console.log('Client disconnected:', client.id);
   }
 
