@@ -133,7 +133,7 @@ export default function Pong() {
     console.log("Socket and gameId both ready, joining game:", gameId);
 
     // Make sure you're sending the correct structure
-    socketRef.current.emit("joinGame", { gameId });
+    socketRef.current.emit("joinGame", { gameId, playerId });
 
     return () => {
       console.log("Cleaning up joinGame effect");

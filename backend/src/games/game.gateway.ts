@@ -50,6 +50,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       // Extract gameId from input (handle both string and object formats)
       const gameId = typeof data === 'object' ? data.gameId : data;
+      const userId = typeof data === 'object' ? data.userId : null;
 
       console.log('Received joinGame event with data:', data);
       // Check if gameId is valid
@@ -70,10 +71,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Now we can safely log players
       console.log('Current players in room:', Object.keys(game.players).length);
       console.log(`Player ${client.id} joining game ${gameId}`);
-
+      if (
+        Object.keys(game.players).length >= 2 ||
+        this.playerToRoom.has(client.id)
+      ) {
+        console.error('Game is full or player already in a game');
+        return;
+      }
       // Store player associations
       this.playerToRoom.set(client.id, gameId);
-      this.socketToUserId.set(client.id, 1);
+      this.socketToUserId.set(client.id, userId);
 
       // Join the socket.io room
       client.join(gameId);
@@ -203,7 +210,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     if (game.score[0] == 11 || game.score[1] == 11) {
       try {
-        this.gamesService.endGame(gameId);
+        this.gamesService.closeGame(gameId);
       } catch (error) {
         console.error(
           `Error updating game status in database: ${error.message}`,
@@ -247,15 +254,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (Object.keys(game.players).length === 0) {
         try {
-          this.gamesService.updateGameStatus(gameId, GameStatus.CANCELLED);
+          this.gamesService.cancelGame(gameId);
         } catch (error) {
           console.error(
             `Error updating game status in database: ${error.message}`,
           );
         }
         this.cleanupGame(gameId);
+        this.server.to(gameId).emit('removePlayer');
       }
-      this.server.to(gameId).emit('removePlayer');
     }
   }
 

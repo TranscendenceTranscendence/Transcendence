@@ -320,7 +320,7 @@ export class GamesService {
       );
     }
   }
-  async endGame(gameId: string): Promise<Game> {
+  async closeGame(gameId: string): Promise<Game> {
     try {
       const game = await this.gamesRepository.findOne({
         where: { room_identifier: gameId },
@@ -333,6 +333,25 @@ export class GamesService {
         : (game.winner_user_id = game.player2_user_id);
 
       game.status = GameStatus.CLOSED;
+      game.ended_at = new Date();
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to end game`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async cancelGame(gameId: string): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { room_identifier: gameId },
+      });
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+      game.status = GameStatus.CANCELLED;
       game.ended_at = new Date();
       return await this.gamesRepository.save(game);
     } catch (error) {
