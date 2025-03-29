@@ -12,26 +12,27 @@
   border-color: black;
   display: flex;
   overflow-y: scroll;
-  flex-direction: column; /* Stack children vertically */
-  height: 75vh; /* Set height for the chat box */
-  width: 75vh; /* Set width for the chat box */
+  flex-direction: column;
+  height: 300px;
+  width: 300px;
 }
 
 .chatMessages {
   display: flex;
-  flex-direction: column; /* Arrange messages in a column */
-  gap: 10px; /* Space between messages */
-  flex: 1; /* Allow this section to grow and fill available space */
-  overflow-y: auto; /* Enable scrolling if messages exceed height */
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .formMessages {
-  margin-top: auto; /* Push this section to the bottom of the chat box */
-  display: flex; /* Use flex to align children if necessary */
-  /* Add padding or margins as needed */
-}
+  /* margin-top: auto;
+  display: flex; */
+  position:relative;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Optional */}
 
-/* User and Contact message styles */
 .chatUser {
   list-style-type: none;
   align-self: flex-start;

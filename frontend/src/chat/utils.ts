@@ -5,7 +5,7 @@ import {
   UpdateChatParticipantDtoChatParticipantRoleEnum,
 } from "@/generated-api/index.ts";
 
-export const KickUser = async (chatRoomId, id) => {
+export const KickUser = async (chatRoomId: number, id: number) => {
   const api = useApi();
   try {
     await api.ChatParticipants.chatParticipantsControllerRemove({

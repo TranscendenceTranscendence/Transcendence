@@ -25,7 +25,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
       callbackURL: fortyTwoConfiguration.callbackURL,
     });
 
-    this.defaultAvatar = '/uploads/cute_dog.jpeg';
+    this.defaultAvatar = '/img/pingpong.jpg'; // default avatar
   }
 
   async validate(

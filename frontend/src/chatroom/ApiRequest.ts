@@ -29,7 +29,7 @@ export const useChatRooms = () => {
   return { chatRooms, fetchChatRooms };
 };
 
-export const UseaddParticipant = (userId: number, chatRoomId: number) => {
+export const useAddParticipant = () => {
   const api = useApi();
 
   const addParticipant = async (userId: number, chatRoomId: number) => {
@@ -47,7 +47,5 @@ export const UseaddParticipant = (userId: number, chatRoomId: number) => {
     }
   };
 
-  useEffect(() => {
-    addParticipant(userId, chatRoomId);
-  });
+  return { addParticipant };
 };

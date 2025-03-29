@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessage } from './chat_message.entity';
+import { findChatMessageDto } from './dto/find.dto';
 
 @Injectable()
 export class ChatMessagesService {
@@ -17,6 +18,28 @@ export class ChatMessagesService {
     const chatMessageData =
       await this.chatMessagesRepository.create(createChatMessageDto);
     return this.chatMessagesRepository.save(chatMessageData);
+  }
+
+  async find(findDto: findChatMessageDto): Promise<ChatMessage[]> {
+    const { chatRoomId, sent_time_from, sent_time_till } = findDto;
+    const queryBuilder =
+      this.chatMessagesRepository.createQueryBuilder('chat_message');
+    if (chatRoomId) {
+      queryBuilder.where('chat_message.chat_room_id = :chatRoomId', {
+        chatRoomId,
+      });
+    }
+    if (sent_time_from) {
+      queryBuilder.andWhere('chat_message.sent_time >= :sent_time_from', {
+        sent_time_from,
+      });
+    }
+    if (sent_time_till) {
+      queryBuilder.andWhere('chat_message.sent_time <= :sent_time_till', {
+        sent_time_till,
+      });
+    }
+    return queryBuilder.getMany();
   }
 
   async findAll(): Promise<ChatMessage[]> {
