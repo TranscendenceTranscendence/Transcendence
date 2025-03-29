@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ChatParticipantResponse } from "@/generated-api";
 import { ChatParticipant } from "@/generated-api";
 
 interface ChatNodeProps {

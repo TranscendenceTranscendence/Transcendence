@@ -93,11 +93,12 @@ export class ChatParticipantsService {
       id,
     );
 
-    // Directly update the properties of the found entity
     Object.assign(existingChatParticipant, updateDto);
+    await this.chatParticipantsRepository.save(existingChatParticipant);
 
-    // Save the updated entity
-    return await this.chatParticipantsRepository.save(existingChatParticipant);
+    return await this.chatParticipantsRepository.findOne({
+      where: { user_id: existingChatParticipant.user_id },
+    });
   }
 
   async remove(
