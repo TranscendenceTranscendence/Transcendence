@@ -7,7 +7,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
-import { Game, GameStatus } from './game.entity';
 
 interface Player {
   id: string;
@@ -151,14 +150,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.log(`Game ${roomId} started successfully`);
             game.countdownActive = false;
             // Start the game loop only after countdown completes
-            this.startGameLoop(roomId, game);
+            this.startGameLoop(roomId);
             this.server.to(roomId).emit('gameStart');
           })
           .catch((error) => {
             console.error(`Error updating game status: ${error.message}`);
             game.countdownActive = false;
             // Start the game loop even if there was an error updating status
-            this.startGameLoop(roomId, game);
+            this.startGameLoop(roomId);
             this.server.to(roomId).emit('gameStart');
           });
       }
@@ -190,7 +189,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return game;
   }
 
-  private startGameLoop(roomId: string, game: GameState) {
+  private startGameLoop(roomId: string) {
     // Remove the countdownActive check here, since we only call this when ready
     const loop = setInterval(() => {
       this.updateGame(roomId);

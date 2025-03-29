@@ -1,9 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Not, IsNull } from 'typeorm';
+import { Repository, In, Not } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
-import { EventEmitter } from 'events';
 @Injectable()
 export class GamesService {
   constructor(
@@ -331,9 +330,8 @@ export class GamesService {
       if (!game) {
         throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
       }
-      game.score[0] == 11
-        ? (game.winner_user_id = game.player1_user_id)
-        : (game.winner_user_id = game.player2_user_id);
+      if (game.score[0] == 11) game.winner_user_id = game.player1_user_id;
+      else game.winner_user_id = game.player2_user_id;
 
       game.status = GameStatus.CLOSED;
       game.ended_at = new Date();

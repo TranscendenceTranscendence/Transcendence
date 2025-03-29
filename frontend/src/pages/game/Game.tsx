@@ -32,7 +32,6 @@ export default function Pong() {
   const navigate = useNavigate();
   const isComponentMounted = useRef<boolean>(true);
   const [playerNumber, setPlayerNumber] = useState<number>(-1);
-  const [currentUser, setCurrentUser] = useState<number>(0);
   const [count, setCount] = useState<number>(-1);
 
   // Create socket connection (only once)
