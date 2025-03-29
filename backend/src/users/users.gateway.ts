@@ -103,7 +103,6 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
     client.join(targetRoom);
-    console.log(`User ${user.sub} joined room ${targetRoom}`);
   }
 
   @SubscribeMessage('heartbeat')
@@ -118,7 +117,7 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
       return;
     }
-    console.log(`Heartbeat received from ${client.id}:`, data);
+    // console.log(`Heartbeat received from ${client.id}:`, data);
     try {
       await this.usersService.setLastActive(user.sub, new Date(data.timestamp));
     } catch (error) {

@@ -24,7 +24,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('newMessage')
   onNewMessage(@MessageBody() body: any) {
-    console.log(body);
+    void body;
+    // console.log(body);
   }
 
   handleDisconnect(client: any) {

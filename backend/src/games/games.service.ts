@@ -71,7 +71,6 @@ export class GamesService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
-      console.log(`Joining game with ID: ${gameId} for player ID: ${playerId}`);
       const gameData = await queryRunner.manager.findOne(Game, {
         where: { room_identifier: gameId },
         lock: { mode: 'pessimistic_write' },
@@ -279,7 +278,6 @@ export class GamesService {
         });
 
         if (!gamePlayer2) {
-          console.log(`User ${userId} is not in game ${roomIdentifier}`);
           return false;
         }
       }

@@ -43,7 +43,6 @@ function App() {
   return (
     <Fragment>
       <Toaster />
-      <DevBarLayout />
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoute />}>

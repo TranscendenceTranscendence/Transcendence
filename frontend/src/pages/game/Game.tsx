@@ -34,12 +34,8 @@ export default function Pong() {
   const [playerNumber, setPlayerNumber] = useState<number>(-1);
   const [count, setCount] = useState<number>(-1);
 
-  // Create socket connection (only once)
   useEffect(() => {
-    console.log("Socket setup effect running");
-    // Create socket connection with authentication token
     if (!socketRef.current) {
-      console.log("Creating new socket connection");
       const token = localStorage.getItem("access_token");
 
       if (!token) {
@@ -81,7 +77,7 @@ export default function Pong() {
       });
 
       socket.on("gameStart", () => {
-        console.log("Game started!");
+        // console.log("Game started");
       });
 
       socket.on("removePlayer", () => {
@@ -90,11 +86,10 @@ export default function Pong() {
     }
 
     return () => {
-      console.log("Cleaning up socket setup effect");
       isComponentMounted.current = false;
 
       if (socketRef.current) {
-        console.log("Player has left the page, but socket remains connected");
+        // console.log("Player has left the page, but socket remains connected");
       }
     };
   }, [config.backendUrl]);
@@ -148,7 +143,7 @@ export default function Pong() {
     socketRef.current.emit("joinGame", { roomId, playerId, playerNumber });
 
     return () => {
-      console.log("Cleaning up joinGame effect");
+      // console.log("Cleaning up socket connection");
     };
   }, [socketConnected, roomId, playerNumber]);
 
@@ -178,7 +173,6 @@ export default function Pong() {
                 <button
                   onClick={() => {
                     if (socketRef.current && roomId) {
-                      console.log("Force joining game:", roomId);
                       socketRef.current.emit("joinGame", { roomId });
                     }
                   }}

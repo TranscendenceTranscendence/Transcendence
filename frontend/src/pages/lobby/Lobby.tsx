@@ -21,26 +21,21 @@ const Lobby = () => {
     }
 
     try {
-      console.log("Fetching game data...");
       const gameData = await api.Games.gamesControllerFindByRoomIdentifier({
         roomIdentifier: roomIdentifier,
       });
-      console.log("Game data fetched:", gameData);
 
       if (gameData.id == undefined) {
-        console.log("You're not in this lobby, redirecting to matchmaking...");
         navigate("/matchmaking");
         return;
       }
 
       if (gameData.status == "ongoing") {
-        console.log("You're already in a game, hurry up!");
         navigate("/game");
         return;
       }
 
       if (gameData.status == "countdown") {
-        console.log("Game is in countdown, redirecting to game...");
         navigate("/game");
         return;
       }
