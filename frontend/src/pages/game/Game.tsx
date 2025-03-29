@@ -54,11 +54,9 @@ export default function Pong() {
         reconnectionDelay: 1000,
       });
 
-      // Set up socket event listeners
       const socket = socketRef.current;
 
       socket.on("connect", () => {
-        console.log("Socket connected in Game.tsx:", socket.id);
         setSocketConnected(true);
         setPlayerId(socket.id);
       });
@@ -70,17 +68,15 @@ export default function Pong() {
       });
 
       socket.on("disconnect", (reason) => {
-        console.log("Socket disconnected in Game.tsx:", reason);
+        void reason;
         setSocketConnected(false);
       });
 
       socket.on("update", (state) => {
-        console.log("Game state updated:", state);
         setGameState(state);
       });
 
       socket.on("countdown", (count) => {
-        console.log("Game starting in:", count);
         setCount(count);
       });
 
@@ -88,42 +84,29 @@ export default function Pong() {
         console.log("Game started!");
       });
 
-      socket.on("removePlayer", (playerId) => {
-        console.log("Removing player:", playerId);
+      socket.on("removePlayer", () => {
         navigate("/result");
       });
     }
 
-    // Clean up on component unmount
     return () => {
       console.log("Cleaning up socket setup effect");
       isComponentMounted.current = false;
 
       if (socketRef.current) {
-        // Keep the socket connection alive when navigating to other pages
-        // Don't disconnect the socket
         console.log("Player has left the page, but socket remains connected");
       }
     };
-  }, [config.backendUrl]); // Only depend on config.backendUrl
+  }, [config.backendUrl]);
 
   async function checkPlayerNumber(game: Game) {
     try {
-      // First, properly get the current user ID and wait for the result
-      const user = await api.Users.usersControllerMe();
-      const currentUserId = user.id;
-      setCurrentUser(currentUserId);
+      const currentUserId = (await api.Users.usersControllerMe()).id;
 
-      console.log("Current user ID:", currentUserId);
-      console.log("Game player IDs:", game.player1UserId, game.player2UserId);
-
-      // Check if the current user is player1 or player2
       if (currentUserId === game.player1UserId) {
         setPlayerNumber(0);
-        console.log("You are Player 1");
       } else if (currentUserId === game.player2UserId) {
         setPlayerNumber(1);
-        console.log("You are Player 2");
       } else {
         setPlayerNumber(-1);
         console.error("Current user is not a player in this game");
@@ -133,7 +116,6 @@ export default function Pong() {
     }
   }
 
-  // Handle game fetching and joining in a separate effect
   useEffect(() => {
     if (!socketConnected || gameFetched) return;
 
@@ -146,7 +128,6 @@ export default function Pong() {
           setTimeout(() => navigate("/matchmaking"), 1300);
           return;
         }
-        console.log("Fetched game:", game);
 
         setRoomId(game.roomIdentifier);
         await checkPlayerNumber(game);
@@ -160,16 +141,10 @@ export default function Pong() {
     fetchGame();
   }, [socketConnected, api, navigate]);
 
-  // Join game when both roomId and socket are ready
   useEffect(() => {
-    console.log("joinGame effect running");
     if (!socketConnected || !roomId || !socketRef.current || playerNumber == -1)
       return;
 
-    console.log("Socket and roomId both ready, joining game:", roomId);
-
-    // Make sure you're sending the correct structure
-    console.log("Joining game with playerId:", playerNumber);
     socketRef.current.emit("joinGame", { roomId, playerId, playerNumber });
 
     return () => {
@@ -227,10 +202,9 @@ export default function Pong() {
     );
   }
 
-  // Game interface wrapped in the pong-game class for CSS scoping
   return (
     <div className="pong-game" onMouseMove={movePaddle}>
-      {count >= 0 && count <= 10 && (
+      {count >= 0 && count <= 5 && (
         <div className="countdown-overlay">
           <div className="countdown-number">{count === 0 ? "GO!" : count}</div>
         </div>
@@ -249,7 +223,6 @@ export default function Pong() {
 
         {/* Players/Paddles */}
         {Object.entries(gameState.players).map(([id, player]) => {
-          // Get the correct position based on player's playerNumber
           const isPlayer1 = player.playerNumber === 0;
 
           return (
@@ -259,7 +232,7 @@ export default function Pong() {
               style={{
                 position: "absolute",
                 top: `${player.y}%`,
-                left: `${isPlayer1 ? "5%" : "95%"}`, // Set left position based on player number
+                left: `${isPlayer1 ? "5%" : "95%"}`,
               }}
             />
           );

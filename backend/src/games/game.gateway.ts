@@ -28,51 +28,38 @@ interface GameState {
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  private playerToRoom = new Map<string, string>(); // Map player IDs to room IDs
-  private socketToUserId = new Map<string, number>(); // Map socket IDs to user IDs
+  private playerToRoom = new Map<string, string>();
+  private socketToUserId = new Map<string, number>();
 
-  constructor(
-    private readonly gamesService: GamesService, // Inject GamesService
-  ) {}
-  private games = new Map<string, GameState>(); // Stores game states by roomId
-  private gameLoops = new Map<string, NodeJS.Timeout>(); // Stores game loops by roomId
+  constructor(private readonly gamesService: GamesService) {}
+  private games = new Map<string, GameState>();
+  private gameLoops = new Map<string, NodeJS.Timeout>();
 
   handleConnection(client: Socket): void {
-    console.log(`Player connected: ${client.id})`);
+    void client;
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`Player disconnected: ${client.id}`);
     this.removePlayerFromGame(client);
   }
 
   @SubscribeMessage('joinGame')
   async handleJoinGame(client: Socket, data: any) {
     try {
-      // Extract roomId from input (handle both string and object formats)
       const roomId = typeof data === 'object' ? data.roomId : data;
       const userId = typeof data === 'object' ? data.userId : null;
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
-      console.log('Received joinGame event with data:', data);
-      // Check if roomId is valid
       if (!roomId || roomId === undefined || playerNumber === -1) {
         console.error('Invalid roomId or playerNumber');
         return;
       }
 
-      console.log('GAME ID HAS BEEN PROVIDED', roomId);
-
-      // Create game first if it doesn't exist
       let game = this.games.get(roomId);
       if (!game) {
         game = this.createGame(roomId);
-        console.log(`Created new WebSocket game: ${roomId}`);
       }
 
-      // Now we can safely log players
-      console.log('Current players in room:', Object.keys(game.players).length);
-      console.log(`Player ${client.id} joining game ${roomId}`);
       if (
         Object.keys(game.players).length >= 2 ||
         this.playerToRoom.has(client.id)
@@ -80,15 +67,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.error('Game is full or player already in a game');
         return;
       }
-      // Store player associations
       this.playerToRoom.set(client.id, roomId);
       this.socketToUserId.set(client.id, userId);
 
-      // Join the socket.io room
       client.join(roomId);
 
-      // Add player to WebSocket game state
-      console.log(`Adding player ${client.id} to playernumber ${playerNumber}`);
       const x = playerNumber == 0 ? 5 : 95;
       game.players[client.id] = {
         id: client.id,
@@ -97,21 +80,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         x,
       };
 
-      // Check the database game entity
       try {
-        // Find game in database
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
 
-        // Send initial game state to the client
         this.server.to(client.id).emit('update', game);
-
-        // If game is ready to start (two players), update status and start countdown
-        console.log(
-          'DB GAME',
-          Object.keys(game.players).length,
-          dbGame,
-          dbGame.status,
-        );
         if (
           Object.keys(game.players).length == 2 &&
           dbGame.status == 'countdown'
@@ -121,17 +93,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.error(`Error fetching game from database: ${error.message}`);
         this.server.to(client.id).emit('update', game);
       }
-
-      console.log(`Player ${client.id} joined game ${roomId}`);
     } catch (error) {
       console.error(`Error in handleJoinGame: ${error.message}`);
     }
   }
 
   private startCountdown(roomId: string) {
-    let count = 10;
-    console.log('Starting countdown for game:', roomId);
-
+    let count = 5;
     const game = this.games.get(roomId);
     if (!game || game.countdownActive) return;
 
@@ -139,7 +107,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const countdownInterval = setInterval(() => {
       this.server.to(roomId).emit('countdown', count);
-      console.log(`Game ${roomId} countdown: ${count}`);
 
       if (count <= -1) {
         clearInterval(countdownInterval);
@@ -147,16 +114,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.gamesService
           .startGame(roomId)
           .then(() => {
-            console.log(`Game ${roomId} started successfully`);
             game.countdownActive = false;
-            // Start the game loop only after countdown completes
+
             this.startGameLoop(roomId);
             this.server.to(roomId).emit('gameStart');
           })
           .catch((error) => {
             console.error(`Error updating game status: ${error.message}`);
             game.countdownActive = false;
-            // Start the game loop even if there was an error updating status
+
             this.startGameLoop(roomId);
             this.server.to(roomId).emit('gameStart');
           });
@@ -168,6 +134,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('move')
   handleMove(client: Socket, { roomId, y }: { roomId: string; y: number }) {
+    void client;
     const game = this.games.get(roomId);
     if (game && game.players[client.id]) {
       game.players[client.id].y = y;
@@ -184,13 +151,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
 
     this.games.set(roomId, game);
-    // Don't start the game loop immediately
-    // Only start it after countdown completes
     return game;
   }
 
   private startGameLoop(roomId: string) {
-    // Remove the countdownActive check here, since we only call this when ready
     const loop = setInterval(() => {
       this.updateGame(roomId);
       this.server.to(roomId).emit('update', this.games.get(roomId));
@@ -209,7 +173,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (ball.y <= 0 || ball.y >= 100) ball.dy *= -1;
 
-    // Paddle collision detection - keep your existing code
     Object.values(players).forEach((player) => {
       if (
         (player.id === Object.keys(players)[0] &&
@@ -223,14 +186,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     });
 
-    // Scoring logic - update to track scores
     if (ball.x < 0) {
-      // Player 2 scores
       ++game.score[1];
       this.resetBall(ball);
       this.updateScoreInDatabase(roomId, game.score);
     } else if (ball.x > 100) {
-      // Player 1 scores
       ++game.score[0];
       this.resetBall(ball);
       this.updateScoreInDatabase(roomId, game.score);
@@ -259,27 +219,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private async updateScoreInDatabase(roomId: string, score: [number, number]) {
     try {
       await this.gamesService.updateGameScore(roomId, score);
-      // console.log(`Score updated in database for game ${roomId}: ${score}`);
     } catch (error) {
       console.error(`Error updating score in database: ${error.message}`);
     }
   }
 
   private removePlayerFromGame(client: Socket) {
-    // Get the game this player was in
     const roomId = this.playerToRoom.get(client.id);
     if (!roomId) return;
 
-    // Remove from our player tracking
     this.playerToRoom.delete(client.id);
     this.socketToUserId.delete(client.id);
 
-    // Remove from the game
     const game = this.games.get(roomId);
     if (game && game.players[client.id]) {
       delete game.players[client.id];
       client.leave(roomId);
-      console.log(`Player ${client.id} left game ${roomId}`);
 
       if (Object.keys(game.players).length === 0) {
         try {
@@ -299,6 +254,5 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     clearInterval(this.gameLoops.get(roomId));
     this.gameLoops.delete(roomId);
     this.games.delete(roomId);
-    console.log(`Game ${roomId} removed`);
   }
 }

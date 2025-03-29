@@ -30,6 +30,31 @@ export class GamesService {
     }
   }
 
+  async startGame(roomId: string): Promise<Game> {
+    try {
+      const gameData = await this.gamesRepository.findOne({
+        where: { room_identifier: roomId },
+      });
+      if (!gameData) {
+        throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+      }
+      if (gameData.status !== GameStatus.COUNTDOWN) {
+        throw new HttpException(
+          'Game is not in countdown status',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      gameData.status = GameStatus.ONGOING;
+      return await this.gamesRepository.save(gameData);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Failed to start game',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async joinGame(gameId: string, playerId: number): Promise<Game> {
     const queryRunner =
       this.gamesRepository.manager.connection.createQueryRunner();
@@ -92,16 +117,6 @@ export class GamesService {
         await queryRunner.release();
       }
     }
-  }
-
-  async startGame(roomId: string): Promise<Game> {
-    const game = await this.findByRoomIdentifier(roomId);
-    if (!game) {
-      throw new Error('Game not found');
-    }
-
-    game.status = GameStatus.ONGOING;
-    return this.gamesRepository.save(game);
   }
 
   async isPlayerInGame(playerId: number): Promise<Game> {
@@ -331,7 +346,7 @@ export class GamesService {
         throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
       }
       if (game.score[0] == 11) game.winner_user_id = game.player1_user_id;
-      else game.winner_user_id = game.player2_user_id;
+      else if (game.score[1] == 11) game.winner_user_id = game.player2_user_id;
 
       game.status = GameStatus.CLOSED;
       game.ended_at = new Date();
