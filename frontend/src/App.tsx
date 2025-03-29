@@ -17,7 +17,6 @@ import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
 import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
 import Game from "./pages/game/Game.tsx";
 import { useApi } from "@/utils/api";
-// import { useApi } from "@/utils/api/index.ts";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
