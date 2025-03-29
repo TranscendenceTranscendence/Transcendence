@@ -22,7 +22,7 @@ interface GameState {
   ball: { x: number; y: number; dx: number; dy: number };
   players: Record<string, Player>;
   score: [number, number];
-  countdownActive?: boolean;
+  countdownActive: boolean;
 }
 
 @WebSocketGateway({ cors: true })
@@ -113,18 +113,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           dbGame,
           dbGame.status,
         );
-        if (
-          Object.keys(game.players).length === 2 &&
-          dbGame &&
-          dbGame.status === GameStatus.PENDING
-        ) {
-          // Start countdown
-          this.startCountdown(roomId);
-        }
+        if (Object.keys(game.players).length == 2 && dbGame.status == 'countdown') this.startCountdown(roomId);
       } catch (error) {
         console.error(`Error fetching game from database: ${error.message}`);
-
-        // Still send the game state even if database fetch fails
         this.server.to(client.id).emit('update', game);
       }
 
@@ -134,38 +125,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  // Add countdown functionality
   private startCountdown(roomId: string) {
-    let count = 3;
+    let count = 10;
     console.log('Starting countdown for game:', roomId);
 
-    // Mark the game as in countdown to prevent multiple countdowns
     const game = this.games.get(roomId);
     if (!game || game.countdownActive) return;
 
-    // Add a flag to prevent multiple countdowns
     game.countdownActive = true;
 
     const countdownInterval = setInterval(() => {
       this.server.to(roomId).emit('countdown', count);
       console.log(`Game ${roomId} countdown: ${count}`);
 
-      if (count <= 0) {
+      if (count <= -1) {
         clearInterval(countdownInterval);
 
-        // Update game status in database to ACTIVE
         this.gamesService
           .startGame(roomId)
           .then(() => {
             console.log(`Game ${roomId} started successfully`);
-            // Start the actual game physics after countdown
-            this.server.to(roomId).emit('gameStart');
             game.countdownActive = false;
+            // Start the game loop only after countdown completes
+            this.startGameLoop(roomId, game);
+            this.server.to(roomId).emit('gameStart');
           })
           .catch((error) => {
             console.error(`Error updating game status: ${error.message}`);
-            this.server.to(roomId).emit('gameStart'); // Still start the game
             game.countdownActive = false;
+            // Start the game loop even if there was an error updating status
+            this.startGameLoop(roomId, game);
+            this.server.to(roomId).emit('gameStart');
           });
       }
 
@@ -186,16 +176,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       id: roomId,
       ball: { x: 50, y: 50, dx: 1.5, dy: 1.5 },
       players: {},
-      score: [0, 0], // Initialize score
+      score: [0, 0],
+      countdownActive: false,
     };
 
     this.games.set(roomId, game);
-    this.startGameLoop(roomId);
-
+    // Don't start the game loop immediately
+    // Only start it after countdown completes
     return game;
   }
 
-  private startGameLoop(roomId: string) {
+  private startGameLoop(roomId: string, game: GameState) {
+    // Remove the countdownActive check here, since we only call this when ready
     const loop = setInterval(() => {
       this.updateGame(roomId);
       this.server.to(roomId).emit('update', this.games.get(roomId));

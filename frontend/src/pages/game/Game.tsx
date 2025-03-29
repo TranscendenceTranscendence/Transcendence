@@ -9,7 +9,7 @@ import { Game } from "@/generated-api";
 interface Player {
   id: string;
   y: number;
-  playerNumber: number; // Add playerNumber to Player interface
+  playerNumber: number;
 }
 
 interface GameState {
@@ -33,6 +33,7 @@ export default function Pong() {
   const isComponentMounted = useRef<boolean>(true);
   const [playerNumber, setPlayerNumber] = useState<number>(-1);
   const [currentUser, setCurrentUser] = useState<number>(0);
+  const [count, setCount] = useState<number>(-1);
 
   // Create socket connection (only once)
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function Pong() {
       const socket = socketRef.current;
 
       socket.on("connect", () => {
+        console.log("Socket connected in Game.tsx:", socket.id);
         setSocketConnected(true);
         setPlayerId(socket.id);
       });
@@ -69,16 +71,18 @@ export default function Pong() {
       });
 
       socket.on("disconnect", (reason) => {
-        console.log("Socket disconnected:", reason);
+        console.log("Socket disconnected in Game.tsx:", reason);
         setSocketConnected(false);
       });
 
       socket.on("update", (state) => {
+        console.log("Game state updated:", state);
         setGameState(state);
       });
 
       socket.on("countdown", (count) => {
         console.log("Game starting in:", count);
+        setCount(count);
       });
 
       socket.on("gameStart", () => {
@@ -160,7 +164,8 @@ export default function Pong() {
   // Join game when both roomId and socket are ready
   useEffect(() => {
     console.log("joinGame effect running");
-    if (!socketConnected || !roomId || !socketRef.current) return;
+    if (!socketConnected || !roomId || !socketRef.current || playerNumber == -1)
+      return;
 
     console.log("Socket and roomId both ready, joining game:", roomId);
 
@@ -226,6 +231,12 @@ export default function Pong() {
   // Game interface wrapped in the pong-game class for CSS scoping
   return (
     <div className="pong-game" onMouseMove={movePaddle}>
+      {count >= 0 && count <= 10 && (
+        <div className="countdown-overlay">
+          <div className="countdown-number">{count === 0 ? "GO!" : count}</div>
+        </div>
+      )}
+
       <div id="table">
         {/* Ball */}
         <div
@@ -256,8 +267,23 @@ export default function Pong() {
         })}
 
         <div id="line"></div>
-        <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
-        <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
+        {/* Display scores correctly based on player number */}
+        {playerNumber === 0 ? (
+          <>
+            <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
+            <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
+          </>
+        ) : playerNumber === 1 ? (
+          <>
+            <div id="scored">{gameState.score ? gameState.score[1] : 0}</div>
+            <div id="conceded">{gameState.score ? gameState.score[0] : 0}</div>
+          </>
+        ) : (
+          <>
+            <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
+            <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
+          </>
+        )}
       </div>
     </div>
   );

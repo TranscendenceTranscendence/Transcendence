@@ -77,12 +77,6 @@ export class GamesService {
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
 
-      try {
-        await this.startGame(gameId);
-      } catch (error) {
-        console.error(`Failed to start game ${gameId}:`, error);
-      }
-
       return updatedGame;
     } catch (error) {
       if (queryRunner.isTransactionActive) {
