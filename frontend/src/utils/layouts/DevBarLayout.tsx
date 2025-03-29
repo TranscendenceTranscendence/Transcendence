@@ -61,7 +61,6 @@ export const DevBarLayout: React.FC = () => {
           {errors.userId && <span>{errors.userId.message}</span>}
           <Button type="submit">switch</Button>
         </form>
-        <Button onClick={generateTestUsers}>Generate 100 Users</Button>
       </div>
       <Outlet />
     </div>
