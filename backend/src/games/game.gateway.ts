@@ -113,7 +113,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           dbGame,
           dbGame.status,
         );
-        if (Object.keys(game.players).length == 2 && dbGame.status == 'countdown') this.startCountdown(roomId);
+        if (
+          Object.keys(game.players).length == 2 &&
+          dbGame.status == 'countdown'
+        )
+          this.startCountdown(roomId);
       } catch (error) {
         console.error(`Error fetching game from database: ${error.message}`);
         this.server.to(client.id).emit('update', game);
