@@ -35,6 +35,7 @@ export class ChatParticipantsService {
     const chatRoomData = await this.chatParticipantsRepository.find({
       where: { chatRoom: { id } },
       relations: ['user'],
+      loadEagerRelations: true,
     });
     if (!chatRoomData)
       throw new HttpException('ChatParticipant Not Found', 404);

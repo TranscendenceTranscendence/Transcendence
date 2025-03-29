@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import { handleSubmitMessages } from "../utils/PostRequest.tsx";
 import { ChatNode } from "./ChatNode.tsx";
 import React from "react";
@@ -138,6 +138,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
                   (participant) => {
+                    console.log("participant", participant);
                     return participant.userId == message.userId;
                   },
                 )}

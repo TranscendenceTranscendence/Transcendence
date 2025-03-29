@@ -1,11 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatParticipantResponse } from "@/generated-api";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { ChatParticipant } from "@/generated-api";
 
 interface ChatNodeProps {
   message: { content: string };
-  user: ChatParticipantResponse | null;
+  user: ChatParticipant | null;
   loading: boolean;
 }
 
@@ -23,12 +23,11 @@ export const ChatNode: React.FC<ChatNodeProps> = ({
     console.error("User ID is undefined");
     return <li>Invalid user data</li>;
   }
-
+  console.log(user[0].isMuted);
   const handleRedirect = () => {
     navigate(`/profile/${userId}`);
   };
-  if (user.chatParticipant == undefined)
-    console.log("muted?", user.chatParticipant?.isMuted);
+  if (user[0].isMuted == true) console.log("muted?!!!!!!!!");
   return (
     <div>
       <li>
