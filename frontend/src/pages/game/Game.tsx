@@ -4,10 +4,12 @@ import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import "./Game.css"; // Import your scoped CSS
+import { Game } from "@/generated-api";
 
 interface Player {
   id: string;
   y: number;
+  playerNumber: number; // Add playerNumber to Player interface
 }
 
 interface GameState {
@@ -29,6 +31,8 @@ export default function Pong() {
   const socketRef = useRef<Socket | null>(null);
   const navigate = useNavigate();
   const isComponentMounted = useRef<boolean>(true);
+  const [playerNumber, setPlayerNumber] = useState<number>(-1);
+  const [currentUser, setCurrentUser] = useState<number>(0);
 
   // Create socket connection (only once)
   useEffect(() => {
@@ -95,9 +99,36 @@ export default function Pong() {
       if (socketRef.current) {
         // Keep the socket connection alive when navigating to other pages
         // Don't disconnect the socket
+        console.log("Player has left the page, but socket remains connected");
       }
     };
   }, [config.backendUrl]); // Only depend on config.backendUrl
+
+  async function checkPlayerNumber(game: Game) {
+    try {
+      // First, properly get the current user ID and wait for the result
+      const user = await api.Users.usersControllerMe();
+      const currentUserId = user.id;
+      setCurrentUser(currentUserId);
+
+      console.log("Current user ID:", currentUserId);
+      console.log("Game player IDs:", game.player1UserId, game.player2UserId);
+
+      // Check if the current user is player1 or player2
+      if (currentUserId === game.player1UserId) {
+        setPlayerNumber(0);
+        console.log("You are Player 1");
+      } else if (currentUserId === game.player2UserId) {
+        setPlayerNumber(1);
+        console.log("You are Player 2");
+      } else {
+        setPlayerNumber(-1);
+        console.error("Current user is not a player in this game");
+      }
+    } catch (error) {
+      console.error("Error determining player number:", error);
+    }
+  }
 
   // Handle game fetching and joining in a separate effect
   useEffect(() => {
@@ -115,6 +146,7 @@ export default function Pong() {
         console.log("Fetched game:", game);
 
         setRoomId(game.roomIdentifier);
+        await checkPlayerNumber(game);
         setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
@@ -133,12 +165,13 @@ export default function Pong() {
     console.log("Socket and roomId both ready, joining game:", roomId);
 
     // Make sure you're sending the correct structure
-    socketRef.current.emit("joinGame", { roomId, playerId });
+    console.log("Joining game with playerId:", playerNumber);
+    socketRef.current.emit("joinGame", { roomId, playerId, playerNumber });
 
     return () => {
       console.log("Cleaning up joinGame effect");
     };
-  }, [socketConnected, roomId]);
+  }, [socketConnected, roomId, playerNumber]);
 
   const movePaddle = (event: React.MouseEvent) => {
     if (playerId && socketRef.current && roomId && socketConnected) {
@@ -205,16 +238,22 @@ export default function Pong() {
         />
 
         {/* Players/Paddles */}
-        {Object.entries(gameState.players).map(([id, player], index) => (
-          <div
-            key={player.id}
-            id={index === 0 ? "player1" : "player2"}
-            style={{
-              position: "absolute",
-              top: `${player.y}%`,
-            }}
-          />
-        ))}
+        {Object.entries(gameState.players).map(([id, player]) => {
+          // Get the correct position based on player's playerNumber
+          const isPlayer1 = player.playerNumber === 0;
+
+          return (
+            <div
+              key={id}
+              id={isPlayer1 ? "player1" : "player2"}
+              style={{
+                position: "absolute",
+                top: `${player.y}%`,
+                left: `${isPlayer1 ? "5%" : "95%"}`, // Set left position based on player number
+              }}
+            />
+          );
+        })}
 
         <div id="line"></div>
         <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>

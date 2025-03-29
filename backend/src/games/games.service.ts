@@ -106,7 +106,7 @@ export class GamesService {
     if (!game) {
       throw new Error('Game not found');
     }
-    
+
     game.status = GameStatus.ONGOING;
     return this.gamesRepository.save(game);
   }
@@ -286,12 +286,12 @@ export class GamesService {
   }
 
   async updateGameScore(
-    gameId: string,
+    roomId: string,
     score: [number, number],
   ): Promise<Game> {
     try {
       const game = await this.gamesRepository.findOne({
-        where: { room_identifier: gameId },
+        where: { room_identifier: roomId },
       });
 
       if (!game) {

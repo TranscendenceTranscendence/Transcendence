@@ -11,6 +11,7 @@ import { Game, GameStatus } from './game.entity';
 
 interface Player {
   id: string;
+  playerNumber: number;
   y: number;
   x: number;
 }
@@ -52,11 +53,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Extract roomId from input (handle both string and object formats)
       const roomId = typeof data === 'object' ? data.roomId : data;
       const userId = typeof data === 'object' ? data.userId : null;
+      const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
       console.log('Received joinGame event with data:', data);
       // Check if roomId is valid
-      if (!roomId || roomId === undefined) {
-        console.error('No roomId provided');
+      if (!roomId || roomId === undefined || playerNumber === -1) {
+        console.error('Invalid roomId or playerNumber');
         return;
       }
 
@@ -87,8 +89,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.join(roomId);
 
       // Add player to WebSocket game state
-      const x = Object.keys(game.players).length === 0 ? 5 : 95; // Set x position based on number of players
-      game.players[client.id] = { id: client.id, y: 50, x };
+      console.log(`Adding player ${client.id} to playernumber ${playerNumber}`);
+      const x = playerNumber == 0 ? 5 : 95;
+      game.players[client.id] = {
+        id: client.id,
+        playerNumber: playerNumber,
+        y: 50,
+        x,
+      };
 
       // Check the database game entity
       try {
@@ -130,36 +138,37 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private startCountdown(roomId: string) {
     let count = 3;
     console.log('Starting countdown for game:', roomId);
-    
+
     // Mark the game as in countdown to prevent multiple countdowns
     const game = this.games.get(roomId);
     if (!game || game.countdownActive) return;
-    
+
     // Add a flag to prevent multiple countdowns
     game.countdownActive = true;
-    
+
     const countdownInterval = setInterval(() => {
       this.server.to(roomId).emit('countdown', count);
       console.log(`Game ${roomId} countdown: ${count}`);
-  
+
       if (count <= 0) {
         clearInterval(countdownInterval);
-        
+
         // Update game status in database to ACTIVE
-        this.gamesService.startGame(roomId)
+        this.gamesService
+          .startGame(roomId)
           .then(() => {
             console.log(`Game ${roomId} started successfully`);
             // Start the actual game physics after countdown
             this.server.to(roomId).emit('gameStart');
             game.countdownActive = false;
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(`Error updating game status: ${error.message}`);
             this.server.to(roomId).emit('gameStart'); // Still start the game
             game.countdownActive = false;
           });
       }
-  
+
       count--;
     }, 1000);
   }
@@ -222,18 +231,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Scoring logic - update to track scores
     if (ball.x < 0) {
       // Player 2 scores
-      game.score[1]++;
+      ++game.score[1];
       this.resetBall(ball);
       this.updateScoreInDatabase(roomId, game.score);
     } else if (ball.x > 100) {
       // Player 1 scores
-      game.score[0]++;
+      ++game.score[0];
       this.resetBall(ball);
       this.updateScoreInDatabase(roomId, game.score);
     }
+
     if (game.score[0] == 11 || game.score[1] == 11) {
-      this.updateScoreInDatabase(roomId, game.score);
       try {
+        this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);
       } catch (error) {
         console.error(
