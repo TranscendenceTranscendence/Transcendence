@@ -1,9 +1,10 @@
 import React from "react";
 import "../css/PasswordPrompt.css";
 import { useState } from "react";
-
+import { ChatRoomsResponse } from "@/generated-api";
 interface PasswordPromptProps {
-  onSubmit: (password: string) => void; // Function to handle password submission
+  chatRoom: ChatRoomsResponse;
+  onSubmit: (password: string) => void;
 }
 
 export const PasswordPrompt: React.FC<PasswordPromptProps> = ({ onSubmit }) => {

@@ -17,7 +17,10 @@ models/AchievementsResponse.ts
 models/Blocked.ts
 models/ChatMessage.ts
 models/ChatParticipant.ts
+models/ChatParticipantResponse.ts
+models/ChatParticipantsResponse.ts
 models/ChatRoom.ts
+models/ChatRoomsResponse.ts
 models/CreateBlockedDto.ts
 models/CreateChatMessageDto.ts
 models/CreateChatParticipantDto.ts
@@ -29,6 +32,7 @@ models/FileUploadResponseSuccess.ts
 models/Friend.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
+models/MessagesResponse.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserDto.ts
 models/UpdateUserResponse.ts

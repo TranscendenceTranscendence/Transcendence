@@ -1,8 +1,24 @@
 // Chat Messages Controller
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
+import { ChatMessage } from './chat_message.entity';
+import { findChatMessageDto } from './dto/find.dto';
+
+class MessagesResponse {
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty({ type: [ChatMessage], required: false })
+  data?: ChatMessage[];
+  @ApiProperty()
+  message?: string;
+}
 
 @ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
 @Controller('chatMessages')
@@ -34,8 +50,8 @@ export class ChatMessagesController {
     }
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Retrieve all chat messages' })
+  @Post('find')
+  @ApiOperation({ summary: 'Find chat messages' })
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
@@ -44,7 +60,38 @@ export class ChatMessagesController {
     status: 500,
     description: 'Internal server error.',
   })
-  async findAll() {
+  async find(@Body() findChatMessageDto: findChatMessageDto): Promise<{
+    success: boolean;
+    data?: ChatMessage[];
+    message?: string;
+  }> {
+    try {
+      const data = await this.chatMessagesService.find(findChatMessageDto);
+      return {
+        success: true,
+        data,
+        message: 'ChatMessage Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Retrieve all chat messages' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  async findAll(): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.findAllAndSortByTime();
       return {
@@ -65,12 +112,13 @@ export class ChatMessagesController {
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat room not found.',
   })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.findByChatRoomId(+id);
       return {

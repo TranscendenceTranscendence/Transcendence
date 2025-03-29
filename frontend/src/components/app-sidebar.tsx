@@ -1,12 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-// import { useApi } from "@/utils/api";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon } from "lucide-react";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import AvatarDisplay from "../pages/updateUser/components/AvatarDisplay";
 import { Avatar } from "@/components/ui/avatar";
-// import { useNavigate } from "react-router-dom";
 import { useUser } from "@/utils/providers/UserProvider";
 
 // class User {

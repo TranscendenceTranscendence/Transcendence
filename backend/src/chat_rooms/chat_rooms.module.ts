@@ -4,10 +4,12 @@ import { ChatRoomsController } from './chat_rooms.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatRoom } from './chat_room.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
+import { JwtService } from '@nestjs/jwt';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ChatRoom, ChatParticipant])],
-  providers: [ChatRoomsService],
+  imports: [TypeOrmModule.forFeature([ChatRoom, ChatParticipant]), UsersModule],
+  providers: [JwtService, ChatRoomsService],
   controllers: [ChatRoomsController],
 })
 export class ChatRoomsModule {}

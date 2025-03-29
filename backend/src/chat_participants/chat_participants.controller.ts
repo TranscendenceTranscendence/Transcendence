@@ -7,10 +7,34 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { CreateChatParticipantDto } from './dto/create-chat_participant.dto';
 import { UpdateChatParticipantDto } from './dto/update-chat_participant.dto';
 import { ChatParticipantsService } from './chat_participants.service';
+import { ChatParticipant } from './chat_participant.entity';
+
+class ChatParticipantResponse {
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty()
+  chatParticipant?: ChatParticipant;
+  @ApiProperty()
+  message?: string;
+}
+
+class ChatParticipantsResponse {
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty({ type: [ChatParticipant] })
+  chatParticipants?: ChatParticipant[];
+  @ApiProperty()
+  message?: string;
+}
 
 @ApiTags('ChatParticipants')
 @Controller('chatParticipants')
@@ -108,6 +132,7 @@ export class ChatParticipantsController {
   @ApiResponse({
     status: 200,
     description: 'Participant fetched successfully.',
+    type: ChatParticipantResponse,
   })
   @ApiResponse({
     status: 404,
@@ -116,15 +141,16 @@ export class ChatParticipantsController {
   async findParticipantChatRoomUserId(
     @Param('chatRoomId') chatRoomId: number,
     @Param('userId') userId: number,
-  ) {
+  ): Promise<ChatParticipantResponse> {
     try {
-      const data = await this.chatParticipantsService.findByUserIdAndChatRoom(
-        +chatRoomId,
-        +userId,
-      );
+      const data: ChatParticipant =
+        await this.chatParticipantsService.findByUserIdAndChatRoom(
+          +chatRoomId,
+          +userId,
+        );
       return {
         success: true,
-        data,
+        chatParticipant: data,
         message: 'ChatParticipant Fetched Successfully',
       };
     } catch (error) {
@@ -140,15 +166,18 @@ export class ChatParticipantsController {
   @ApiResponse({
     status: 200,
     description: 'Participants fetched successfully.',
+    type: ChatParticipantsResponse,
   })
   @ApiResponse({ status: 404, description: 'Chat room not found.' })
-  async findParticipantByChatRoom(@Param('chatRoomId') chatRoomId: number) {
+  async findParticipantByChatRoom(
+    @Param('chatRoomId') chatRoomId: number,
+  ): Promise<ChatParticipantsResponse> {
     try {
-      const data =
-        await this.chatParticipantsService.findByChatRoomId(+chatRoomId);
+      const chatParticipants =
+        await this.chatParticipantsService.findByChatRoomId(chatRoomId);
       return {
         success: true,
-        data,
+        chatParticipants,
         message: 'ChatParticipant Fetched Successfully',
       };
     } catch (error) {
@@ -164,13 +193,14 @@ export class ChatParticipantsController {
   @ApiResponse({
     status: 200,
     description: 'ChatParticipant updated successfully.',
+    type: ChatParticipant,
   })
   @ApiResponse({ status: 404, description: 'ChatParticipant not found.' })
   async updateParticipant(
     @Param('chatRoomId') chatRoomId: number,
     @Param('id') id: number,
     @Body() updateDto: UpdateChatParticipantDto,
-  ) {
+  ): Promise<ChatParticipant> {
     return await this.chatParticipantsService.update(chatRoomId, id, updateDto);
   }
 

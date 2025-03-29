@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Oxanium&family=Press+Start+2P&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  color: white;
+  font-family: "Oxanium", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  background-color: #8f91a2;
+}
+
+h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5%;
+}
+
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#btn {
+  padding: 3% 10%;
+  border-radius: 10%;
+  background-color: #94b0da;
+  font-size: 3vh;
+}

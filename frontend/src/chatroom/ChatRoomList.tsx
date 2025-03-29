@@ -1,122 +1,71 @@
-import React, { useState, useEffect } from "react";
-import "../css/Chatroom.css";
-import { PasswordPrompt } from "./PasswordPrompt.tsx";
-import { OnlineDot } from "./OnlineDot.tsx";
-
-enum chat_room_types {
-  Public = "public",
-  Protected = "protected",
-  Private = "private",
-}
-
-interface Participant {
-  user_id: number;
-}
-
-interface ChatRoom {
-  title: string;
-  id: number;
-  chat_room_type: chat_room_types;
-  password: string;
-  chatParticipants: Participant[];
-}
+import React, { useCallback } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { PasswordPrompt } from "./PasswordPrompt";
+import { OnlineDot } from "./OnlineDot";
+import {
+  ChatRoom,
+  ChatRoomsResponse,
+  ChatRoomChatRoomTypeEnum,
+} from "@/generated-api/index.ts";
 
 interface ChatRoomListProps {
-  chatRooms: ChatRoom[];
+  chatRooms?: ChatRoomsResponse;
   userId: number;
   onChatRoomChange: (newChatRoom: ChatRoom) => void;
   askPassword: boolean;
   setAskPassword: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const ChatRoomList: React.FC<ChatRoomListProps> = ({
-  chatRooms,
+const ChatRoomList: React.FC<ChatRoomListProps> = ({
+  chatRooms = [],
   onChatRoomChange,
   userId,
   askPassword,
   setAskPassword,
 }) => {
-  const [selectedChatRoom, setSelectedChatRoom] = useState<ChatRoom | null>(
-    null,
+  const handleChatRoomChange = useCallback(
+    (newChatRoom: ChatRoom) => {
+      onChatRoomChange(newChatRoom);
+    },
+    [onChatRoomChange],
   );
 
-  useEffect(() => {
-    if (
-      selectedChatRoom &&
-      selectedChatRoom.chat_room_type === chat_room_types.Protected
-    ) {
-      setAskPassword(true);
-    } else {
-      setAskPassword(false);
-    }
-  }, [selectedChatRoom, setAskPassword]);
-
-  const CheckIfActive = (
-    chatParticipants: Participant[] | undefined,
-  ): boolean => {
-    return (
-      chatParticipants?.some((participant) => participant.user_id === userId) ??
-      false
-    );
-  };
-
-  const changeChatRoom = (newId: number) => {
-    const chatRoom = chatRooms.find((room) => room.id === newId) ?? null;
-    setSelectedChatRoom(chatRoom);
-    if (
-      chatRoom?.chat_room_type !== chat_room_types.Protected ||
-      CheckIfActive(chatRoom.chatParticipants)
-    ) {
-      onChatRoomChange(chatRoom);
-    }
-  };
-
-  const validatePassword = async (password: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(password === selectedChatRoom?.password);
-      }, 1000);
-    });
-  };
-
-  const handlePasswordSubmit = async (password: string) => {
-    if (await validatePassword(password)) {
-      onChatRoomChange(selectedChatRoom);
-    } else {
-      console.log("Wrong password");
-    }
-    setAskPassword(false);
-  };
-
-  const filteredChatRooms = chatRooms.filter((room) => {
-    return (
-      room.chat_room_type !== chat_room_types.Private ||
-      CheckIfActive(room.chatParticipants)
-    );
-  });
-
   return (
-    <div>
-      <div className="PromptContainer">
-        {askPassword && <PasswordPrompt onSubmit={handlePasswordSubmit} />}
-      </div>
-      <ul className="rooms">
-        {filteredChatRooms.length > 0 ? (
-          filteredChatRooms.map((chatroom, index) => (
-            <div
-              key={index}
-              className="node"
-              onClick={() => changeChatRoom(chatroom.id)}
-            >
-              <OnlineDot status={CheckIfActive(chatroom.chatParticipants)} />
-              <li>{chatroom.title}</li>
-              <li>{chatroom.chat_room_type}</li>
-            </div>
-          ))
-        ) : (
-          <p>No chatRooms found.</p>
-        )}
-      </ul>
+    <div className="chat-room-list flex flex-col gap-3 max-h-96 overflow-y-auto p-2">
+      {chatRooms?.chatRooms?.map((chatRoom) => (
+        <Button
+          key={chatRoom.id}
+          onClick={() => handleChatRoomChange(chatRoom)}
+          variant="ghost"
+          className="p-0"
+          asChild
+        >
+          <Card className="chat-room-item hover:shadow-lg transition cursor-pointer w-full">
+            <CardContent className="flex justify-between items-center p-4">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <h3 className="text-lg font-semibold truncate">
+                  {chatRoom.title}
+                </h3>
+                <OnlineDot
+                  status={chatRoom.chatParticipants.some(
+                    (p) => p.user_id === userId,
+                  )}
+                />
+              </div>
+              {chatRoom.chat_room_type === ChatRoomChatRoomTypeEnum.Protected &&
+                askPassword && (
+                  <PasswordPrompt
+                    chatRoom={chatRoom}
+                    setAskPassword={setAskPassword}
+                  />
+                )}
+            </CardContent>
+          </Card>
+        </Button>
+      ))}
     </div>
   );
 };
+
+export default React.memo(ChatRoomList);

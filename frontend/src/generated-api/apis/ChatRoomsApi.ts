@@ -13,8 +13,10 @@
  */
 
 import * as runtime from "../runtime";
-import type { CreateChatRoomDto } from "../models/index";
+import type { ChatRoomsResponse, CreateChatRoomDto } from "../models/index";
 import {
+  ChatRoomsResponseFromJSON,
+  ChatRoomsResponseToJSON,
   CreateChatRoomDtoFromJSON,
   CreateChatRoomDtoToJSON,
 } from "../models/index";
@@ -41,7 +43,7 @@ export interface ChatRoomsControllerUpdateRequest {
  */
 export class ChatRoomsApi extends runtime.BaseAPI {
   /**
-   * Create a new chat room
+   * Create a new chat room and add the creator as an owner
    */
   async chatRoomsControllerCreateRaw(
     requestParameters: ChatRoomsControllerCreateRequest,
@@ -75,7 +77,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Create a new chat room
+   * Create a new chat room and add the creator as an owner
    */
   async chatRoomsControllerCreate(
     requestParameters: ChatRoomsControllerCreateRequest,
@@ -153,7 +155,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
    */
   async chatRoomsControllerFindAllincludeParticipantRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -168,7 +170,9 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -176,8 +180,10 @@ export class ChatRoomsApi extends runtime.BaseAPI {
    */
   async chatRoomsControllerFindAllincludeParticipant(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
+  ): Promise<ChatRoomsResponse> {
+    const response =
+      await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
+    return await response.value();
   }
 
   /**

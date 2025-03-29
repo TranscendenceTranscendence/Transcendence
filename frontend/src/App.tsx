@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/home/Home.tsx";
 import Login from "./pages/login/index";
 import UpdateUser from "./pages/updateUser/updateUser.tsx";
+import { Chat } from "./chat/Chat.tsx";
 import EnableTwoFactorAuth from "./pages/login/EnableTwoFactorAuth.tsx";
 import DisableTwoFactorAuth from "./pages/login/DisableTwoFactorAuth";
 import TwoFactorAuth from "./pages/login/TwoFactorAuth";
@@ -42,12 +43,12 @@ function App() {
   return (
     <Fragment>
       <Toaster />
+      <DevBarLayout />
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
         </Route>
-
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DevBarLayout />}>
@@ -62,9 +63,9 @@ function App() {
             <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
             <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
             <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+            <Route path="/chat" element={<Chat />} />
           </Route>
         </Route>
-
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Fragment>

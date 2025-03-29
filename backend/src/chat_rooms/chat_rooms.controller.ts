@@ -6,19 +6,42 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
+import { ChatRoom } from './chat_room.entity';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 
-@ApiTags('ChatRooms') // Groups the endpoints under "ChatRooms" in Swagger
+class ChatRoomsResponse {
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty()
+  chatRooms?: ChatRoom[];
+  @ApiProperty()
+  message?: string;
+}
+
+@ApiTags('ChatRooms')
 @Controller('chatroom')
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new chat room' })
+  @ApiOperation({
+    summary: 'Create a new chat room and add the creator as an owner',
+  })
   @ApiResponse({
     status: 201,
     description: 'Chat room created successfully.',
@@ -29,10 +52,11 @@ export class ChatRoomsController {
   })
   async create(@Body() createChatRoomDto: CreateChatRoomDto) {
     try {
-      await this.chatRoomsService.create(createChatRoomDto);
+      const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
       return {
         success: true,
         message: 'ChatRoom Created Successfully',
+        chatRoom,
       };
     } catch (error) {
       return {
@@ -86,18 +110,42 @@ export class ChatRoomsController {
     }
   }
 
+  @Get('overview')
+  @ApiOperation({ summary: 'Get all chat rooms the user can see' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat rooms fetched successfully.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async findOverview(@Req() req: AuthenticatedRequest) {
+    try {
+      const data = await this.chatRoomsService.findOverview(req.user.id);
+      return {
+        success: true,
+        data,
+        message: 'ChatRooms Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
   @Get('includeParticipant')
   @ApiOperation({ summary: 'Get all chat rooms including participants' })
   @ApiResponse({
     status: 200,
     description: 'Chat rooms with participants fetched successfully.',
+    type: ChatRoomsResponse,
   })
-  async findAllincludeParticipant() {
+  async findAllincludeParticipant(): Promise<ChatRoomsResponse> {
     try {
       const data = await this.chatRoomsService.findAllincludeParticipant();
       return {
         success: true,
-        data,
+        chatRooms: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
