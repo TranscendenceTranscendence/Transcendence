@@ -56,6 +56,16 @@ export class ChatMessagesController {
     @Body() createChatMessageDto: CreateChatMessageDto,
   ) {
     try {
+      const { chat_room_id: chatRoomId, content } = createChatMessageDto;
+      if (!chatRoomId || !content) {
+        throw new Error('Chat room ID and message are required.');
+      }
+      if (content.length > 500) {
+        throw new Error('Message length exceeds 500 characters.');
+      }
+      if (content.length < 1) {
+        throw new Error('Message length must be at least 1 character.');
+      }
       await this.chatMessagesService.create(createChatMessageDto, req.user.id);
       return {
         success: true,
@@ -79,13 +89,21 @@ export class ChatMessagesController {
     status: 500,
     description: 'Internal server error.',
   })
-  async find(@Body() findChatMessageDto: findChatMessageDto): Promise<{
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async find(
+    @Req() req: AuthenticatedRequest,
+    @Body() findChatMessageDto: findChatMessageDto,
+  ): Promise<{
     success: boolean;
     data?: ChatMessage[];
     message?: string;
   }> {
     try {
-      const data = await this.chatMessagesService.find(findChatMessageDto);
+      const data = await this.chatMessagesService.find({
+        ...findChatMessageDto,
+        currentUserId: req.user.id,
+      });
       return {
         success: true,
         data,

@@ -4,12 +4,18 @@ import { Repository } from 'typeorm';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessage } from './chat_message.entity';
 import { findChatMessageDto } from './dto/find.dto';
+import { ChatRoom } from '../chat_rooms/chat_room.entity';
+import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 
 @Injectable()
 export class ChatMessagesService {
   constructor(
     @InjectRepository(ChatMessage)
     private readonly chatMessagesRepository: Repository<ChatMessage>,
+    @InjectRepository(ChatRoom)
+    private readonly chatRoomRepository: Repository<ChatRoom>,
+    @InjectRepository(ChatParticipant)
+    private readonly chatParticipantRepository: Repository<ChatParticipant>,
   ) {}
   private readonly logger = new Logger(ChatMessagesService.name);
 
@@ -17,15 +23,38 @@ export class ChatMessagesService {
     createChatMessageDto: CreateChatMessageDto,
     id: number,
   ): Promise<ChatMessage> {
-    const chatMessageData = this.chatMessagesRepository.create({
+    const chatPartiticpant = await this.chatParticipantRepository.findOne({
+      where: {
+        user_id: id,
+        chat_room_id: createChatMessageDto.chat_room_id,
+        is_banned: false,
+        is_muted: false,
+      },
+    });
+    if (!chatPartiticpant) {
+      throw new HttpException('ChatRoom Not Found', 404);
+    }
+
+    return this.chatMessagesRepository.save({
       ...createChatMessageDto,
       user_id: id,
     });
-    return this.chatMessagesRepository.save(chatMessageData);
   }
 
-  async find(findDto: findChatMessageDto): Promise<ChatMessage[]> {
+  async find(
+    findDto: findChatMessageDto & { currentUserId: number },
+  ): Promise<ChatMessage[]> {
     const { chatRoomId, sent_time_from, sent_time_till } = findDto;
+    const chatParticipant = await this.chatParticipantRepository.findOne({
+      where: {
+        user_id: findDto.currentUserId,
+        chat_room_id: chatRoomId,
+        is_banned: false,
+      },
+    });
+    if (!chatParticipant) {
+      throw new HttpException('ChatRoom Not Found', 404);
+    }
     const queryBuilder =
       this.chatMessagesRepository.createQueryBuilder('chat_message');
     if (chatRoomId) {

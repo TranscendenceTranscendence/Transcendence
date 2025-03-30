@@ -9,10 +9,12 @@ import { User } from '../users/user.entity';
 import { AchievementsModule } from '../achievements/achievements.module';
 import { ConfigModule } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
+import { ChatRoom } from '../chat_rooms/chat_room.entity';
+import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatMessage, User]),
+    TypeOrmModule.forFeature([ChatMessage, User, ChatRoom, ChatParticipant]),
     AchievementsModule,
     ConfigModule.forFeature(jwtConfig),
   ],
