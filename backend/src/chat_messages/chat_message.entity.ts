@@ -18,7 +18,10 @@ export class ChatMessage {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @CreateDateColumn({ type: 'timestamp with time zone', nullable: true })
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   sent_time: Date;
 
   @PrimaryColumn()

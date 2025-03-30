@@ -10,15 +10,17 @@ import FortyTwoOauthConfig from '../config/ft-oauth.config';
 import { AchievementsService } from '../achievements/achievements.service';
 import { Achievement } from '../achievements/achievement.entity';
 import { UsersGateway } from './users.gateway';
+import { AchievementsModule } from '../achievements/achievements.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Achievement]),
+    TypeOrmModule.forFeature([User]),
     ConfigModule.forFeature(FortyTwoOauthConfig),
+    AchievementsModule,
     ConfigModule.forFeature(JwtConfig),
   ],
-  providers: [UsersService, JwtService, AchievementsService, UsersGateway],
-  exports: [UsersService, TypeOrmModule],
+  providers: [UsersService, JwtService, UsersGateway],
+  exports: [UsersService, TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
 })
 export class UsersModule {}

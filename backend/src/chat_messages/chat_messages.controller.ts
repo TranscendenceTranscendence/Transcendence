@@ -1,15 +1,29 @@
 // Chat Messages Controller
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiProperty,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
 import { ChatMessage } from './chat_message.entity';
 import { findChatMessageDto } from './dto/find.dto';
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
 
 class MessagesResponse {
   @ApiProperty()
@@ -35,9 +49,14 @@ export class ChatMessagesController {
     status: 400,
     description: 'Bad Request.',
   })
-  async create(@Body() createChatMessageDto: CreateChatMessageDto) {
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async create(
+    @Req() req: AuthenticatedRequest,
+    @Body() createChatMessageDto: CreateChatMessageDto,
+  ) {
     try {
-      await this.chatMessagesService.create(createChatMessageDto);
+      await this.chatMessagesService.create(createChatMessageDto, req.user.id);
       return {
         success: true,
         message: 'ChatMessage Created Successfully',

@@ -12,11 +12,15 @@ export class ChatMessagesService {
     private readonly chatMessagesRepository: Repository<ChatMessage>,
   ) {}
   private readonly logger = new Logger(ChatMessagesService.name);
+
   async create(
     createChatMessageDto: CreateChatMessageDto,
+    id: number,
   ): Promise<ChatMessage> {
-    const chatMessageData =
-      await this.chatMessagesRepository.create(createChatMessageDto);
+    const chatMessageData = this.chatMessagesRepository.create({
+      ...createChatMessageDto,
+      user_id: id,
+    });
     return this.chatMessagesRepository.save(chatMessageData);
   }
 
