@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { useApi } from "@/utils/api";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
-import Chat from "@/components/chat/chat";
 
 interface ChatContextProps {
   chatRooms: {

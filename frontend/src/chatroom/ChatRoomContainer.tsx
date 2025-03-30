@@ -8,25 +8,13 @@ import { useChat } from "@/utils/providers/ChatProvider.tsx";
 
 interface ChatRoomContainerProps {
   userDetails: UserContextType;
-  chatRoomId: number;
-  setChatRoomId: (chatRoomId: number) => void;
 }
 
-export const ChatRoomContainer = ({
-  userDetails,
-  chatRoomId,
-  setChatRoomId,
-}: ChatRoomContainerProps) => {
+export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
   const [askPassword, setAskPassword] = useState<boolean>(false);
   const { chatRooms } = useChatRooms();
   const { joinChatRoom } = useChat();
   let userId: number;
-
-  useEffect(() => {
-    if (chatRoomId !== null) {
-      localStorage.setItem("chatRoomId", JSON.stringify(chatRoomId));
-    }
-  }, [chatRoomId]);
 
   const { addParticipant } = useAddParticipant();
 
@@ -37,7 +25,6 @@ export const ChatRoomContainer = ({
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
     if (newChatRoom != null) {
       localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
-      setChatRoomId(newChatRoom?.id);
       handleAddParticipant(userDetails?.user.id, newChatRoom.id);
       joinChatRoom(newChatRoom.id);
     }
@@ -58,11 +45,6 @@ export const ChatRoomContainer = ({
         askPassword={askPassword}
         setAskPassword={setAskPassword}
       />
-      {/* <ChatContainer chatRoomId={chatRoomId} userId={userId} />
-      <PostChatRoom
-        userId={userId}
-        role={ChatParticipantChatParticipantRoleEnum.Owner}
-      /> */}
     </div>
   );
 };
