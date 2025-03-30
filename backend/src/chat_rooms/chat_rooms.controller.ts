@@ -23,15 +23,7 @@ import {
   AuthenticatedRequest,
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
-
-class ChatRoomsResponse {
-  @ApiProperty()
-  success: boolean;
-  @ApiProperty()
-  chatRooms?: ChatRoom[];
-  @ApiProperty()
-  message?: string;
-}
+import { ChatRoomsResponse } from './dto/chat_rooms-response.dto';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
@@ -161,17 +153,18 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 200,
     description: 'Chat room fetched successfully.',
+    type: ChatRoomsResponse,
   })
   @ApiResponse({
     status: 404,
     description: 'Chat room not found.',
   })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: number): Promise<ChatRoomsResponse> {
     try {
-      const data = await this.chatRoomsService.findOne(+id);
+      const data = await this.chatRoomsService.findOne(id);
       return {
         success: true,
-        data,
+        chatRooms: [data],
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
