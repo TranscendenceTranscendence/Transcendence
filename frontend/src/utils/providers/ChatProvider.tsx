@@ -51,8 +51,15 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setChatRoomId(null);
   };
 
-  const sendMessage = (content: string) => {
-    // Placeholder for sending a message logic
+  const sendMessage = async (content: string) => {
+    if (chatRoomId === null) return;
+    const newMessage = {
+      content,
+      chatRoomId,
+    };
+    await api.ChatMessages.chatMessagesControllerCreate({
+      createChatMessageDto: newMessage,
+    });
     console.log("Message sent:", content);
   };
 

@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useChat } from "@/utils/providers/ChatProvider";
 
 const Chat = () => {
-  const { chatRooms, sendMessage, currentChatRoomId, joinChatRoom } = useChat();
-
-  useEffect(() => {
-    joinChatRoom(1);
-  }, []);
+  const { chatRooms, sendMessage, currentChatRoomId } = useChat();
 
   const [message, setMessage] = useState<string>("");
 
