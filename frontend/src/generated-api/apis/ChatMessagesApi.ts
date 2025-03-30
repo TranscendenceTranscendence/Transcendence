@@ -119,7 +119,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerFindRaw(
     requestParameters: ChatMessagesControllerFindRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<MessagesResponse>> {
     if (requestParameters["findChatMessageDto"] == null) {
       throw new runtime.RequiredError(
         "findChatMessageDto",
@@ -152,7 +152,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      MessagesResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -161,8 +163,12 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerFind(
     requestParameters: ChatMessagesControllerFindRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatMessagesControllerFindRaw(requestParameters, initOverrides);
+  ): Promise<MessagesResponse> {
+    const response = await this.chatMessagesControllerFindRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
   }
 
   /**

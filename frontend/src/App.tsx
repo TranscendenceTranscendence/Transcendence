@@ -16,6 +16,7 @@ import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
 import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
 import Game from "./pages/game/Game.tsx";
+import ChatLayout from "./utils/layouts/ChatLayout.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -57,7 +58,6 @@ function App() {
             <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
             <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
             <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
-            <Route path="/chat" element={<Chat />} />
           </Route>
           <Route path="*" element={<Navigate to="/login" />} />
         </Route>

@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { useApi } from "@/utils/api";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
-import { useUser } from "@/utils/providers/UserProvider";
+import Chat from "@/components/chat/chat";
 
 interface ChatContextProps {
   chatRooms: {
@@ -10,6 +10,7 @@ interface ChatContextProps {
       participants: ChatParticipant[];
     };
   };
+  currentChatRoomId: number | null;
   sendMessage: (content: string) => void;
   joinChatRoom: (chatRoomId: number) => void;
   leaveChatRoom: () => void;
@@ -18,7 +19,6 @@ interface ChatContextProps {
 const ChatContext = createContext<ChatContextProps | null>(null);
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useUser();
   const api = useApi();
   const [chatRooms, setChatRooms] = useState<ChatContextProps["chatRooms"]>({});
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
@@ -30,16 +30,17 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
         id: newChatRoomId,
       });
-      const {} = await api.ChatMessages.chatMessagesControllerFind({
-        findChatMessageDto: {
-          chatRoomId: newChatRoomId,
-        },
-      });
+      const { data: messages } =
+        await api.ChatMessages.chatMessagesControllerFind({
+          findChatMessageDto: {
+            chatRoomId: newChatRoomId,
+          },
+        });
       const { chatParticipants } = chatRooms[0];
       setChatRooms((prev) => ({
         ...prev,
         [newChatRoomId]: {
-          messages: [],
+          messages: messages,
           participants: chatParticipants,
         },
       }));
@@ -62,6 +63,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         sendMessage,
         joinChatRoom,
         leaveChatRoom,
+        currentChatRoomId: chatRoomId,
       }}
     >
       {children}

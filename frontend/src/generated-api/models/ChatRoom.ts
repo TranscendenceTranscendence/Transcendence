@@ -69,13 +69,13 @@ export interface ChatRoom {
    * @type {Array<ChatMessage>}
    * @memberof ChatRoom
    */
-  chatMessages: Array<ChatMessage>;
+  chatMessages?: Array<ChatMessage>;
   /**
    *
    * @type {Array<ChatParticipant>}
    * @memberof ChatRoom
    */
-  chatParticipants: Array<ChatParticipant>;
+  chatParticipants?: Array<ChatParticipant>;
 }
 
 /**
@@ -101,10 +101,6 @@ export function instanceOfChatRoom(value: object): value is ChatRoom {
     return false;
   if (!("chatRoomType" in value) || value["chatRoomType"] === undefined)
     return false;
-  if (!("chatMessages" in value) || value["chatMessages"] === undefined)
-    return false;
-  if (!("chatParticipants" in value) || value["chatParticipants"] === undefined)
-    return false;
   return true;
 }
 
@@ -125,10 +121,14 @@ export function ChatRoomFromJSONTyped(
     password: json["password"],
     creationDate: new Date(json["creation_date"]),
     chatRoomType: json["chat_room_type"],
-    chatMessages: (json["chatMessages"] as Array<any>).map(ChatMessageFromJSON),
-    chatParticipants: (json["chatParticipants"] as Array<any>).map(
-      ChatParticipantFromJSON,
-    ),
+    chatMessages:
+      json["chatMessages"] == null
+        ? undefined
+        : (json["chatMessages"] as Array<any>).map(ChatMessageFromJSON),
+    chatParticipants:
+      json["chatParticipants"] == null
+        ? undefined
+        : (json["chatParticipants"] as Array<any>).map(ChatParticipantFromJSON),
   };
 }
 
@@ -150,9 +150,13 @@ export function ChatRoomToJSONTyped(
     password: value["password"],
     creation_date: value["creationDate"].toISOString(),
     chat_room_type: value["chatRoomType"],
-    chatMessages: (value["chatMessages"] as Array<any>).map(ChatMessageToJSON),
-    chatParticipants: (value["chatParticipants"] as Array<any>).map(
-      ChatParticipantToJSON,
-    ),
+    chatMessages:
+      value["chatMessages"] == null
+        ? undefined
+        : (value["chatMessages"] as Array<any>).map(ChatMessageToJSON),
+    chatParticipants:
+      value["chatParticipants"] == null
+        ? undefined
+        : (value["chatParticipants"] as Array<any>).map(ChatParticipantToJSON),
   };
 }

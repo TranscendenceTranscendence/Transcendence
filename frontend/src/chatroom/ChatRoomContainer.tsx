@@ -3,6 +3,7 @@ import ChatRoomList from "./ChatRoomList.tsx";
 import { ChatRoom } from "@/generated-api/index.ts";
 import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
 import { UserContextType } from "@/utils/providers/UserProvider.tsx";
+import { useChat } from "@/utils/providers/ChatProvider.tsx";
 // import { Dialog } from "@/components/ui/dialog.tsx";
 
 interface ChatRoomContainerProps {
@@ -18,6 +19,7 @@ export const ChatRoomContainer = ({
 }: ChatRoomContainerProps) => {
   const [askPassword, setAskPassword] = useState<boolean>(false);
   const { chatRooms } = useChatRooms();
+  const { joinChatRoom } = useChat();
   let userId: number;
 
   useEffect(() => {
@@ -37,8 +39,8 @@ export const ChatRoomContainer = ({
       localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
       setChatRoomId(newChatRoom?.id);
       handleAddParticipant(userDetails?.user.id, newChatRoom.id);
+      joinChatRoom(newChatRoom.id);
     }
-    console.log("Chat room ID changed to:", newChatRoom?.id);
   };
   if (userDetails == null || userDetails.user == null) {
     console.log("ChatRoomContainer userDetails is null");

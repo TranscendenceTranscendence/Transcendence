@@ -90,7 +90,6 @@ export default function Page() {
             />
           </div>
           <AchievementBox achievements={achievements} />
-          <ChatContainer chatRoomId={chatRoomId} userId={151953} />
         </div>
       </SidebarInset>
     </SidebarProvider>

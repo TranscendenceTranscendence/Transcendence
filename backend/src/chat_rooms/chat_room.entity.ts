@@ -34,11 +34,11 @@ export class ChatRoom {
   chat_room_type: chat_room_types;
 
   @OneToMany(() => ChatMessage, (chatMessage) => chatMessage.chatRoom)
-  chatMessages: ChatMessage[];
+  chatMessages?: ChatMessage[];
 
   @OneToMany(
     () => ChatParticipant,
     (chatParticipant) => chatParticipant.chatRoom,
   )
-  chatParticipants: ChatParticipant[];
+  chatParticipants?: ChatParticipant[];
 }

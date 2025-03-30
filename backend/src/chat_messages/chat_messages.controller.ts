@@ -24,15 +24,7 @@ import {
   AuthenticatedRequest,
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
-
-class MessagesResponse {
-  @ApiProperty()
-  success: boolean;
-  @ApiProperty({ type: [ChatMessage], required: false })
-  data?: ChatMessage[];
-  @ApiProperty()
-  message?: string;
-}
+import { MessagesResponse } from './dto/chat_message-response.dto';
 
 @ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
 @Controller('chatMessages')
@@ -84,6 +76,7 @@ export class ChatMessagesController {
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
   })
   @ApiResponse({
     status: 500,
@@ -94,11 +87,7 @@ export class ChatMessagesController {
   async find(
     @Req() req: AuthenticatedRequest,
     @Body() findChatMessageDto: findChatMessageDto,
-  ): Promise<{
-    success: boolean;
-    data?: ChatMessage[];
-    message?: string;
-  }> {
+  ): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.find({
         ...findChatMessageDto,
