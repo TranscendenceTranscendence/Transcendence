@@ -150,9 +150,6 @@ export class AuthController {
     // Generate an access token for the user
     const accessToken = await this.authService.getTokenByUserId(user.id);
 
-    console.log('dev login', userId);
-    console.log('access token', accessToken);
-
     return {
       accessToken,
     };

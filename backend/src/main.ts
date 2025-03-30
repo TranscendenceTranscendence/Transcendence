@@ -10,10 +10,12 @@ const setupSwagger = (app: INestApplication) => {
     .setTitle('Transcendence backend')
     .setDescription('The Transcendence API description')
     .setVersion('1.0')
-    .addServer('https://localhost:3000')
+    .addServer(process.env.BACKEND_URL)
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',
+      in: 'header',
+      name: 'Authorization',
       bearerFormat: 'JWT',
     })
     .build();
@@ -43,7 +45,7 @@ const setupSwagger = (app: INestApplication) => {
   // app.use(cookieParser("secret"));
 
   app.enableCors({
-    origin: ['http://localhost:3001'],
+    origin: [process.env.FRONTEND_URL ?? 'http://localhost:3001'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
@@ -61,6 +63,6 @@ const setupSwagger = (app: INestApplication) => {
     `Swagger documentation available at https://localhost:3000/api-docs`,
   );
   console.log(
-    `listening on ${process.env.FRONTEND_URL || 'http://localhost:3001'}`,
+    `listening on ${process.env.BACKEND_URL || 'http://localhost:3001'}`,
   );
 })();
