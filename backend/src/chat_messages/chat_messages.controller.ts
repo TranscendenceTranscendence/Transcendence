@@ -10,6 +10,7 @@ import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
 import { ChatMessage } from './chat_message.entity';
 import { findChatMessageDto } from './dto/find.dto';
+import { Query } from '@nestjs/common';
 
 class MessagesResponse {
   @ApiProperty()
@@ -50,27 +51,27 @@ export class ChatMessagesController {
     }
   }
 
-  @Post('find')
+  @Get('find')
   @ApiOperation({ summary: 'Find chat messages' })
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
   })
   @ApiResponse({
     status: 500,
     description: 'Internal server error.',
   })
-  async find(@Body() findChatMessageDto: findChatMessageDto): Promise<{
-    success: boolean;
-    data?: ChatMessage[];
-    message?: string;
-  }> {
+  async find(
+    @Query() findChatMessageDto: findChatMessageDto,
+  ): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.find(findChatMessageDto);
+
       return {
         success: true,
         data,
-        message: 'ChatMessage Fetched Successfully',
+        message: 'Chat messages fetched successfully',
       };
     } catch (error) {
       return {

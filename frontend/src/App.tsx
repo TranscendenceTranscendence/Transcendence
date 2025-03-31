@@ -15,11 +15,38 @@ import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
 import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
+import Matchmaking from "./pages/matchmaking/Matchmaking.tsx";
+import Lobby from "./pages/lobby/Lobby.tsx";
 import Game from "./pages/game/Game.tsx";
+import Result from "./pages/result/result.tsx";
+import { useApi } from "@/utils/api";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const navigate = useNavigate(); // Hook to navigate
+  const api = useApi(); // Use your API utility to make backend requests
+
+  // Function to validate and remove invalid access_token
+  async function validateAccessToken() {
+    console.log("validate token");
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) return; // No token to validate
+
+    api.Users.usersControllerMe()
+      .then(() => {
+        console.log("Found me!");
+      })
+      .catch((error) => {
+        console.error("Error validating access_token:", error);
+        localStorage.removeItem("access_token"); // Remove access token if validation fails.
+        navigate("/login"); // Redirect to login page
+      });
+  }
+
+  useEffect(() => {
+    // Validate the access_token when the app initializes
+    validateAccessToken();
+  }, []);
 
   if (params.has("access_token")) {
     localStorage.setItem("access_token", params.get("access_token"));
@@ -40,7 +67,6 @@ function App() {
   return (
     <Fragment>
       <Toaster />
-      <DevBarLayout />
       <Routes>
         {/* Public Routes */}
         <Route element={<PublicRoute />}>
@@ -53,7 +79,10 @@ function App() {
             <Route path="/update" element={<UpdateUser />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/profile/:id" element={<VisitingProfile />} />
+            <Route path="/Matchmaking" element={<Matchmaking />} />
+            <Route path="/lobby/:roomIdentifier" element={<Lobby />} />
             <Route path="/game" element={<Game />} />
+            <Route path="/result" element={<Result />} />
             <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
             <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
             <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />

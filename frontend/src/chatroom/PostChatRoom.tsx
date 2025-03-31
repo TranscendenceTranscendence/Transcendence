@@ -27,7 +27,7 @@ export const PostChatRoom = ({ userId }) => {
           role: ChatParticipantChatParticipantRoleEnum.Owner,
         },
       };
-      console.log("Chat Room Data:", chatRoomData);
+      // console.log("Chat Room Data:", chatRoomData);
 
       await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
     } catch (error) {

@@ -49,7 +49,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log("WebSocket connected");
+      // console.log("WebSocket connected");
     });
 
     socket.on("connect_error", (error) => {
