@@ -31,7 +31,7 @@ export class ChatMessagesService {
         is_muted: false,
       },
     });
-    if (!chatPartiticpant) {
+    if (!chatParticipant) {
       throw new HttpException('ChatRoom Not Found', 404);
     }
 
