@@ -15,7 +15,7 @@ const ChatLayout: React.FC = () => {
   return (
     <>
       <Outlet />
-      <div className="fixed bottom-0 right-0 w-full h-[calc(100vh-4rem)] md:w-[400px] md:h-full md:bottom-0 md:right-0 pointer-events-none">
+      <div className="fixed bottom-0 right-0 w-full h-[calc(100vh-4rem)] pointer-events-none">
         <Chat />
       </div>
     </>
