@@ -144,7 +144,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     const response = await this.request(
       {
         path: `/chatMessages/find`,
-        method: "POST",
+        method: "GET",
         headers: headerParameters,
         query: queryParameters,
         body: FindChatMessageDtoToJSON(requestParameters["findChatMessageDto"]),
