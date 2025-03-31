@@ -3,39 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Not } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
-
-// test
 @Injectable()
 export class GamesService {
   constructor(
     @InjectRepository(Game)
     private readonly gamesRepository: Repository<Game>,
   ) {}
-
-  async isPlayerInGame(playerId: number): Promise<boolean> {
-    try {
-      const activeGame = await this.gamesRepository.findOne({
-        where: [
-          {
-            player1_user_id: playerId,
-            status: In([GameStatus.PENDING, GameStatus.OPEN]),
-          },
-          {
-            player2_user_id: playerId,
-            status: In([GameStatus.PENDING, GameStatus.OPEN]),
-          },
-        ],
-      });
-
-      return !!activeGame;
-    } catch (error) {
-      if (error instanceof HttpException) throw error;
-      throw new HttpException(
-        'Error checking player game status',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
 
   async create(createGameDto: CreateGameDto): Promise<Game> {
     try {
@@ -57,7 +30,32 @@ export class GamesService {
     }
   }
 
-  async joinGame(gameId: number, playerId: number): Promise<Game> {
+  async startGame(roomId: string): Promise<Game> {
+    try {
+      const gameData = await this.gamesRepository.findOne({
+        where: { room_identifier: roomId },
+      });
+      if (!gameData) {
+        throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+      }
+      if (gameData.status !== GameStatus.COUNTDOWN) {
+        throw new HttpException(
+          'Game is not in countdown status',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      gameData.status = GameStatus.ONGOING;
+      return await this.gamesRepository.save(gameData);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Failed to start game',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async joinGame(gameId: string, playerId: number): Promise<Game> {
     const queryRunner =
       this.gamesRepository.manager.connection.createQueryRunner();
 
@@ -74,7 +72,7 @@ export class GamesService {
       await queryRunner.startTransaction();
 
       const gameData = await queryRunner.manager.findOne(Game, {
-        where: { id: gameId },
+        where: { room_identifier: gameId },
         lock: { mode: 'pessimistic_write' },
       });
 
@@ -86,23 +84,21 @@ export class GamesService {
         throw new HttpException('Game is already full', HttpStatus.BAD_REQUEST);
       }
 
-      if (gameData.status === GameStatus.OPEN) {
+      if (
+        gameData.status === GameStatus.COUNTDOWN ||
+        gameData.status === GameStatus.ONGOING
+      ) {
         throw new HttpException(
           'Game is already started',
           HttpStatus.BAD_REQUEST,
         );
       }
+
       gameData.player2_user_id = playerId;
-      gameData.status = GameStatus.OPEN;
+      gameData.status = GameStatus.COUNTDOWN;
 
       const updatedGame = await queryRunner.manager.save(Game, gameData);
       await queryRunner.commitTransaction();
-
-      setTimeout(() => {
-        this.startGame(gameId).catch((err) => {
-          if (err instanceof HttpException) throw err;
-        });
-      }, 10000);
 
       return updatedGame;
     } catch (error) {
@@ -122,9 +118,37 @@ export class GamesService {
     }
   }
 
-  async startGame(gameId: number) {
-    // Game start logic here
-    void gameId;
+  async isPlayerInGame(playerId: number): Promise<Game> {
+    try {
+      const activeGame = await this.gamesRepository.findOne({
+        where: [
+          {
+            player1_user_id: playerId,
+            status: In([
+              GameStatus.PENDING,
+              GameStatus.COUNTDOWN,
+              GameStatus.ONGOING,
+            ]),
+          },
+          {
+            player2_user_id: playerId,
+            status: In([
+              GameStatus.PENDING,
+              GameStatus.COUNTDOWN,
+              GameStatus.ONGOING,
+            ]),
+          },
+        ],
+      });
+      if (!activeGame) return null;
+      return activeGame;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Error checking player game status',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async findAll(): Promise<Game[]> {
@@ -160,6 +184,24 @@ export class GamesService {
     }
   }
 
+  async findGameById(id: number): Promise<Game> {
+    try {
+      const gameData = await this.gamesRepository.findOne({
+        where: { id },
+      });
+      if (!gameData) {
+        throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+      }
+      return gameData;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to find game with id ${id}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async remove(id: number): Promise<Game[]> {
     try {
       const existingGame = await this.findByUserId(id);
@@ -190,6 +232,146 @@ export class GamesService {
       if (error instanceof HttpException) throw error;
       throw new HttpException(
         'Error finding available games',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findByRoomIdentifier(roomIdentifier: string): Promise<Game> {
+    try {
+      const gameData = await this.gamesRepository.findOne({
+        where: { room_identifier: roomIdentifier },
+      });
+
+      if (!gameData) {
+        throw new HttpException('Game Not Found', HttpStatus.NOT_FOUND);
+      }
+
+      return gameData;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Failed to fetch game by room identifier',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async checkIfUserInCurrentGame(
+    userId: number,
+    roomIdentifier: string,
+  ): Promise<boolean> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: {
+          room_identifier: roomIdentifier,
+          player1_user_id: userId,
+        },
+      });
+
+      if (!game) {
+        const gamePlayer2 = await this.gamesRepository.findOne({
+          where: {
+            room_identifier: roomIdentifier,
+            player2_user_id: userId,
+          },
+        });
+
+        if (!gamePlayer2) {
+          return false;
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error(
+        `Error checking if user ${userId} is in game ${roomIdentifier}:`,
+        error,
+      );
+      return false;
+    }
+  }
+
+  async updateGameScore(
+    roomId: string,
+    score: [number, number],
+  ): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { room_identifier: roomId },
+      });
+
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+
+      game.score = score;
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to update game score`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updateGameStatus(gameId: string, status: GameStatus): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { room_identifier: gameId },
+      });
+
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+
+      game.status = status;
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to update game status`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async closeGame(gameId: string): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { room_identifier: gameId },
+      });
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+      if (game.score[0] == 11) game.winner_user_id = game.player1_user_id;
+      else if (game.score[1] == 11) game.winner_user_id = game.player2_user_id;
+
+      game.status = GameStatus.CLOSED;
+      game.ended_at = new Date();
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to end game`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async cancelGame(gameId: string): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: { room_identifier: gameId },
+      });
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+      game.status = GameStatus.CANCELLED;
+      game.ended_at = new Date();
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to end game`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

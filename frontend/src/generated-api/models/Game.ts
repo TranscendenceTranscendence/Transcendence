@@ -80,7 +80,8 @@ export interface Game {
  */
 export const GameStatusEnum = {
   Pending: "pending",
-  Open: "open",
+  Countdown: "countdown",
+  Ongoing: "ongoing",
   Closed: "closed",
   Cancelled: "cancelled",
 } as const;

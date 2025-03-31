@@ -74,7 +74,8 @@ export interface CreateGameDto {
  */
 export const CreateGameDtoStatusEnum = {
   Pending: "pending",
-  Open: "open",
+  Countdown: "countdown",
+  Ongoing: "ongoing",
   Closed: "closed",
   Cancelled: "cancelled",
 } as const;

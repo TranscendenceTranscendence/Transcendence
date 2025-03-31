@@ -68,14 +68,10 @@ export class GamesController {
   async joinGame(
     @Param('id') gameId: string,
     @Req() req: AuthenticatedRequest,
-  ) {
+  ): Promise<Game> {
     try {
-      const game = await this.gamesService.joinGame(+gameId, req.user.id);
-      return {
-        success: true,
-        data: game,
-        message: 'Game Joined Successfully',
-      };
+      const game = await this.gamesService.joinGame(gameId, req.user.id);
+      return game;
     } catch (error) {
       throw error;
     }
@@ -116,6 +112,27 @@ export class GamesController {
     } catch (error) {
       console.error('Error fetching available games:', error);
       throw error;
+    }
+  }
+
+  @Get('current')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Retrieve current game for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game fetched successfully or null if no game found.',
+    type: Game,
+  })
+  async findCurrentGame(@Req() req: AuthenticatedRequest): Promise<Game | []> {
+    try {
+      const game = await this.gamesService.isPlayerInGame(req.user.id);
+      if (!game) {
+        return [];
+      }
+      return game;
+    } catch (error) {
+      console.error('Error finding current game:', error);
+      return [];
     }
   }
 
@@ -167,6 +184,54 @@ export class GamesController {
         success: false,
         message: error.message,
       };
+    }
+  }
+
+  @Get('room/:roomIdentifier')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Retrieve a game by room identifier' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game fetched successfully.',
+    type: Game,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied: You are not a participant in this game',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Game not found.',
+  })
+  async findByRoomIdentifier(
+    @Param('roomIdentifier') roomIdentifier: string,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<Game | []> {
+    try {
+      const game = await this.gamesService.findByRoomIdentifier(roomIdentifier);
+
+      try {
+        const isUserInGame = await this.gamesService.checkIfUserInCurrentGame(
+          req.user.id,
+          roomIdentifier,
+        );
+
+        if (!isUserInGame) {
+          console.warn(`User ${req.user.id} is not in game ${roomIdentifier}`);
+          return [];
+        }
+      } catch (error) {
+        console.warn(
+          `Error checking if user ${req.user.id} is in game ${roomIdentifier}:`,
+          error,
+        );
+        return [];
+      }
+
+      return game;
+    } catch (error) {
+      console.error(`Error finding game by room ID ${roomIdentifier}:`, error);
+      throw error;
     }
   }
 }
