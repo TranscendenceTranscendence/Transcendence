@@ -50,13 +50,13 @@ export class ChatMessagesController {
     try {
       const { chat_room_id: chatRoomId, content } = createChatMessageDto;
       if (!chatRoomId || !content) {
-        throw new Error('Chat room ID and message are required.');
+        throw new HttpException('Chat room ID and message are required.', HttpStatus.BAD_REQUEST);
       }
       if (content.length > 500) {
-        throw new Error('Message length exceeds 500 characters.');
+        throw new HttpException('Message length exceeds 500 characters.', HttpStatus.BAD_REQUEST);
       }
       if (content.length < 1) {
-        throw new Error('Message length must be at least 1 character.');
+        throw new HttpException('Message length must be at least 1 character.', HttpStatus.BAD_REQUEST);
       }
       await this.chatMessagesService.create(createChatMessageDto, req.user.id);
       return {
