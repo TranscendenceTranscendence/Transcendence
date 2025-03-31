@@ -23,7 +23,7 @@ export class ChatMessagesService {
     createChatMessageDto: CreateChatMessageDto,
     id: number,
   ): Promise<ChatMessage> {
-    const chatPartiticpant = await this.chatParticipantRepository.findOne({
+    const chatParticipant = await this.chatParticipantRepository.findOne({
       where: {
         user_id: id,
         chat_room_id: createChatMessageDto.chat_room_id,
