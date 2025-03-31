@@ -21,7 +21,7 @@ export class ChatMessagesService {
   }
 
   async find(findDto: findChatMessageDto): Promise<ChatMessage[]> {
-    const { chatRoomId, daysAgo } = findDto;
+    const { chatRoomId, sent_time_from, sent_time_till } = findDto;
     const queryBuilder =
       this.chatMessagesRepository.createQueryBuilder('chat_message');
     if (chatRoomId) {
