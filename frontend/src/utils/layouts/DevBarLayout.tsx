@@ -77,6 +77,7 @@ export const DevBarLayout: React.FC = () => {
         setCurrentUser(decoded.sub);
       } catch (error) {
         console.error("Failed to decode token:", error);
+        localStorage.removeItem("access_token"); // Remove token if decode fails
       }
     }
   }, []);
