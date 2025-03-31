@@ -113,6 +113,15 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    const PADDING = 10;
+
+    setPosition({
+      x: window.innerWidth - (400 + PADDING),
+      y: window.innerHeight - (500 + PADDING),
+    });
+  }, []);
+
+  useEffect(() => {
     if (isDragging) {
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
@@ -120,6 +129,7 @@ const Chat = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     }
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
