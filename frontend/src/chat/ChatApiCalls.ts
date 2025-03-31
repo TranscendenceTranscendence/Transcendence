@@ -14,7 +14,7 @@ export const useChatRooms = () => {
     try {
       const response: ChatRoomsResponse =
         await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
-      console.log("ChatRoomsResponse:", response);
+      // console.log("ChatRoomsResponse:", response);
 
       if (response.success) {
         setChatRooms(response);
@@ -44,7 +44,7 @@ export const useMessages = (chatroomId) => {
         await api.ChatMessages.chatMessagesControllerFindOne({
           id: chatroomId,
         });
-      console.log("MessagesResponse:", response);
+      // console.log("MessagesResponse:", response);
 
       if (response.success) {
         setFetchedMessages(response);
@@ -74,7 +74,7 @@ export const useActiveParticipantbyChatroomId = (chatRoomId: number) => {
         await api.ChatParticipants.chatParticipantsControllerFindParticipantByChatRoom(
           { chatRoomId },
         );
-      console.log("MessagesResponse:", response);
+      // console.log("MessagesResponse:", response);
 
       if (response.success) {
         setActiveParticipants(response);
@@ -106,7 +106,8 @@ export const useAddMessage = async (
       user_id: userId,
       chat_room_id: chatRoomId,
     });
-    console.log("Participant added:", response);
+    void response;
+    // console.log("Participant added:", response);
   } catch (error) {
     console.error("Error adding participant:", error);
   }

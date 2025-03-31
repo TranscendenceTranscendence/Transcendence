@@ -49,7 +49,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log("WebSocket connected");
+      // console.log("WebSocket connected");
     });
 
     socket.on("connect_error", (error) => {
@@ -118,9 +118,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     console.log(`${action} on user with ID: ${id}`);
     setSelectedMessage(null);
   };
-  if (localParticipant == undefined) {
-    return <p>Chat not available</p>;
-  }
+
   return (
     <div>
       <ul className="chatMessages">
