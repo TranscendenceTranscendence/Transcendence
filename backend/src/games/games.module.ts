@@ -6,6 +6,7 @@ import { Game } from './game.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
+import { GameGateway } from './game.gateway';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { UsersModule } from '../users/users.module';
     }),
     UsersModule,
   ],
-  providers: [GamesService],
+  providers: [GamesService, GameGateway],
   controllers: [GamesController],
   exports: [GamesService],
 })

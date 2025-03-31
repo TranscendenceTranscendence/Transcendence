@@ -25,6 +25,10 @@ export interface GamesControllerCreateRequest {
   createGameDto: CreateGameDto;
 }
 
+export interface GamesControllerFindByRoomIdentifierRequest {
+  roomIdentifier: string;
+}
+
 export interface GamesControllerFindOneRequest {
   id: string;
 }
@@ -153,6 +157,92 @@ export class GamesApi extends runtime.BaseAPI {
   ): Promise<Array<Game>> {
     const response =
       await this.gamesControllerFindAllExceptUserRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * Retrieve a game by room identifier
+   */
+  async gamesControllerFindByRoomIdentifierRaw(
+    requestParameters: GamesControllerFindByRoomIdentifierRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<Game>> {
+    if (requestParameters["roomIdentifier"] == null) {
+      throw new runtime.RequiredError(
+        "roomIdentifier",
+        'Required parameter "roomIdentifier" was null or undefined when calling gamesControllerFindByRoomIdentifier().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/games/room/{roomIdentifier}`.replace(
+          `{${"roomIdentifier"}}`,
+          encodeURIComponent(String(requestParameters["roomIdentifier"])),
+        ),
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      GameFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Retrieve a game by room identifier
+   */
+  async gamesControllerFindByRoomIdentifier(
+    requestParameters: GamesControllerFindByRoomIdentifierRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Game> {
+    const response = await this.gamesControllerFindByRoomIdentifierRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
+  }
+
+  /**
+   * Retrieve current game for current user
+   */
+  async gamesControllerFindCurrentGameRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<Game>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/games/current`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      GameFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Retrieve current game for current user
+   */
+  async gamesControllerFindCurrentGame(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Game> {
+    const response =
+      await this.gamesControllerFindCurrentGameRaw(initOverrides);
     return await response.value();
   }
 
