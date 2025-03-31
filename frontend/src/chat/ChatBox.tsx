@@ -112,10 +112,10 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
   const handleAction = (action: string, id: number) => {
     if (action == "Kick") KickUser(chatRoomId, id);
     else if (action == "Promote") PromoteUser(chatRoomId, id);
-    else if (action == "Mute") MuteUser(chatRoomId, userId);
-    else if (action == "Block") BlockUser(chatRoomId, userId);
+    else if (action == "Mute") MuteUser(chatRoomId, id);
+    else if (action == "Block") BlockUser(chatRoomId, id);
 
-    console.log(`${action} user with ID: ${id}`);
+    console.log(`${action} on user with ID: ${id}`);
     setSelectedMessage(null);
   };
   if (localParticipant == undefined) {
@@ -138,7 +138,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
                   (participant) => {
-                    console.log("participant", participant);
                     return participant.userId == message.userId;
                   },
                 )}
@@ -150,16 +149,20 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
           <p>No messages found.</p>
         )}
       </ul>
-      <div className="formMessages">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-          placeholder="Type a message"
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
+      {localParticipant?.isMuted == false ? (
+        <div className="formMessages">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            placeholder="Type a message"
+          />
+          <button onClick={handleSendMessage}>Send</button>
+        </div>
+      ) : (
+        <p className="mutedMessage">You are muted</p>
+      )}
 
       {selectedMessage && selectedMessage.userId != userId && (
         <div

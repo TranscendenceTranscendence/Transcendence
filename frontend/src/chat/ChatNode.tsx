@@ -22,11 +22,10 @@ export const ChatNode: React.FC<ChatNodeProps> = ({
     console.error("User ID is undefined");
     return <li>Invalid user data</li>;
   }
-  console.log(user[0].isMuted);
+  console.log(userId, "this Node has a muted user -->", user[0].isMuted);
   const handleRedirect = () => {
     navigate(`/profile/${userId}`);
   };
-  if (user[0].isMuted == true) console.log("muted?!!!!!!!!");
   return (
     <div>
       <li>
