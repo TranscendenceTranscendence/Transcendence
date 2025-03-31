@@ -8,17 +8,12 @@ import {
   Delete,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiProperty,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
-import { ChatRoom } from './chat_room.entity';
 import {
   AuthenticatedRequest,
   JwtAccessAuthGuard,
@@ -159,7 +154,9 @@ export class ChatRoomsController {
     status: 404,
     description: 'Chat room not found.',
   })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ChatRoomsResponse> {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ChatRoomsResponse> {
     try {
       const data = await this.chatRoomsService.findOne(id);
       return {
