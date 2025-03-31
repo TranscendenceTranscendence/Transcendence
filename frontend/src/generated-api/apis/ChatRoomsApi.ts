@@ -269,38 +269,6 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Get all chat rooms the user can see
-   */
-  async chatRoomsControllerFindOverviewRaw(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/chatroom/overview`,
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Get all chat rooms the user can see
-   */
-  async chatRoomsControllerFindOverview(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatRoomsControllerFindOverviewRaw(initOverrides);
-  }
-
-  /**
    * Delete a chat room by ID
    */
   async chatRoomsControllerRemoveRaw(
