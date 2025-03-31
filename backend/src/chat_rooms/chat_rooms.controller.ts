@@ -159,7 +159,7 @@ export class ChatRoomsController {
     status: 404,
     description: 'Chat room not found.',
   })
-  async findOne(@Param('id') id: number): Promise<ChatRoomsResponse> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ChatRoomsResponse> {
     try {
       const data = await this.chatRoomsService.findOne(id);
       return {
