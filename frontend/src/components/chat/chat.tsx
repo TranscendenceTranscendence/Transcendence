@@ -3,10 +3,12 @@ import { useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { SendIcon } from "lucide-react";
+import { DoorOpenIcon, GhostIcon, SendIcon } from "lucide-react";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
 const Chat = () => {
-  const { chatRooms, sendMessage, currentChatRoomId } = useChat();
+  const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
+    useChat();
   const me = useUser();
 
   const [message, setMessage] = useState<string>("");
@@ -23,11 +25,21 @@ const Chat = () => {
     : null;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
+    <div className="flex flex-col items-center justify-center h-full pointer-events-none">
       {currentChatRoom && (
-        <div className="bg-white shadow-lg rounded-lg p-4 w-[400px] overflow-hidden">
-          <h3>Chat Room {currentChatRoomId}</h3>
-          <div className="space-y-1 overflow-x-scroll h-[300px] w-full p-[10px]">
+        <Card className="w-[400px] overflow-hidden pointer-events-auto">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <h3>Chat Room {currentChatRoomId}</h3>
+            <Button
+              variant="ghost"
+              onClick={leaveChatRoom}
+              size="icon"
+              className="text-xl mt-0"
+            >
+              <GhostIcon size="2em" />
+            </Button>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
             {currentChatRoom.messages.map((msg, index) => {
               const user = currentChatRoom.participants.find(
                 (p) => p.user.id === msg.userId,
@@ -59,8 +71,8 @@ const Chat = () => {
                 </div>
               );
             })}
-          </div>
-          <div className="flex w-full max-w-sm items-center space-x-2 space-y-2">
+          </CardContent>
+          <CardFooter className="space-x-2">
             <Input
               type="text"
               value={message}
@@ -70,8 +82,8 @@ const Chat = () => {
             <Button onClick={handleSendMessage} size="icon">
               <SendIcon />
             </Button>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       )}
     </div>
   );
