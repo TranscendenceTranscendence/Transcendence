@@ -1,22 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DoorOpenIcon, GhostIcon, SendIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const messageSchema = z.object({
+  message: z.string().min(1, "Message cannot be empty"),
+});
 
 const Chat = () => {
   const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
     useChat();
   const me = useUser();
 
-  const [message, setMessage] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(messageSchema),
+  });
 
-  const handleSendMessage = () => {
-    if (message.trim() && currentChatRoomId !== null) {
-      sendMessage(message);
-      setMessage("");
+  const onSubmit = (data: { message: string }) => {
+    if (currentChatRoomId !== null) {
+      sendMessage(data.message);
+      reset();
     }
   };
 
@@ -73,15 +87,24 @@ const Chat = () => {
             })}
           </CardContent>
           <CardFooter className="space-x-2">
-            <Input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message"
-            />
-            <Button onClick={handleSendMessage} size="icon">
-              <SendIcon />
-            </Button>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex w-full space-x-2"
+            >
+              <Input
+                type="text"
+                {...register("message")}
+                placeholder="Type a message"
+              />
+              <Button type="submit" size="icon">
+                <SendIcon />
+              </Button>
+            </form>
+            {errors.message && (
+              <p className="text-red-500 text-sm">
+                {errors.message.message.toString()}
+              </p>
+            )}
           </CardFooter>
         </Card>
       )}
