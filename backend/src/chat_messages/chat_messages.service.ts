@@ -62,14 +62,10 @@ export class ChatMessagesService {
         chatRoomId,
       });
     }
-    if (sent_time_from) {
-      queryBuilder.andWhere('chat_message.sent_time >= :sent_time_from', {
-        sent_time_from,
-      });
-    }
-    if (sent_time_till) {
-      queryBuilder.andWhere('chat_message.sent_time <= :sent_time_till', {
-        sent_time_till,
+    if (sent_time_from && sent_time_till) {
+      queryBuilder.andWhere('chat_message.sent_time BETWEEN :from AND :to', {
+        from: sent_time_from,
+        to: sent_time_till,
       });
     }
     return queryBuilder.getMany();

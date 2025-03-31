@@ -71,11 +71,12 @@ export class ChatMessagesController {
     }
   }
 
-  @Post('find')
+  @Get('find')
   @ApiOperation({ summary: 'Find chat messages' })
   @ApiResponse({
     status: 200,
     description: 'Chat messages fetched successfully.',
+    type: MessagesResponse,
     type: MessagesResponse,
   })
   @ApiResponse({
@@ -96,7 +97,7 @@ export class ChatMessagesController {
       return {
         success: true,
         data,
-        message: 'ChatMessage Fetched Successfully',
+        message: 'Chat messages fetched successfully',
       };
     } catch (error) {
       return {

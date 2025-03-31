@@ -177,6 +177,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerFindAllRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<MessagesResponse>> {
+  ): Promise<runtime.ApiResponse<MessagesResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -194,6 +195,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     return new runtime.JSONApiResponse(response, (jsonValue) =>
       MessagesResponseFromJSON(jsonValue),
     );
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      MessagesResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -201,6 +205,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
    */
   async chatMessagesControllerFindAll(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<MessagesResponse> {
+    const response = await this.chatMessagesControllerFindAllRaw(initOverrides);
+    return await response.value();
   ): Promise<MessagesResponse> {
     const response = await this.chatMessagesControllerFindAllRaw(initOverrides);
     return await response.value();
