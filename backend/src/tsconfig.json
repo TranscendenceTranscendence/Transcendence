@@ -17,5 +17,5 @@
       "request": ["node_modules/request"]
     }
   },
-  "include": ["**/*"]
+  "include": ["src/**/*.ts", "src/chat_messages/dto/*.ts"]
 }

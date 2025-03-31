@@ -33,7 +33,7 @@ export const useChatRooms = () => {
   return { chatRooms, fetchChatRooms };
 };
 
-export const useMessages = (chatroomId) => {
+export const useMessages = (chatroomId: number) => {
   const api = useApi();
   const [fetchedMessages, setFetchedMessages] =
     useState<MessagesResponse | null>(null);
@@ -42,10 +42,9 @@ export const useMessages = (chatroomId) => {
     try {
       const response: MessagesResponse =
         await api.ChatMessages.chatMessagesControllerFind({
-          findChatMessageDto: {
-            chatRoomId: chatroomId,
-            daysAgo: 1,
-          },
+          chatRoomId: chatroomId,
+          sentTimeFrom: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+          sentTimeTill: new Date(),
         });
       console.log("MessagesResponse:", response);
 

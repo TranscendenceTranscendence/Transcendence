@@ -29,14 +29,10 @@ export class ChatMessagesService {
         chatRoomId,
       });
     }
-    if (daysAgo) {
-      const currentTime = new Date();
-      const sent_time_from = new Date();
-      sent_time_from.setDate(currentTime.getDate() - daysAgo);
-
+    if (sent_time_from && sent_time_till) {
       queryBuilder.andWhere('chat_message.sent_time BETWEEN :from AND :to', {
         from: sent_time_from,
-        to: currentTime,
+        to: sent_time_till,
       });
     }
     return queryBuilder.getMany();

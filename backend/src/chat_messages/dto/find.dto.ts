@@ -2,13 +2,9 @@ import { IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class findChatMessageDto {
-  @ApiProperty({ description: 'chatRoomId' })
-  @IsNumber()
-  @IsOptional()
-  chatRoomId: number;
+  chatRoomId?: number;
 
-  @ApiProperty({ description: 'daysAgo' })
-  @IsNumber()
-  @IsOptional()
-  daysAgo: number;
+  sent_time_from?: Date;
+
+  sent_time_till?: Date;
 }
