@@ -9,6 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
+import { useNavigate } from "react-router";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -24,6 +25,7 @@ const ChatMessages = ({
   participants: ChatParticipant[];
   currentUserId: number;
 }) => {
+  const navigate = useNavigate();
   if (messages.length === 0) {
     return <p className="text-center text-gray-500">No messages yet.</p>;
   }
@@ -44,9 +46,17 @@ const ChatMessages = ({
             }`}
           >
             {!isCurrentUser && (
-              <strong className="text-sm text-gray-500">
-                {user.nickname}:
-              </strong>
+              <Button
+                variant="ghost"
+                className="text-xs text-gray-500"
+                aria-label="User name"
+                size="xs"
+                onClick={() => {
+                  navigate(`/profile/${user.id}`);
+                }}
+              >
+                {user.nickname}
+              </Button>
             )}
             <div
               className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${
