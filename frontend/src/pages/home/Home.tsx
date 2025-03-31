@@ -83,11 +83,7 @@ export default function Page() {
               <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
               <DialogPostChatroom />
             </div>
-            <ChatRoomContainer
-              userDetails={me}
-              chatRoomId={chatRoomId}
-              setChatRoomId={setChatRoomId}
-            />
+            <ChatRoomContainer userDetails={me} />
           </div>
           <AchievementBox achievements={achievements} />
         </div>
