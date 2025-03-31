@@ -1,0 +1,15 @@
+.dialog-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    color: black;
+    z-index: 100;
+    padding: 4mm;
+    font-weight: bold; 
+}
+  
+  .dialog-close {
+    cursor: pointer;
+  }

@@ -26,8 +26,9 @@ export interface ChatMessagesControllerCreateRequest {
 }
 
 export interface ChatMessagesControllerFindRequest {
-  chatRoomId: number;
-  daysAgo: number;
+  chatRoomId?: number;
+  sentTimeFrom?: Date;
+  sentTimeTill?: Date;
 }
 
 export interface ChatMessagesControllerFindAllByUserAndChatRoomRequest {
@@ -107,28 +108,22 @@ export class ChatMessagesApi extends runtime.BaseAPI {
     requestParameters: ChatMessagesControllerFindRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<MessagesResponse>> {
-    if (requestParameters["chatRoomId"] == null) {
-      throw new runtime.RequiredError(
-        "chatRoomId",
-        'Required parameter "chatRoomId" was null or undefined when calling chatMessagesControllerFind().',
-      );
-    }
-
-    if (requestParameters["daysAgo"] == null) {
-      throw new runtime.RequiredError(
-        "daysAgo",
-        'Required parameter "daysAgo" was null or undefined when calling chatMessagesControllerFind().',
-      );
-    }
-
     const queryParameters: any = {};
 
     if (requestParameters["chatRoomId"] != null) {
       queryParameters["chatRoomId"] = requestParameters["chatRoomId"];
     }
 
-    if (requestParameters["daysAgo"] != null) {
-      queryParameters["daysAgo"] = requestParameters["daysAgo"];
+    if (requestParameters["sentTimeFrom"] != null) {
+      queryParameters["sent_time_from"] = (
+        requestParameters["sentTimeFrom"] as any
+      ).toISOString();
+    }
+
+    if (requestParameters["sentTimeTill"] != null) {
+      queryParameters["sent_time_till"] = (
+        requestParameters["sentTimeTill"] as any
+      ).toISOString();
     }
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -152,7 +147,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
    * Find chat messages
    */
   async chatMessagesControllerFind(
-    requestParameters: ChatMessagesControllerFindRequest,
+    requestParameters: ChatMessagesControllerFindRequest = {},
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<MessagesResponse> {
     const response = await this.chatMessagesControllerFindRaw(
