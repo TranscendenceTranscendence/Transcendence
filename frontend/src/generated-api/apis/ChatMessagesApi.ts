@@ -13,16 +13,10 @@
  */
 
 import * as runtime from "../runtime";
-import type {
-  CreateChatMessageDto,
-  FindChatMessageDto,
-  MessagesResponse,
-} from "../models/index";
+import type { CreateChatMessageDto, MessagesResponse } from "../models/index";
 import {
   CreateChatMessageDtoFromJSON,
   CreateChatMessageDtoToJSON,
-  FindChatMessageDtoFromJSON,
-  FindChatMessageDtoToJSON,
   MessagesResponseFromJSON,
   MessagesResponseToJSON,
 } from "../models/index";

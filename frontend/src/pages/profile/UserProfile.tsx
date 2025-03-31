@@ -26,7 +26,6 @@ export default function UserProfile() {
       try {
         const user = await apiUsersRef.current.usersControllerMe();
         setCurrentUser(user);
-        console.log("currentUser:", user);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
         setError("Failed to fetch user data");

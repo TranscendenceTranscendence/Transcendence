@@ -20,6 +20,7 @@ import { mapValues } from "../runtime";
  */
 export interface FindChatMessageDto {
   /**
+<<<<<<< HEAD
    * chatRoomId
    * @type {number}
    * @memberof FindChatMessageDto
@@ -31,6 +32,25 @@ export interface FindChatMessageDto {
    * @memberof FindChatMessageDto
    */
   daysAgo: number;
+=======
+   *
+   * @type {number}
+   * @memberof FindChatMessageDto
+   */
+  chatRoomId?: number;
+  /**
+   *
+   * @type {Date}
+   * @memberof FindChatMessageDto
+   */
+  sentTimeFrom?: Date;
+  /**
+   *
+   * @type {Date}
+   * @memberof FindChatMessageDto
+   */
+  sentTimeTill?: Date;
+>>>>>>> develop
 }
 
 /**
@@ -39,9 +59,12 @@ export interface FindChatMessageDto {
 export function instanceOfFindChatMessageDto(
   value: object,
 ): value is FindChatMessageDto {
+<<<<<<< HEAD
   if (!("chatRoomId" in value) || value["chatRoomId"] === undefined)
     return false;
   if (!("daysAgo" in value) || value["daysAgo"] === undefined) return false;
+=======
+>>>>>>> develop
   return true;
 }
 
@@ -57,8 +80,20 @@ export function FindChatMessageDtoFromJSONTyped(
     return json;
   }
   return {
+<<<<<<< HEAD
     chatRoomId: json["chatRoomId"],
     daysAgo: json["daysAgo"],
+=======
+    chatRoomId: json["chatRoomId"] == null ? undefined : json["chatRoomId"],
+    sentTimeFrom:
+      json["sent_time_from"] == null
+        ? undefined
+        : new Date(json["sent_time_from"]),
+    sentTimeTill:
+      json["sent_time_till"] == null
+        ? undefined
+        : new Date(json["sent_time_till"]),
+>>>>>>> develop
   };
 }
 
@@ -76,6 +111,17 @@ export function FindChatMessageDtoToJSONTyped(
 
   return {
     chatRoomId: value["chatRoomId"],
+<<<<<<< HEAD
     daysAgo: value["daysAgo"],
+=======
+    sent_time_from:
+      value["sentTimeFrom"] == null
+        ? undefined
+        : value["sentTimeFrom"].toISOString(),
+    sent_time_till:
+      value["sentTimeTill"] == null
+        ? undefined
+        : value["sentTimeTill"].toISOString(),
+>>>>>>> develop
   };
 }

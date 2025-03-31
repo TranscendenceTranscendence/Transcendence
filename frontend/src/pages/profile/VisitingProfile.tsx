@@ -38,7 +38,6 @@ export default function VisitingProfile() {
       const currentUserId = decoded.sub;
 
       if (currentUserId === userIdNumber) {
-        console.log("Visiting own profile, send back to /profile");
         navigate("/profile");
         return;
       }
