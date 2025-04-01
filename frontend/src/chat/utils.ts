@@ -41,8 +41,6 @@ export const MuteUser = async (chatRoomId, id) => {
   const updateDto: UpdateChatParticipantDto = {
     isMuted: true,
   };
-  console.log("inMuteUser", chatRoomId, id);
-  console.log(updateDto);
   try {
     const response: ChatParticipant =
       await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
