@@ -12,7 +12,6 @@ import { PostChatRoom } from "./PostChatRoom";
 
 export const DialogPostChatRoom = ({ userId }) => {
   if (typeof userId !== "number") return null; // Ensure userId is a number
-  console.log("sadfdsf", userId);
   return (
     <Dialog>
       <DialogTrigger asChild>

@@ -23,7 +23,6 @@ export class ChatParticipantsService {
     const chatParticipantData = await this.chatParticipantsRepository.create(
       createChatParticipantDto,
     );
-    console.log('createChatParticipantDto', createChatParticipantDto);
     return this.chatParticipantsRepository.save(chatParticipantData);
   }
 

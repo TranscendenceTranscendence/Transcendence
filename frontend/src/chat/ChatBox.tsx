@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { handleSubmitMessages } from "../utils/PostRequest.tsx";
 import { ChatNode } from "./ChatNode.tsx";
 import React from "react";

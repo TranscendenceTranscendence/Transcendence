@@ -1,4 +1,3 @@
-import { UserContextType } from "@/utils/providers/UserProvider.tsx";
 import "../css/ChatBox.css";
 import { ChatBox } from "./ChatBox.tsx";
 import io from "socket.io-client";

@@ -41,7 +41,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
   return (
     <div className="chat-room-list flex flex-col gap-3 max-h-96 overflow-y-auto p-2">
       {chatRooms?.chatRooms?.map((chatRoom) => (
-        <div key={chatRoom.id} className={addStyle(chatRoom.id == chatRoomId)}>
+        <div key={chatRoom.id} className={addStyle(chatRoom.id === chatRoomId)}>
           <Button
             key={chatRoom.id}
             onClick={() => handleChatRoomChange(chatRoom)}

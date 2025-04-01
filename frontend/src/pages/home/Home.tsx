@@ -58,8 +58,6 @@ export default function Page() {
   };
 
   const userId = me.user?.id;
-  console.log("userId", userId);
-  console.log("me", me);
   return (
     <SidebarProvider>
       <AppSidebar />
