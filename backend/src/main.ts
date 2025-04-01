@@ -56,9 +56,6 @@ const setupSwagger = (app: INestApplication) => {
   app.useStaticAssets('img', {
     prefix: '/img/',
   });
-
-  console.log('JWT_SECRET:', process.env.JWT_SECRET);
-
   await app.listen(3000);
 
   console.info(
