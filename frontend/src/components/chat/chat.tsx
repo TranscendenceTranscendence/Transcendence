@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { useNavigate } from "react-router";
 
@@ -78,6 +78,7 @@ const Chat = () => {
   const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
     useChat();
   const me = useUser();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -114,12 +115,14 @@ const Chat = () => {
 
   useEffect(() => {
     const PADDING = 10;
+    const cardWidth = cardRef.current?.offsetWidth || 400;
+    const cardHeight = cardRef.current?.offsetHeight || 500;
 
     setPosition({
-      x: window.innerWidth - (400 + PADDING),
-      y: window.innerHeight - (500 + PADDING),
+      x: window.innerWidth - (cardWidth + PADDING),
+      y: window.innerHeight - (cardHeight + PADDING),
     });
-  }, []);
+  }, [cardRef]);
 
   useEffect(() => {
     if (isDragging) {
@@ -153,6 +156,7 @@ const Chat = () => {
 
   return (
     <Card
+      ref={cardRef}
       className="w-[400px] overflow-hidden pointer-events-auto shadow-lg absolute bg-white border border-gray-300 rounded-lg"
       style={{
         top: `${position.y}px`,
@@ -174,14 +178,14 @@ const Chat = () => {
           <XIcon />
         </Button>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2 pt-4">
+      <CardContent className="flex flex-col gap-2 pt-4 max-h-[400px] overflow-y-auto">
         <ChatMessages
           messages={currentChatRoom.messages}
           participants={currentChatRoom.participants}
           currentUserId={me.user?.id}
         />
       </CardContent>
-      <CardFooter className="space-x-2">
+      <CardFooter className="space-x-2 py-3">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full space-x-2"

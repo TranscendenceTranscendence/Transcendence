@@ -25,25 +25,21 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const joinChatRoom = async (newChatRoomId: number) => {
     if (chatRoomId === newChatRoomId) return;
     setChatRoomId(newChatRoomId);
-    if (!chatRooms[newChatRoomId]) {
-      const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
-        id: newChatRoomId,
+    const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
+      id: newChatRoomId,
+    });
+    const { data: messages } =
+      await api.ChatMessages.chatMessagesControllerFind({
+        chatRoomId: newChatRoomId,
       });
-      const { data: messages } =
-        await api.ChatMessages.chatMessagesControllerFind({
-          findChatMessageDto: {
-            chatRoomId: newChatRoomId,
-          },
-        });
-      const { chatParticipants } = chatRooms[0];
-      setChatRooms((prev) => ({
-        ...prev,
-        [newChatRoomId]: {
-          messages: messages,
-          participants: chatParticipants,
-        },
-      }));
-    }
+    const { chatParticipants } = chatRooms[0];
+    setChatRooms((prev) => ({
+      ...prev,
+      [newChatRoomId]: {
+        messages: messages,
+        participants: chatParticipants,
+      },
+    }));
   };
 
   const leaveChatRoom = () => {

@@ -10,17 +10,16 @@ import {
   Req,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiProperty,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
-import { ChatMessage } from './chat_message.entity';
 import { findChatMessageDto } from './dto/find.dto';
 import {
   AuthenticatedRequest,
@@ -97,7 +96,7 @@ export class ChatMessagesController {
   @ApiBearerAuth()
   async find(
     @Req() req: AuthenticatedRequest,
-    @Body() findChatMessageDto: findChatMessageDto,
+    @Query() findChatMessageDto: findChatMessageDto,
   ): Promise<MessagesResponse> {
     try {
       const data = await this.chatMessagesService.find({
