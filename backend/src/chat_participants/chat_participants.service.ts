@@ -33,6 +33,8 @@ export class ChatParticipantsService {
   async findByChatRoomId(id: number): Promise<ChatParticipant[]> {
     const chatRoomData = await this.chatParticipantsRepository.find({
       where: { chatRoom: { id } },
+      relations: ['user'],
+      loadEagerRelations: true,
     });
     if (!chatRoomData)
       throw new HttpException('ChatParticipant Not Found', 404);
@@ -90,11 +92,12 @@ export class ChatParticipantsService {
       id,
     );
 
-    // Directly update the properties of the found entity
     Object.assign(existingChatParticipant, updateDto);
+    await this.chatParticipantsRepository.save(existingChatParticipant);
 
-    // Save the updated entity
-    return await this.chatParticipantsRepository.save(existingChatParticipant);
+    return await this.chatParticipantsRepository.findOne({
+      where: { user_id: existingChatParticipant.user_id },
+    });
   }
 
   async remove(

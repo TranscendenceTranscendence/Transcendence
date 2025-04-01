@@ -64,6 +64,7 @@ export const ChatRoomContainer = ({
         onChatRoomChange={handleChatRoomChange}
         askPassword={askPassword}
         setAskPassword={setAskPassword}
+        chatRoomId={chatRoomId}
       />
       {/* <ChatContainer chatRoomId={chatRoomId} userId={userId} />
       <PostChatRoom

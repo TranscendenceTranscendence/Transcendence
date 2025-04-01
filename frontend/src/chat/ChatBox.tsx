@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { handleSubmitMessages } from "../utils/PostRequest.tsx";
 import { ChatNode } from "./ChatNode.tsx";
 import React from "react";
-import { KickUser, PromoteUser } from "./utils.ts";
+import { KickUser, PromoteUser, MuteUser, BlockUser } from "./utils.ts";
 import {
   useActiveParticipantbyChatroomId,
   useMessages,
@@ -57,8 +57,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     });
 
     const handleReceiveMessage = (message) => {
-      // setMessages((prevMessages) => [...prevMessages, message]);
-      void message;
+      setMessages((prevMessages) => [...prevMessages, message]);
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
@@ -73,7 +72,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
         content: input,
         userId: userId,
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
       socket.emit("sendMessage", newMessage);
       handleSubmitMessages(
         "https://localhost:3000/chatMessages",
@@ -95,10 +93,12 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
   const handleMessageClick = (e: React.MouseEvent, user_id: number) => {
     e.stopPropagation();
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
     setSelectedMessage({
       userId: user_id,
-      x: e.clientX,
-      y: e.clientY,
+      x: rect.left + window.scrollX - 175,
+      y: rect.top + window.scrollY - 125,
     });
   };
 
@@ -109,15 +109,15 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
   const handleAction = (action: string, id: number) => {
     if (action == "Kick") KickUser(chatRoomId, id);
     else if (action == "Promote") PromoteUser(chatRoomId, id);
-    // else if (action == 'Mute')
-    //   MuteUser(userId);
-    // else if (action == 'Block')
-    //   BlockUser(userId);
+    else if (action == "Mute") MuteUser(chatRoomId, id);
+    else if (action == "Block") BlockUser(chatRoomId, id);
 
-    console.log(`${action} user with ID: ${id}`);
+    console.log(`${action} on user with ID: ${id}`);
     setSelectedMessage(null);
   };
-  // console.log("active --->", activeParticipants, messages);
+  if (localParticipant == undefined) {
+    return <p>Chat not available</p>;
+  }
   return (
     <div>
       <ul className="chatMessages">
@@ -135,10 +135,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
                 message={message}
                 user={activeParticipants?.chatParticipants.filter(
                   (participant) => {
-                    console.log(
-                      index,
-                      `Comparing participant ${participant.userId} with message ${message.userId}`,
-                    );
                     return participant.userId == message.userId;
                   },
                 )}
@@ -150,18 +146,22 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
           <p>No messages found.</p>
         )}
       </ul>
-      <div className="formMessages">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-          placeholder="Type a message"
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
+      {localParticipant?.isMuted == false ? (
+        <div className="formMessages">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            placeholder="Type a message"
+          />
+          <button onClick={handleSendMessage}>Send</button>
+        </div>
+      ) : (
+        <p className="mutedMessage">You are muted</p>
+      )}
 
-      {selectedMessage && (
+      {selectedMessage && selectedMessage.userId != userId && (
         <div
           className="messagePrompt"
           style={{
