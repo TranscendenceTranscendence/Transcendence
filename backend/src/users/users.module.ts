@@ -7,8 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import JwtConfig from '../config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
 import FortyTwoOauthConfig from '../config/ft-oauth.config';
-import { AchievementsService } from '../achievements/achievements.service';
-import { Achievement } from '../achievements/achievement.entity';
 import { UsersGateway } from './users.gateway';
 import { AchievementsModule } from '../achievements/achievements.module';
 

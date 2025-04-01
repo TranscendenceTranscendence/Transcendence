@@ -26,6 +26,7 @@ import {
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
 import { MessagesResponse } from './dto/chat_message-response.dto';
+import { ChatMessage } from './chat_message.entity';
 
 @ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
 @Controller('chatMessages')
@@ -37,17 +38,22 @@ export class ChatMessagesController {
   @ApiResponse({
     status: 201,
     description: 'Chat message created successfully.',
+    type: ChatMessage,
   })
   @ApiResponse({
     status: 400,
     description: 'Bad Request.',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
   })
   @UseGuards(JwtAccessAuthGuard)
   @ApiBearerAuth()
   async create(
     @Req() req: AuthenticatedRequest,
     @Body() createChatMessageDto: CreateChatMessageDto,
-  ) {
+  ): Promise<ChatMessage> {
     try {
       const { chat_room_id: chatRoomId, content } = createChatMessageDto;
       if (!chatRoomId || !content) {
@@ -68,16 +74,15 @@ export class ChatMessagesController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      await this.chatMessagesService.create(createChatMessageDto, req.user.id);
-      return {
-        success: true,
-        message: 'ChatMessage Created Successfully',
-      };
+      return await this.chatMessagesService.create(
+        createChatMessageDto,
+        req.user.id,
+      );
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      throw new HttpException(
+        error.message || 'Internal server error.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

@@ -11,5 +11,6 @@ import { UsersModule } from '../users/users.module';
   imports: [TypeOrmModule.forFeature([ChatRoom, ChatParticipant]), UsersModule],
   providers: [JwtService, ChatRoomsService],
   controllers: [ChatRoomsController],
+  exports: [ChatRoomsService],
 })
 export class ChatRoomsModule {}

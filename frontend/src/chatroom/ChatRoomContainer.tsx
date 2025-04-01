@@ -29,13 +29,6 @@ export const ChatRoomContainer = ({ userDetails }: ChatRoomContainerProps) => {
       joinChatRoom(newChatRoom.id);
     }
   };
-  if (userDetails == null || userDetails.user == null) {
-    console.log("ChatRoomContainer userDetails is null");
-    userId = -1;
-  } else {
-    console.log("ChatRoomContainer userDetails:", userDetails.user.id);
-    userId = userDetails.user.id;
-  }
   return (
     <div className="chatRoomBox">
       <ChatRoomList

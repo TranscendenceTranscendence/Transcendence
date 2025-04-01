@@ -13,8 +13,14 @@
  */
 
 import * as runtime from "../runtime";
-import type { CreateChatMessageDto, MessagesResponse } from "../models/index";
+import type {
+  ChatMessage,
+  CreateChatMessageDto,
+  MessagesResponse,
+} from "../models/index";
 import {
+  ChatMessageFromJSON,
+  ChatMessageToJSON,
   CreateChatMessageDtoFromJSON,
   CreateChatMessageDtoToJSON,
   MessagesResponseFromJSON,
@@ -58,7 +64,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerCreateRaw(
     requestParameters: ChatMessagesControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<ChatMessage>> {
     if (requestParameters["createChatMessageDto"] == null) {
       throw new runtime.RequiredError(
         "createChatMessageDto",
@@ -93,7 +99,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatMessageFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -102,11 +110,12 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerCreate(
     requestParameters: ChatMessagesControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatMessagesControllerCreateRaw(
+  ): Promise<ChatMessage> {
+    const response = await this.chatMessagesControllerCreateRaw(
       requestParameters,
       initOverrides,
     );
+    return await response.value();
   }
 
   /**
