@@ -48,6 +48,12 @@ export interface ChatParticipant {
   isBanned: boolean;
   /**
    *
+   * @type {Date}
+   * @memberof ChatParticipant
+   */
+  bannedUntil: Date;
+  /**
+   *
    * @type {boolean}
    * @memberof ChatParticipant
    */
@@ -107,6 +113,8 @@ export function instanceOfChatParticipant(
   )
     return false;
   if (!("isBanned" in value) || value["isBanned"] === undefined) return false;
+  if (!("bannedUntil" in value) || value["bannedUntil"] === undefined)
+    return false;
   if (!("isMuted" in value) || value["isMuted"] === undefined) return false;
   if (!("entranceTime" in value) || value["entranceTime"] === undefined)
     return false;
@@ -132,6 +140,7 @@ export function ChatParticipantFromJSONTyped(
   return {
     chatParticipantRole: json["chat_participant_role"],
     isBanned: json["is_banned"],
+    bannedUntil: new Date(json["banned_until"]),
     isMuted: json["is_muted"],
     entranceTime: new Date(json["entrance_time"]),
     userId: json["user_id"],
@@ -156,6 +165,7 @@ export function ChatParticipantToJSONTyped(
   return {
     chat_participant_role: value["chatParticipantRole"],
     is_banned: value["isBanned"],
+    banned_until: value["bannedUntil"].toISOString(),
     is_muted: value["isMuted"],
     entrance_time: value["entranceTime"].toISOString(),
     user_id: value["userId"],

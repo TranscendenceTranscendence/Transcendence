@@ -38,8 +38,11 @@ export const PromoteUser = async (chatRoomId, id) => {
 
 export const MuteUser = async (chatRoomId, id) => {
   const api = useApi();
+  const muteUntil = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
+  console.log("Mute Until:", muteUntil.toISOString());
   const updateDto: UpdateChatParticipantDto = {
     isMuted: true,
+    bannedUntil: muteUntil,
   };
   try {
     const response: ChatParticipant =

@@ -27,11 +27,11 @@ interface ChatBoxProps {
 }
 
 export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
-  const { fetchedMessages } = useMessages(chatRoomId);
   const { activeParticipants } = useActiveParticipantbyChatroomId(chatRoomId);
   const localParticipant = activeParticipants?.chatParticipants.find(
     (participant) => participant.userId?.toString() == userId.toString(),
   );
+  const { fetchedMessages } = useMessages(chatRoomId);
   const [messages, setMessages] = useState<ChatMessage[]>(
     fetchedMessages?.data || [],
   );
@@ -41,6 +41,15 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     x: number;
     y: number;
   } | null>(null);
+
+  if (localParticipant?.isMuted == true) {
+    const currentTime = new Date();
+    console.log("true!!", currentTime, " | ", localParticipant?.bannedUntil);
+    if (currentTime > localParticipant?.bannedUntil) {
+      console.log("User is unmuted");
+      localParticipant.isMuted = false;
+    }
+  }
   useEffect(() => {
     if (fetchedMessages && fetchedMessages.data) {
       setMessages(fetchedMessages.data);
@@ -49,7 +58,8 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      // console.log("WebSocket connected");
+      console.log("WebSocket connected");
+      socket.emit("joinRoom", chatRoomId);
     });
 
     socket.on("connect_error", (error) => {
