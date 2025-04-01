@@ -68,13 +68,17 @@ export default function Page() {
               P L A Y
             </Button>
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
-              <div className="flex items-center gap-2">
-                <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
-                <DialogPostChatRoom userId={userId} />
+          <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200">
+            <div className="flex items-center flex-col">
+              <div className="flex flex-row justify-between items-center gap-2 p-4 w-full">
+                <p className="font-bold text-3xl">CHAT ROOMS</p>
+                <div>
+                  <DialogPostChatRoom userId={userId} />
+                </div>
               </div>
-              <ChatRoomContainer />
+              <div className="w-full">
+                <ChatRoomContainer />
+              </div>
             </div>
           </div>
 
