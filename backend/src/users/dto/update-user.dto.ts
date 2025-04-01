@@ -1,6 +1,9 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { Blocked } from '../../blockeds/blocked.entity';
+import { IsOptional } from 'class-validator';
+import { User } from '../user.entity';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
@@ -21,4 +24,27 @@ export class UpdateUserResponse {
   message?: string;
   @ApiProperty({ type: 'object', required: false })
   errors?: { [key: string]: string };
+}
+
+export class UpdateAddUserToBlockedListDto {
+  @ApiProperty({ description: 'The ID of the user to block.' })
+  blockedUsers: Blocked[];
+
+  @ApiProperty({ type: 'User', description: 'The ID of the user to block.' })
+  targetUser: User;
+
+  @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
+  @IsOptional()
+  nickname?: string;
+
+  @ApiProperty({ type: 'string', description: 'The avatar of the user.' })
+  @IsOptional()
+  avatar?: string;
+
+  @ApiProperty({
+    type: 'boolean',
+    description: 'The two factor authentication status of the user.',
+  })
+  @IsOptional()
+  two_factor_enabled?: boolean;
 }

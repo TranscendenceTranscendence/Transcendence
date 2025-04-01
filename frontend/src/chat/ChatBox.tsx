@@ -120,7 +120,14 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     if (action == "Kick") KickUser(chatRoomId, id);
     else if (action == "Promote") PromoteUser(chatRoomId, id);
     else if (action == "Mute") MuteUser(chatRoomId, id);
-    else if (action == "Block") BlockUser(chatRoomId, id);
+    else if (action == "Block")
+      BlockUser(
+        chatRoomId,
+        id,
+        localParticipant?.user.blockedUsers,
+        activeParticipants.chatParticipants.find((user) => user.userId == id)
+          ?.user,
+      );
 
     console.log(`${action} on user with ID: ${id}`);
     setSelectedMessage(null);
@@ -128,6 +135,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
   if (localParticipant == undefined) {
     return <p>Chat not available</p>;
   }
+  console.log("localParticipant", localParticipant.user.blockedUsers);
   return (
     <div>
       <ul className="chatMessages">

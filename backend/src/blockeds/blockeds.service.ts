@@ -20,16 +20,21 @@ export class BlockedsService {
     return await this.blockedsRepository.find();
   }
 
-  async findByUserId(id: number): Promise<Blocked[]> {
-    const blockedData = await this.blockedsRepository.find({
-      where: [{ blockedUser: { id } }, { user: { id } }],
-    });
-    if (!blockedData) throw new HttpException('Blocked Not Found', 404);
-    return blockedData;
-  }
+  // async findByUserId(userId: number): Promise<Blocked[]> {
+  //   const blockedData = await this.blockedsRepository.find({
+  //     where: [
+  //       { blockedUserId: userId },
+  //       { userId: userId },
+  //     ],
+  //   });
+  //   if (!blockedData || blockedData.length === 0) {
+  //     throw new HttpException('Blocked Not Found', 404);
+  //   }
+  //   return blockedData;
+  // }
 
-  async remove(id: number): Promise<Blocked[]> {
-    const existingBlocked = await this.findByUserId(id);
-    return await this.blockedsRepository.remove(existingBlocked);
-  }
+  // async remove(id: number): Promise<Blocked[]> {
+  //   const existingBlocked = await this.findByUserId(id);
+  //   return await this.blockedsRepository.remove(existingBlocked);
+  // }
 }

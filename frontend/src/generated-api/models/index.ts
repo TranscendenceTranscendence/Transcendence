@@ -21,6 +21,7 @@ export * from "./Friend";
 export * from "./Game";
 export * from "./GetFriendRequestsDto";
 export * from "./MessagesResponse";
+export * from "./UpdateAddUserToBlockedListDto";
 export * from "./UpdateChatParticipantDto";
 export * from "./UpdateUserDto";
 export * from "./UpdateUserResponse";

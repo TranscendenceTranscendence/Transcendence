@@ -18,7 +18,11 @@ import {
   ApiProperty,
 } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
+import {
+  UpdateUserDto,
+  UpdateUserResponse,
+  UpdateAddUserToBlockedListDto,
+} from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
@@ -162,6 +166,47 @@ export class UsersController {
           success: false,
           errors: {
             nickname: 'Nickname already taken',
+          },
+        };
+      }
+      return {
+        success: true,
+        message: 'User Updated Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        errors: {
+          global: error.message,
+        },
+      };
+    }
+  }
+
+  @Patch('blockUser')
+  @ApiOperation({ summary: 'Update add user to blocked list' })
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully.',
+    type: UpdateUserResponse,
+  })
+  @ApiResponse({ status: 400, description: 'Invalid data provided.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized access.' })
+  @UseGuards(JwtAccessAuthGuard)
+  async updateAddUserToBlockedList(
+    @Body() body: UpdateAddUserToBlockedListDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<UpdateUserResponse> {
+    try {
+      const alreadyBlocked = !(await this.usersService.blockUser(
+        req.user.id,
+        body,
+      ));
+      if (alreadyBlocked) {
+        return {
+          success: false,
+          errors: {
+            nickname: 'User is already blocked',
           },
         };
       }

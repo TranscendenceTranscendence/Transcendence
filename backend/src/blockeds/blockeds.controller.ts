@@ -60,54 +60,54 @@ export class BlockedsController {
     }
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Retrieve a blocked entry by user ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Blocked entry fetched successfully.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Blocked entry not found.',
-  })
-  async findOne(@Param('id') id: string) {
-    try {
-      const data = await this.blockedsService.findByUserId(+id);
-      return {
-        success: true,
-        data,
-        message: 'Blocked Fetched Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
-  }
+  // @Get(':id')
+  // @ApiOperation({ summary: 'Retrieve a blocked entry by user ID' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Blocked entry fetched successfully.',
+  // })
+  // @ApiResponse({
+  //   status: 404,
+  //   description: 'Blocked entry not found.',
+  // })
+  // async findOne(@Param('id') id: string) {
+  //   try {
+  //     const data = await this.blockedsService.findByUserId(+id);
+  //     return {
+  //       success: true,
+  //       data,
+  //       message: 'Blocked Fetched Successfully',
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: error.message,
+  //     };
+  //   }
+  // }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete a blocked entry by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Blocked entry deleted successfully.',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Blocked entry not found.',
-  })
-  async remove(@Param('id') id: string) {
-    try {
-      await this.blockedsService.remove(+id);
-      return {
-        success: true,
-        message: 'Blocked Deleted Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
-  }
+  // @Delete(':id')
+  // @ApiOperation({ summary: 'Delete a blocked entry by ID' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Blocked entry deleted successfully.',
+  // })
+  // @ApiResponse({
+  //   status: 404,
+  //   description: 'Blocked entry not found.',
+  // })
+  // async remove(@Param('id') id: string) {
+  //   try {
+  //     await this.blockedsService.remove(+id);
+  //     return {
+  //       success: true,
+  //       message: 'Blocked Deleted Successfully',
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: error.message,
+  //     };
+  //   }
+  // }
 }

@@ -2,13 +2,17 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  UpdateUserDto,
+  UpdateAddUserToBlockedListDto,
+} from './dto/update-user.dto';
 import { User, UserStatus } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import JwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { AchievementsService } from '../achievements/achievements.service';
 import { AchievementType } from '../achievements/achievement.entity';
+import { Blocked } from '../blockeds/blocked.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +20,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     private readonly achievementsService: AchievementsService,
+    private readonly blockedsRepository: Repository<Blocked>,
     private jwt: JwtService,
     @Inject(JwtConfig.KEY)
     private jwtConfig: ConfigType<typeof JwtConfig>,
@@ -53,6 +58,29 @@ export class UsersService {
     });
     if (userWithSameNickname && userWithSameNickname.id !== id) return false;
 
+    return await this.usersRepository.save(userData);
+  }
+
+  async blockUser(
+    id: number,
+    AddBlockedUser: UpdateAddUserToBlockedListDto,
+  ): Promise<User | false> {
+    const existingUser = await this.findOne(id);
+    const userData = this.usersRepository.merge(existingUser, AddBlockedUser);
+    if (!existingUser) return false;
+
+    if (
+      AddBlockedUser.blockedUsers.find(
+        (blockedUser) =>
+          blockedUser.blockedUser.id === AddBlockedUser.targetUser.id,
+      )
+    )
+      return false;
+    const newBlocked = this.blockedsRepository.create({
+      blockedUser: AddBlockedUser.targetUser,
+    });
+    AddBlockedUser.blockedUsers.push(newBlocked);
+    console.log('userData', userData);
     return await this.usersRepository.save(userData);
   }
 
