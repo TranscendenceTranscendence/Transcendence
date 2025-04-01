@@ -72,6 +72,7 @@ export class UsersGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.warn(`User info missing on disconnect for socket ${client.id}`);
       return;
     }
+
     this.server.to(`user_${user.sub}`).emit('userStatus', {
       userId: user.sub,
       status: UserStatus.Offline,

@@ -5,16 +5,10 @@ import { useApi } from "@/utils/api";
 import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
-import { jwtDecode } from "jwt-decode";
 import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/utils/providers/UserProvider";
-
-interface JwtPayload {
-  sub: number;
-  email: string;
-}
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();

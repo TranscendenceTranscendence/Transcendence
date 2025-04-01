@@ -10,25 +10,14 @@ import { AchievementBox } from "./components/AchievementsBox";
 import { useUser } from "@/utils/providers/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
-import { DialogPostChatroom } from "@/chatroom/DialogPostChatroom";
-import ChatContainer from "@/chat/ChatContainer";
+import { DialogPostChatRoom } from "@/chatroom/DialogPostChatroom";
 
 export default function Page() {
   const navigate = useNavigate();
   const api = useApi();
   const me = useUser();
-  const [chatRoomId, setChatRoomId] = useState(() => {
-    try {
-      const savedId = localStorage.getItem("chatRoomId");
-      return savedId ? JSON.parse(savedId) : 1;
-    } catch (error) {
-      console.error("Failed to parse chatRoomId from localStorage:", error);
-      return 1;
-    }
-  });
   const [friends, setFriends] = useState<Friend[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-
   useEffect(() => {
     const fetchFriends = async () => {
       try {
@@ -55,9 +44,10 @@ export default function Page() {
   }, [me.user]);
 
   const handlePlayClick = () => {
-    navigate("/game");
+    navigate("/matchmaking");
   };
 
+  const userId = me.user?.id;
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -78,13 +68,16 @@ export default function Page() {
               P L A Y
             </Button>
           </div>
-          <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
-              <DialogPostChatroom />
+          <div className="flex items-center justify-between gap-4">
+            <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200 ...">
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-3xl m-4">CHAT ROOMS</p>
+                <DialogPostChatRoom userId={userId} />
+              </div>
+              <ChatRoomContainer />
             </div>
-            <ChatRoomContainer userDetails={me} />
           </div>
+
           <AchievementBox achievements={achievements} />
         </div>
       </SidebarInset>

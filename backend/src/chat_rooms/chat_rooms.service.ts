@@ -5,19 +5,8 @@ import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoom } from './chat_room.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
-
-export enum chat_room_types {
-  Public = 'public',
-  Protected = 'protected',
-  Private = 'private',
-  Dm = 'Dm',
-}
-
-export enum chat_participant_roles {
-  Owner = 'owner',
-  Admin = 'admin',
-  Guest = 'guest',
-}
+import { chat_room_types } from './chat_room.entity';
+import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
 
 @Injectable()
 export class ChatRoomsService {
@@ -29,8 +18,7 @@ export class ChatRoomsService {
   ) {}
 
   async create(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoom> {
-    const { title, password, chat_room_type, user_id, role } =
-      createChatRoomDto;
+    const { title, password, chat_room_type, user_id } = createChatRoomDto;
     const chatRoomData = await this.chatRoomsRepository.create({
       title,
       chat_room_type,
@@ -39,9 +27,9 @@ export class ChatRoomsService {
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoomData);
 
     const participant = this.chatParticipantsRepository.create({
-      user_id,
+      user_id: user_id,
       chat_room_id: savedChatRoom.id,
-      chat_participant_role: role,
+      chat_participant_role: chat_participant_roles.Owner,
     });
 
     await this.chatParticipantsRepository.save(participant);

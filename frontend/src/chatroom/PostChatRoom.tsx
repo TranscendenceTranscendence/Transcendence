@@ -5,8 +5,9 @@ import {
   ChatRoomsControllerCreateRequest,
   CreateChatRoomDtoChatRoomTypeEnum,
 } from "@/generated-api/index.ts";
+import PropTypes from "prop-types";
 
-export const PostChatRoom = (userId) => {
+export const PostChatRoom = ({ userId }) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [response, setResponse] = useState<{
@@ -14,7 +15,6 @@ export const PostChatRoom = (userId) => {
   } | null>(null);
   const [type, setType] = useState<CreateChatRoomDtoChatRoomTypeEnum>("public");
   const api = useApi();
-
   const addChatRoom = async () => {
     try {
       const chatRoomData: ChatRoomsControllerCreateRequest = {
@@ -23,11 +23,11 @@ export const PostChatRoom = (userId) => {
           password: password || "",
           creationDate: new Date(),
           chatRoomType: type,
-          userId: userId.userId,
+          userId: userId,
           role: ChatParticipantChatParticipantRoleEnum.Owner,
         },
       };
-      console.log("Chat Room Data:", chatRoomData);
+      // console.log("Chat Room Data:", chatRoomData);
 
       await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
     } catch (error) {
@@ -112,4 +112,8 @@ export const PostChatRoom = (userId) => {
       )}
     </div>
   );
+};
+
+PostChatRoom.propTypes = {
+  userId: PropTypes.number.isRequired,
 };
