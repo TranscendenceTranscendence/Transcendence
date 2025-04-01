@@ -180,7 +180,7 @@ const Chat = () => {
       </CardHeader>
       <CardContent className="flex flex-col gap-2 pt-4 max-h-[400px] overflow-y-auto">
         <ChatMessages
-          messages={currentChatRoom.messages}
+          messages={currentChatRoom.messages ?? []}
           participants={currentChatRoom.participants}
           currentUserId={me.user?.id}
         />
