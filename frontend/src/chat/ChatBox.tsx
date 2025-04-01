@@ -72,9 +72,6 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
         content: input,
         userId: userId,
       };
-      if (newMessage.userId == userId) {
-        console.log("newMessage.userId == userId");
-      }
       socket.emit("sendMessage", newMessage);
       handleSubmitMessages(
         "https://localhost:3000/chatMessages",
