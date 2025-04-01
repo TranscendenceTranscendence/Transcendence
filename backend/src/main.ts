@@ -51,6 +51,9 @@ const setupSwagger = (app: INestApplication) => {
   app.useStaticAssets('uploads', {
     prefix: '/uploads/',
   });
+  app.useStaticAssets('img', {
+    prefix: '/img/',
+  });
 
   await app.listen(3000);
 

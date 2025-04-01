@@ -54,7 +54,7 @@ export default function Page() {
   }, [me.user]);
 
   const handlePlayClick = () => {
-    navigate("/game");
+    navigate("/matchmaking");
   };
 
   const userId = me.user?.id;

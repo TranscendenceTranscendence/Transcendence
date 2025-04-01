@@ -10,7 +10,7 @@ export const useChatRooms = () => {
     try {
       const response: ChatRoomsResponse =
         await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
-      console.log("ChatRoomsResponse:", response);
+      // console.log("ChatRoomsResponse:", response);
 
       if (response.success) {
         setChatRooms(response);

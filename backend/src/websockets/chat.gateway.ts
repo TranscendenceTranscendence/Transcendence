@@ -18,16 +18,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
   handleConnection(client: any) {
-    console.log('Client connected:', client.id);
+    void client;
+    // console.log('Client connected:', client.id);
   }
 
   @SubscribeMessage('newMessage')
   onNewMessage(@MessageBody() body: any) {
-    console.log(body);
+    void body;
+    // console.log(body);
   }
 
   handleDisconnect(client: any) {
-    console.log('Client disconnected:', client.id);
+    void client;
+    // console.log('Client disconnected:', client.id);
   }
 
   @SubscribeMessage('sendMessage')

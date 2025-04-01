@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Outlet } from "react-router-dom";
 import { useApi } from "../api";
 import { jwtDecode } from "jwt-decode";
+import { useConfig } from "../config";
 
 const schema = z.object({
   userId: z.string().nonempty(),
@@ -29,6 +30,44 @@ export const DevBarLayout: React.FC = () => {
     resolver: zodResolver(schema),
   });
   const api = useApi();
+  const config = useConfig();
+
+  const generateTestUsers = async () => {
+    try {
+      const results = [];
+
+      for (let i = 1; i <= 100; i++) {
+        const userData = {
+          avatar: `default_avatar_${i}.png`,
+          nickname: `user${i}`,
+          two_factor_enabled: false,
+          is_second_auth_done: false,
+          two_factor_auth_secret: "",
+          email: `user${i}@example.com`,
+          ladder_level: Math.floor(Math.random() * 10),
+          user_status: "offline",
+          id: i,
+        };
+
+        const response = await fetch(`${config.backendUrl}/users`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
+        });
+
+        const data = await response.json();
+        results.push(data);
+      }
+      console.log("Generated test users:", results);
+      alert(`Successfully generated 100 test users!`);
+    } catch (error) {
+      console.error("Error generating test users:", error);
+      alert("Failed to generate test users");
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -38,6 +77,7 @@ export const DevBarLayout: React.FC = () => {
         setCurrentUser(decoded.sub);
       } catch (error) {
         console.error("Failed to decode token:", error);
+        localStorage.removeItem("access_token"); // Remove token if decode fails
       }
     }
   }, []);
@@ -73,6 +113,7 @@ export const DevBarLayout: React.FC = () => {
           {errors.userId && <span>{errors.userId.message}</span>}
           <Button type="submit">switch</Button>
         </form>
+        <Button onClick={generateTestUsers}>Generate 100 Users</Button>
       </div>
       <Outlet />
     </div>

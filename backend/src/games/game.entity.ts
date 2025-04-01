@@ -2,7 +2,8 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum GameStatus {
   PENDING = 'pending',
-  OPEN = 'open',
+  COUNTDOWN = 'countdown',
+  ONGOING = 'ongoing',
   CLOSED = 'closed',
   CANCELLED = 'cancelled',
 }
@@ -18,7 +19,7 @@ export class Game {
   @Column({
     type: 'enum',
     enum: GameStatus,
-    default: GameStatus.OPEN,
+    default: GameStatus.PENDING,
   })
   status: GameStatus;
 
