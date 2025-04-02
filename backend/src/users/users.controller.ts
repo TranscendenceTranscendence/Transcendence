@@ -10,6 +10,7 @@ import {
   InternalServerErrorException,
   Req,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,17 +18,22 @@ import {
   ApiResponse,
   ApiProperty,
 } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
+import type { CreateUserDto } from './dto/create-user.dto';
+import { type UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  AuthenticatedRequest,
+  type AuthenticatedRequest,
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
 import { PartialType } from '@nestjs/mapped-types';
-import { UserDto } from './dto/user.dto';
+import type { UserDto } from './dto/user.dto';
+import {
+  type SearchUserRequestDto,
+  SearchUserResponseDto,
+} from './dto/search-user.dto';
+import { In } from 'typeorm';
 
 class MeResponseSuccess extends PartialType(User) {
   @ApiProperty()
@@ -53,7 +59,10 @@ class MeResponseSuccess extends PartialType(User) {
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    @Inject(UsersService)
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -195,6 +204,24 @@ export class UsersController {
         success: false,
         message: error.message,
       };
+    }
+  }
+
+  @Post('search')
+  @ApiOperation({ summary: 'Search for users by nickname or email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users found successfully.',
+    type: [SearchUserResponseDto],
+  })
+  @ApiResponse({ status: 400, description: 'Invalid search query.' })
+  async search(
+    @Body() body: SearchUserRequestDto,
+  ): Promise<SearchUserResponseDto[]> {
+    try {
+      return await this.usersService.searchUsers(body.query);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

@@ -11,11 +11,13 @@ import { ConfigModule } from '@nestjs/config';
 import jwtConfig from '../config/jwt.config';
 import { ChatRoom } from '../chat_rooms/chat_room.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ChatMessage, User, ChatRoom, ChatParticipant]),
+    TypeOrmModule.forFeature([ChatMessage, ChatRoom, ChatParticipant]),
     AchievementsModule,
+    UsersModule,
     ConfigModule.forFeature(jwtConfig),
   ],
   providers: [ChatMessagesService, UsersService, JwtService],
