@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   NotFoundException,
   InternalServerErrorException,
   Req,
@@ -23,7 +22,6 @@ import type { CreateUserDto } from './dto/create-user.dto';
 import { type UpdateUserDto, UpdateUserResponse } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
-import { AuthGuard } from '@nestjs/passport';
 import {
   type AuthenticatedRequest,
   JwtAccessAuthGuard,
@@ -34,7 +32,6 @@ import {
   type SearchUserRequestDto,
   SearchUserResponseDto,
 } from './dto/search-user.dto';
-
 
 class MeResponseSuccess extends PartialType(User) {
   @ApiProperty()
