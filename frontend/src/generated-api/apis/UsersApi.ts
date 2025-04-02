@@ -35,10 +35,6 @@ export interface UsersControllerFindOneRequest {
   id: number;
 }
 
-export interface UsersControllerRemoveRequest {
-  id: string;
-}
-
 export interface UsersControllerSearchRequest {
   body: object;
 }
@@ -96,38 +92,6 @@ export class UsersApi extends runtime.BaseAPI {
   }
 
   /**
-   * Get all users
-   */
-  async usersControllerFindAllRaw(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/users`,
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Get all users
-   */
-  async usersControllerFindAll(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.usersControllerFindAllRaw(initOverrides);
-  }
-
-  /**
    * Get a user by ID
    */
   async usersControllerFindOneRaw(
@@ -145,6 +109,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/{id}`.replace(
@@ -187,6 +159,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/me`,
@@ -213,50 +193,6 @@ export class UsersApi extends runtime.BaseAPI {
   }
 
   /**
-   * Delete a user by ID
-   */
-  async usersControllerRemoveRaw(
-    requestParameters: UsersControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
-      throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling usersControllerRemove().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/users/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "DELETE",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Delete a user by ID
-   */
-  async usersControllerRemove(
-    requestParameters: UsersControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.usersControllerRemoveRaw(requestParameters, initOverrides);
-  }
-
-  /**
    * Search for users by nickname or email
    */
   async usersControllerSearchRaw(
@@ -276,6 +212,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     headerParameters["Content-Type"] = "application/json";
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/search`,
@@ -326,6 +270,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     headerParameters["Content-Type"] = "application/json";
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/me`,
