@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import getAuthData from "./isAuthenticated";
 import { UserProvider } from "../providers/UserProvider";
 import { ChatProvider } from "../providers/ChatProvider";

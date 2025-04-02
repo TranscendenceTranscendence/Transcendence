@@ -33,6 +33,13 @@ export default function Pong() {
   const isComponentMounted = useRef<boolean>(true);
   const [playerNumber, setPlayerNumber] = useState<number>(-1);
   const [count, setCount] = useState<number>(-1);
+  const [playerNames, setPlayerNames] = useState<{
+    current: string;
+    opponent: string;
+  }>({
+    current: "Player",
+    opponent: "Opponent",
+  });
 
   useEffect(() => {
     if (!socketRef.current) {
@@ -111,6 +118,25 @@ export default function Pong() {
     }
   }
 
+  async function fetchPlayerNames(game: Game) {
+    try {
+      const player1Data = await api.Users.usersControllerFindOne({
+        id: game.player1UserId,
+      });
+
+      const player2Data = await api.Users.usersControllerFindOne({
+        id: game.player2UserId,
+      });
+
+      setPlayerNames({
+        current: player1Data.nickname || `Player ${game.player1UserId}`,
+        opponent: player2Data.nickname || `Player ${game.player2UserId}`,
+      });
+    } catch (error) {
+      console.error("Error fetching player names:", error);
+    }
+  }
+
   useEffect(() => {
     if (!socketConnected || gameFetched) return;
 
@@ -126,6 +152,7 @@ export default function Pong() {
 
         setRoomId(game.roomIdentifier);
         await checkPlayerNumber(game);
+        await fetchPlayerNames(game); // Add this line
         setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
@@ -149,8 +176,40 @@ export default function Pong() {
 
   const movePaddle = (event: React.MouseEvent) => {
     if (playerId && socketRef.current && roomId && socketConnected) {
-      const yPercent = (event.clientY / window.innerHeight) * 100;
-      socketRef.current.emit("move", { roomId, y: yPercent });
+      const tableElement = document.getElementById("table");
+
+      if (tableElement) {
+        const tableRect = tableElement.getBoundingClientRect();
+
+        // Calculate position relative to the table
+        const relativeY = event.clientY - tableRect.top;
+
+        // Convert to percentage of table height (0-100)
+        const yPercent = (relativeY / tableRect.height) * 100;
+
+        // Get actual paddle height as percentage of table
+        const paddleElement = document.getElementById(
+          playerNumber === 0 ? "player1" : "player2",
+        );
+
+        let paddleHeightPercent = 10;
+
+        if (paddleElement) {
+          const paddleRect = paddleElement.getBoundingClientRect();
+          paddleHeightPercent = (paddleRect.height / tableRect.height) * 100;
+        }
+
+        const buffer = 0.5;
+        const minY = paddleHeightPercent / 2 - buffer;
+        const maxY = 100 - paddleHeightPercent / 2 + buffer;
+
+        const clampedY = Math.max(minY, Math.min(maxY, yPercent));
+
+        socketRef.current.emit("move", { roomId, y: clampedY });
+      } else {
+        const yPercent = (event.clientY / window.innerHeight) * 100;
+        socketRef.current.emit("move", { roomId, y: yPercent });
+      }
     }
   };
 
@@ -174,6 +233,7 @@ export default function Pong() {
                   onClick={() => {
                     if (socketRef.current && roomId) {
                       socketRef.current.emit("joinGame", { roomId });
+                      location.reload();
                     }
                   }}
                   style={{
@@ -197,12 +257,26 @@ export default function Pong() {
   }
 
   return (
-    <div className="pong-game" onMouseMove={movePaddle}>
+    <div
+      className="pong-game"
+      onMouseMove={movePaddle}
+      style={{ position: "relative" }}
+    >
       {count >= 0 && count <= 5 && (
         <div className="countdown-overlay">
           <div className="countdown-number">{count === 0 ? "GO!" : count}</div>
         </div>
       )}
+
+      {/* Player Names Banner */}
+      <div className="player-names-container">
+        <div className="player-name current">
+          <span className="player-value">{playerNames.current}</span>
+        </div>
+        <div className="player-name opponent">
+          <span className="player-value">{playerNames.opponent}</span>
+        </div>
+      </div>
 
       <div id="table">
         {/* Ball */}
@@ -219,37 +293,44 @@ export default function Pong() {
         {Object.entries(gameState.players).map(([id, player]) => {
           const isPlayer1 = player.playerNumber === 0;
 
+          const tableElement = document.getElementById("table");
+          let paddleHeightPercent = 10;
+
+          if (tableElement) {
+            const paddleElement = document.getElementById(
+              isPlayer1 ? "player1" : "player2",
+            );
+            if (paddleElement) {
+              const paddleRect = paddleElement.getBoundingClientRect();
+              const tableRect = tableElement.getBoundingClientRect();
+              paddleHeightPercent =
+                (paddleRect.height / tableRect.height) * 100;
+            }
+          }
+
+          const buffer = 0.5;
+          const minY = paddleHeightPercent / 2 - buffer;
+          const maxY = 100 - paddleHeightPercent / 2 + buffer;
+
+          const safeY = Math.max(minY, Math.min(maxY, player.y));
+
           return (
             <div
               key={id}
               id={isPlayer1 ? "player1" : "player2"}
               style={{
                 position: "absolute",
-                top: `${player.y}%`,
+                top: `${safeY}%`,
                 left: `${isPlayer1 ? "5%" : "95%"}`,
+                transform: "translate(-50%, -50%)",
               }}
             />
           );
         })}
 
         <div id="line"></div>
-        {/* Display scores correctly based on player number */}
-        {playerNumber === 0 ? (
-          <>
-            <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
-            <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
-          </>
-        ) : playerNumber === 1 ? (
-          <>
-            <div id="scored">{gameState.score ? gameState.score[1] : 0}</div>
-            <div id="conceded">{gameState.score ? gameState.score[0] : 0}</div>
-          </>
-        ) : (
-          <>
-            <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
-            <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
-          </>
-        )}
+        <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
+        <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
       </div>
     </div>
   );
