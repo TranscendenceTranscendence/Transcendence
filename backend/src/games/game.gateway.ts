@@ -227,7 +227,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] >= 1111 || game.score[1] >= 1111) {
+    if (game.score[0] >= 11 || game.score[1] >= 11) {
       try {
         this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);
