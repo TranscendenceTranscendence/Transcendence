@@ -12,7 +12,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* Base container for the game - fully responsive */
 .pong-game {
     overflow: hidden;
     padding: 0;
@@ -37,28 +36,33 @@ html, body, #root {
     width: 100%;
 }
 
-/* Game table - adapts to screen size */
 .pong-game #table {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(3, 1fr);
     background-color: black;
-    width: min(90vw, 90vh * 1.33); /* Maintain aspect ratio */
+    width: min(90vw, 90vh * 1.33); 
     height: min(80vh, 80vw / 1.33);
     border: min(5px, 0.5vw) solid white;
     position: relative;
     margin: auto;
 }
 
-/* Responsive paddle sizing */
-.pong-game #player1 {
+.pong-game #player1,
+.pong-game #player2 {
     background-color: white;
     width: min(1vh, 0.5vw);
     height: min(8vh, 12vw);
     position: absolute;
-    left: min(2vh, 1vw);
-    top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%); 
+}
+
+.pong-game #player1 {
+    left: 5%;
+}
+
+.pong-game #player2 {
+    left: 95%;
 }
 
 .pong-game #line {
@@ -81,17 +85,6 @@ html, body, #root {
     transform: translate(-50%, -50%);
 }
 
-.pong-game #player2 {
-    background-color: white;
-    width: min(1vh, 0.5vw);
-    height: min(8vh, 12vw);
-    position: absolute;
-    right: min(2vh, 1vw);
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Score display - responsive text size */
 .pong-game #scored {
     color: white;
     position: absolute;
@@ -114,7 +107,6 @@ html, body, #root {
     transform: translateX(50%);
 }
 
-/* Overlay elements - these are already responsive */
 .countdown-overlay {
     position: fixed;
     top: 0;
@@ -130,7 +122,7 @@ html, body, #root {
 
 .countdown-number {
     font-family: "Press Start 2P", system-ui;
-    font-size: clamp(5rem, 15vh, 15rem); /* Responsive font size */
+    font-size: clamp(5rem, 15vh, 15rem);
     color: white;
     animation: pulse 1s infinite;
 }
@@ -145,14 +137,12 @@ html, body, #root {
     background-color: black;
     color: white;
     font-family: "Press Start 2P", system-ui;
-    font-size: clamp(1rem, 4vh, 4rem); /* Responsive font size */
+    font-size: clamp(1rem, 4vh, 4rem);
     text-align: center;
     padding: 1rem;
 }
 
-/* Add media queries for specific screen types */
 @media (max-aspect-ratio: 1/1) {
-    /* Portrait mode - mobile devices */
     .pong-game #table {
         width: 90vw;
         height: 70vh;

@@ -149,8 +149,40 @@ export default function Pong() {
 
   const movePaddle = (event: React.MouseEvent) => {
     if (playerId && socketRef.current && roomId && socketConnected) {
-      const yPercent = (event.clientY / window.innerHeight) * 100;
-      socketRef.current.emit("move", { roomId, y: yPercent });
+      const tableElement = document.getElementById("table");
+
+      if (tableElement) {
+        const tableRect = tableElement.getBoundingClientRect();
+
+        // Calculate position relative to the table
+        const relativeY = event.clientY - tableRect.top;
+
+        // Convert to percentage of table height (0-100)
+        const yPercent = (relativeY / tableRect.height) * 100;
+
+        // Get actual paddle height as percentage of table
+        const paddleElement = document.getElementById(
+          playerNumber === 0 ? "player1" : "player2",
+        );
+
+        let paddleHeightPercent = 10;
+
+        if (paddleElement) {
+          const paddleRect = paddleElement.getBoundingClientRect();
+          paddleHeightPercent = (paddleRect.height / tableRect.height) * 100;
+        }
+
+        const buffer = 0.5;
+        const minY = paddleHeightPercent / 2 - buffer;
+        const maxY = 100 - paddleHeightPercent / 2 + buffer;
+
+        const clampedY = Math.max(minY, Math.min(maxY, yPercent));
+
+        socketRef.current.emit("move", { roomId, y: clampedY });
+      } else {
+        const yPercent = (event.clientY / window.innerHeight) * 100;
+        socketRef.current.emit("move", { roomId, y: yPercent });
+      }
     }
   };
 
@@ -219,14 +251,37 @@ export default function Pong() {
         {Object.entries(gameState.players).map(([id, player]) => {
           const isPlayer1 = player.playerNumber === 0;
 
+          const tableElement = document.getElementById("table");
+          let paddleHeightPercent = 10; // Default fallback
+
+          if (tableElement) {
+            const paddleElement = document.getElementById(
+              isPlayer1 ? "player1" : "player2",
+            );
+            if (paddleElement) {
+              const paddleRect = paddleElement.getBoundingClientRect();
+              const tableRect = tableElement.getBoundingClientRect();
+              paddleHeightPercent =
+                (paddleRect.height / tableRect.height) * 100;
+            }
+          }
+
+          const buffer = 0.5;
+          const minY = paddleHeightPercent / 2 - buffer;
+          const maxY = 100 - paddleHeightPercent / 2 + buffer;
+
+          const safeY = Math.max(minY, Math.min(maxY, player.y));
+
           return (
             <div
               key={id}
               id={isPlayer1 ? "player1" : "player2"}
               style={{
                 position: "absolute",
-                top: `${player.y}%`,
+                top: `${safeY}%`,
                 left: `${isPlayer1 ? "5%" : "95%"}`,
+                transform: "translate(-50%, -50%)",
+                // Don't constrain height here, let CSS handle it
               }}
             />
           );
