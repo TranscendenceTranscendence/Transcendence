@@ -1,7 +1,7 @@
-import React from "react";
+import type React from "react";
 import { Outlet } from "react-router-dom";
 import { useUser } from "@/utils/providers/UserProvider";
-import Chat from "@/components/chat/Chat";
+import Chat from "@/components/chat/chat";
 
 // filepath: /Users/daan/Projects/42/Transcendence/frontend/src/utils/layouts/ChatLayout.tsx
 
