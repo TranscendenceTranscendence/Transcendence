@@ -34,7 +34,7 @@ import {
   type SearchUserRequestDto,
   SearchUserResponseDto,
 } from './dto/search-user.dto';
-import { In } from 'typeorm';
+
 
 class MeResponseSuccess extends PartialType(User) {
   @ApiProperty()
