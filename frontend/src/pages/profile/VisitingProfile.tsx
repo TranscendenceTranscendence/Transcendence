@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { User } from "../../generated-api/models";
 import { useApi } from "@/utils/api";
 import UserDetails from "./components/UserDetails";
 import FriendRequest from "./components/FriendRequest";
 import AvatarDisplay from "../updateUser/components/AvatarDisplay";
-import { jwtDecode } from "jwt-decode";
 import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface JwtPayload {
-  sub: number;
-  email: string;
-}
+import { useUser } from "@/utils/providers/UserProvider";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
+  const me = useUser();
   const navigate = useNavigate();
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,55 +21,50 @@ export default function VisitingProfile() {
 
   useEffect(() => {
     const userIdNumber = Number(id);
-    const token = localStorage.getItem("access_token");
+    const currentUserId = me.user.id;
 
-    if (!token) {
-      setError("Not authenticated");
-      navigate("/login");
+    if (currentUserId === userIdNumber) {
+      navigate("/profile");
       return;
     }
 
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      const currentUserId = decoded.sub;
-
-      if (currentUserId === userIdNumber) {
-        navigate("/profile");
-        return;
-      }
-
-      if (id && isNaN(userIdNumber)) {
-        setError("Invalid user ID");
-        return;
-      }
-
-      api.Users.usersControllerFindOne({ id: userIdNumber })
-        .then((visitingUser) => {
-          setVisitingUser(visitingUser);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch user data:", error);
-          setError("Invalid user ID");
-        });
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-      setError("Authentication error");
+    if (id && isNaN(userIdNumber)) {
+      setError("Invalid user ID");
+      return;
     }
+
+    api.Users.usersControllerFindOne({ id: userIdNumber })
+      .then((visitingUser) => {
+        setVisitingUser(visitingUser);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch user data:", error);
+        setError("Invalid user ID");
+      });
+  }, [id, navigate]);
+
+  const hasFetchedAchievements = useRef(false); // Track if achievements are already fetched
+
+  useEffect(() => {
+    if (!visitingUser) return;
+
     const fetchAchievements = async () => {
       try {
-        const userId = visitingUser?.id;
-        if (!userId) return;
         const response =
           await api.Achievements.achievementsControllerFindAllbyUserId({
-            userId,
+            userId: visitingUser.id,
           });
         setAchievements(response.achievements);
+        hasFetchedAchievements.current = true; // Mark as fetched
       } catch (error) {
         console.error("Failed to fetch achievements list:", error);
       }
     };
-    Promise.all([fetchAchievements()]);
-  }, [id, navigate, api.Users, visitingUser]);
+
+    if (!hasFetchedAchievements.current) {
+      fetchAchievements();
+    }
+  }, [visitingUser, api.Achievements]);
 
   if (error) {
     return <div>Error: {error}</div>;

@@ -57,7 +57,7 @@ export interface ChatRoom {
    * @type {Date}
    * @memberof ChatRoom
    */
-  creationDate: Date;
+  createdAt: Date;
   /**
    *
    * @type {string}
@@ -69,13 +69,13 @@ export interface ChatRoom {
    * @type {Array<ChatMessage>}
    * @memberof ChatRoom
    */
-  chatMessages: Array<ChatMessage>;
+  chatMessages?: Array<ChatMessage>;
   /**
    *
    * @type {Array<ChatParticipant>}
    * @memberof ChatRoom
    */
-  chatParticipants: Array<ChatParticipant>;
+  chatParticipants?: Array<ChatParticipant>;
 }
 
 /**
@@ -97,13 +97,8 @@ export function instanceOfChatRoom(value: object): value is ChatRoom {
   if (!("id" in value) || value["id"] === undefined) return false;
   if (!("title" in value) || value["title"] === undefined) return false;
   if (!("password" in value) || value["password"] === undefined) return false;
-  if (!("creationDate" in value) || value["creationDate"] === undefined)
-    return false;
+  if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
   if (!("chatRoomType" in value) || value["chatRoomType"] === undefined)
-    return false;
-  if (!("chatMessages" in value) || value["chatMessages"] === undefined)
-    return false;
-  if (!("chatParticipants" in value) || value["chatParticipants"] === undefined)
     return false;
   return true;
 }
@@ -123,12 +118,16 @@ export function ChatRoomFromJSONTyped(
     id: json["id"],
     title: json["title"],
     password: json["password"],
-    creationDate: new Date(json["creation_date"]),
+    createdAt: new Date(json["created_at"]),
     chatRoomType: json["chat_room_type"],
-    chatMessages: (json["chatMessages"] as Array<any>).map(ChatMessageFromJSON),
-    chatParticipants: (json["chatParticipants"] as Array<any>).map(
-      ChatParticipantFromJSON,
-    ),
+    chatMessages:
+      json["chatMessages"] == null
+        ? undefined
+        : (json["chatMessages"] as Array<any>).map(ChatMessageFromJSON),
+    chatParticipants:
+      json["chatParticipants"] == null
+        ? undefined
+        : (json["chatParticipants"] as Array<any>).map(ChatParticipantFromJSON),
   };
 }
 
@@ -148,11 +147,15 @@ export function ChatRoomToJSONTyped(
     id: value["id"],
     title: value["title"],
     password: value["password"],
-    creation_date: value["creationDate"].toISOString(),
+    created_at: value["createdAt"].toISOString(),
     chat_room_type: value["chatRoomType"],
-    chatMessages: (value["chatMessages"] as Array<any>).map(ChatMessageToJSON),
-    chatParticipants: (value["chatParticipants"] as Array<any>).map(
-      ChatParticipantToJSON,
-    ),
+    chatMessages:
+      value["chatMessages"] == null
+        ? undefined
+        : (value["chatMessages"] as Array<any>).map(ChatMessageToJSON),
+    chatParticipants:
+      value["chatParticipants"] == null
+        ? undefined
+        : (value["chatParticipants"] as Array<any>).map(ChatParticipantToJSON),
   };
 }

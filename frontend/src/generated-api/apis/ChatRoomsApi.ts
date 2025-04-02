@@ -26,7 +26,7 @@ export interface ChatRoomsControllerCreateRequest {
 }
 
 export interface ChatRoomsControllerFindOneRequest {
-  id: string;
+  id: number;
 }
 
 export interface ChatRoomsControllerRemoveRequest {
@@ -192,7 +192,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerFindOneRaw(
     requestParameters: ChatRoomsControllerFindOneRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
     if (requestParameters["id"] == null) {
       throw new runtime.RequiredError(
         "id",
@@ -217,7 +217,9 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -226,8 +228,12 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerFindOne(
     requestParameters: ChatRoomsControllerFindOneRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatRoomsControllerFindOneRaw(requestParameters, initOverrides);
+  ): Promise<ChatRoomsResponse> {
+    const response = await this.chatRoomsControllerFindOneRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
   }
 
   /**

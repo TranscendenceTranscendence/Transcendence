@@ -1,25 +1,32 @@
 // Chat Messages Controller
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiProperty,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CreateChatMessageDto } from './dto/create-chat_message.dto';
 import { ChatMessagesService } from './chat_messages.service';
-import { ChatMessage } from './chat_message.entity';
 import { findChatMessageDto } from './dto/find.dto';
-import { Query } from '@nestjs/common';
-
-class MessagesResponse {
-  @ApiProperty()
-  success: boolean;
-  @ApiProperty({ type: [ChatMessage], required: false })
-  data?: ChatMessage[];
-  @ApiProperty()
-  message?: string;
-}
+import {
+  AuthenticatedRequest,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
+import { MessagesResponse } from './dto/chat_message-response.dto';
+import { ChatMessage } from './chat_message.entity';
 
 @ApiTags('ChatMessages') // Groups the endpoints under "ChatMessages" in Swagger
 @Controller('chatMessages')
@@ -31,23 +38,51 @@ export class ChatMessagesController {
   @ApiResponse({
     status: 201,
     description: 'Chat message created successfully.',
+    type: ChatMessage,
   })
   @ApiResponse({
     status: 400,
     description: 'Bad Request.',
   })
-  async create(@Body() createChatMessageDto: CreateChatMessageDto) {
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async create(
+    @Req() req: AuthenticatedRequest,
+    @Body() createChatMessageDto: CreateChatMessageDto,
+  ): Promise<ChatMessage> {
     try {
-      await this.chatMessagesService.create(createChatMessageDto);
-      return {
-        success: true,
-        message: 'ChatMessage Created Successfully',
-      };
+      const { chat_room_id: chatRoomId, content } = createChatMessageDto;
+      if (!chatRoomId || !content) {
+        throw new HttpException(
+          'Chat room ID and message are required.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (content.length > 500) {
+        throw new HttpException(
+          'Message length exceeds 500 characters.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (content.length < 1) {
+        throw new HttpException(
+          'Message length must be at least 1 character.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return await this.chatMessagesService.create(
+        createChatMessageDto,
+        req.user.id,
+      );
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      throw new HttpException(
+        error.message || 'Internal server error.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -62,12 +97,17 @@ export class ChatMessagesController {
     status: 500,
     description: 'Internal server error.',
   })
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
   async find(
+    @Req() req: AuthenticatedRequest,
     @Query() findChatMessageDto: findChatMessageDto,
   ): Promise<MessagesResponse> {
     try {
-      const data = await this.chatMessagesService.find(findChatMessageDto);
-
+      const data = await this.chatMessagesService.find({
+        ...findChatMessageDto,
+        currentUserId: req.user.id,
+      });
       return {
         success: true,
         data,

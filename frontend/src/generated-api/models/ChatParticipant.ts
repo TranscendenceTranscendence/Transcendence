@@ -57,7 +57,7 @@ export interface ChatParticipant {
    * @type {Date}
    * @memberof ChatParticipant
    */
-  entranceTime: Date;
+  createdAt: Date;
   /**
    *
    * @type {number}
@@ -108,8 +108,7 @@ export function instanceOfChatParticipant(
     return false;
   if (!("isBanned" in value) || value["isBanned"] === undefined) return false;
   if (!("isMuted" in value) || value["isMuted"] === undefined) return false;
-  if (!("entranceTime" in value) || value["entranceTime"] === undefined)
-    return false;
+  if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
   if (!("userId" in value) || value["userId"] === undefined) return false;
   if (!("chatRoomId" in value) || value["chatRoomId"] === undefined)
     return false;
@@ -133,7 +132,7 @@ export function ChatParticipantFromJSONTyped(
     chatParticipantRole: json["chat_participant_role"],
     isBanned: json["is_banned"],
     isMuted: json["is_muted"],
-    entranceTime: new Date(json["entrance_time"]),
+    createdAt: new Date(json["created_at"]),
     userId: json["user_id"],
     chatRoomId: json["chat_room_id"],
     user: UserFromJSON(json["user"]),
@@ -157,7 +156,7 @@ export function ChatParticipantToJSONTyped(
     chat_participant_role: value["chatParticipantRole"],
     is_banned: value["isBanned"],
     is_muted: value["isMuted"],
-    entrance_time: value["entranceTime"].toISOString(),
+    created_at: value["createdAt"].toISOString(),
     user_id: value["userId"],
     chat_room_id: value["chatRoomId"],
     user: UserToJSON(value["user"]),

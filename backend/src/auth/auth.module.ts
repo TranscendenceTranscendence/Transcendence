@@ -46,6 +46,6 @@ import { Achievement } from '../achievements/achievement.entity';
     JwtStrategy,
     TwoFactorAuthService,
   ],
-  exports: [AuthService],
+  exports: [AuthService, JwtStrategy, JwtModule, PassportModule],
 })
 export class AuthModule {}
