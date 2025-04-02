@@ -33,6 +33,13 @@ export default function Pong() {
   const isComponentMounted = useRef<boolean>(true);
   const [playerNumber, setPlayerNumber] = useState<number>(-1);
   const [count, setCount] = useState<number>(-1);
+  const [playerNames, setPlayerNames] = useState<{
+    current: string;
+    opponent: string;
+  }>({
+    current: "Player",
+    opponent: "Opponent",
+  });
 
   useEffect(() => {
     if (!socketRef.current) {
@@ -111,6 +118,25 @@ export default function Pong() {
     }
   }
 
+  async function fetchPlayerNames(game: Game) {
+    try {
+      const player1Data = await api.Users.usersControllerFindOne({
+        id: game.player1UserId,
+      });
+
+      const player2Data = await api.Users.usersControllerFindOne({
+        id: game.player2UserId,
+      });
+
+      setPlayerNames({
+        current: player1Data.nickname || `Player ${game.player1UserId}`,
+        opponent: player2Data.nickname || `Player ${game.player2UserId}`,
+      });
+    } catch (error) {
+      console.error("Error fetching player names:", error);
+    }
+  }
+
   useEffect(() => {
     if (!socketConnected || gameFetched) return;
 
@@ -126,6 +152,7 @@ export default function Pong() {
 
         setRoomId(game.roomIdentifier);
         await checkPlayerNumber(game);
+        await fetchPlayerNames(game); // Add this line
         setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
@@ -230,12 +257,26 @@ export default function Pong() {
   }
 
   return (
-    <div className="pong-game" onMouseMove={movePaddle}>
+    <div
+      className="pong-game"
+      onMouseMove={movePaddle}
+      style={{ position: "relative" }}
+    >
       {count >= 0 && count <= 5 && (
         <div className="countdown-overlay">
           <div className="countdown-number">{count === 0 ? "GO!" : count}</div>
         </div>
       )}
+
+      {/* Player Names Banner */}
+      <div className="player-names-container">
+        <div className="player-name current">
+          <span className="player-value">{playerNames.current}</span>
+        </div>
+        <div className="player-name opponent">
+          <span className="player-value">{playerNames.opponent}</span>
+        </div>
+      </div>
 
       <div id="table">
         {/* Ball */}
@@ -253,7 +294,7 @@ export default function Pong() {
           const isPlayer1 = player.playerNumber === 0;
 
           const tableElement = document.getElementById("table");
-          let paddleHeightPercent = 10; // Default fallback
+          let paddleHeightPercent = 10;
 
           if (tableElement) {
             const paddleElement = document.getElementById(
@@ -282,30 +323,14 @@ export default function Pong() {
                 top: `${safeY}%`,
                 left: `${isPlayer1 ? "5%" : "95%"}`,
                 transform: "translate(-50%, -50%)",
-                // Don't constrain height here, let CSS handle it
               }}
             />
           );
         })}
 
         <div id="line"></div>
-        {/* Display scores correctly based on player number */}
-        {playerNumber === 0 ? (
-          <>
-            <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
-            <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
-          </>
-        ) : playerNumber === 1 ? (
-          <>
-            <div id="scored">{gameState.score ? gameState.score[1] : 0}</div>
-            <div id="conceded">{gameState.score ? gameState.score[0] : 0}</div>
-          </>
-        ) : (
-          <>
-            <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
-            <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
-          </>
-        )}
+        <div id="scored">{gameState.score ? gameState.score[0] : 0}</div>
+        <div id="conceded">{gameState.score ? gameState.score[1] : 0}</div>
       </div>
     </div>
   );

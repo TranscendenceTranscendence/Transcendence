@@ -142,6 +142,51 @@ html, body, #root {
     padding: 1rem;
 }
 
+/* Player names styling */
+.player-names-container {
+    display: flex;
+    justify-content: space-between;
+    width: min(90vw, 90vh * 1.33); 
+    margin: 0 auto 1rem auto;
+    padding: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: min(2px, 0.2vw) solid white;
+    color: white;
+    font-family: "Press Start 2P", system-ui;
+    font-size: min(1.5vh, 1.5vw);
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.player-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.player-label {
+    font-size: min(1vh, 1vw);
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.player-value {
+    font-size: min(1.5vh, 1.5vw);
+    color: white;
+}
+
+.current {
+    color: #4CAF50;
+}
+
+.opponent {
+    color: #F44336;
+}
+
 @media (max-aspect-ratio: 1/1) {
     .pong-game #table {
         width: 90vw;
@@ -173,6 +218,11 @@ html, body, #root {
     
     .loading-container {
         font-size: 1.5rem;
+    }
+
+    .player-names-container {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
 

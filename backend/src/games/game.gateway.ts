@@ -168,21 +168,52 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!game) return;
 
     const { ball, players } = game;
+
+    const prevX = ball.x;
+
     ball.x += ball.dx;
     ball.y += ball.dy;
 
     if (ball.y <= 0 || ball.y >= 100) ball.dy *= -1;
 
+    // let paddleCollision = false;
+
     Object.values(players).forEach((player) => {
-      if (
-        (player.id === Object.keys(players)[0] &&
-          ball.x <= 5 &&
-          Math.abs(player.y - ball.y) < 10) ||
-        (player.id === Object.keys(players)[1] &&
-          ball.x >= 95 &&
-          Math.abs(player.y - ball.y) < 10)
-      ) {
-        ball.dx *= -1;
+      const isLeftPaddle = player.playerNumber === 0;
+      const isRightPaddle = player.playerNumber === 1;
+
+      const paddleX = player.x;
+      const paddleY = player.y;
+      const paddleWidth = 1.5;
+      const paddleHeight = 14;
+
+      const crossedLeftPaddle =
+        prevX > paddleX && ball.x <= paddleX && isLeftPaddle;
+      const crossedRightPaddle =
+        prevX < paddleX && ball.x >= paddleX && isRightPaddle;
+
+      const isAtPaddleHeight = Math.abs(paddleY - ball.y) < paddleHeight / 2;
+
+      if ((crossedLeftPaddle || crossedRightPaddle) && isAtPaddleHeight) {
+        // paddleCollision = true;
+
+        ball.dx *= -1.05;
+
+        if (isLeftPaddle) {
+          ball.x = paddleX + paddleWidth / 2 + 0.5;
+        } else {
+          ball.x = paddleX - paddleWidth / 2 - 0.5;
+        }
+
+        const hitPosition = (ball.y - paddleY) / (paddleHeight / 2);
+        ball.dy = ball.dy * 0.5 + hitPosition * 2;
+
+        const maxSpeed = 2.0;
+        const minSpeed = 0.5;
+        if (Math.abs(ball.dy) > maxSpeed)
+          ball.dy = Math.sign(ball.dy) * maxSpeed;
+        if (Math.abs(ball.dy) < minSpeed)
+          ball.dy = Math.sign(ball.dy) * minSpeed;
       }
     });
 
@@ -196,7 +227,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] == 1111 || game.score[1] == 1111) {
+    if (game.score[0] >= 1111 || game.score[1] >= 1111) {
       try {
         this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);
@@ -213,7 +244,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private resetBall(ball: { x: number; y: number; dx: number; dy: number }) {
     ball.x = 50;
     ball.y = 50;
-    ball.dx = ball.dx > 0 ? -1.5 : 1.5;
+
+    ball.dx = 0;
+    ball.dy = 0;
+
+    setTimeout(() => {
+      const direction = Math.random() > 0.5 ? 1 : -1;
+      ball.dx = direction * 1.5;
+      ball.dy = (Math.random() * 2 - 1) * 1.5;
+    }, 1000);
   }
 
   private async updateScoreInDatabase(roomId: string, score: [number, number]) {
