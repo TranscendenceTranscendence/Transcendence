@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Separator } from "@/components/ui/separator";
 import { useApi } from "@/utils/api";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Achievement, Friend } from "@/generated-api";
+import type { Achievement, Friend } from "@/generated-api";
 import { FriendsBox } from "./components/FriendsBox";
 import { AchievementBox } from "./components/AchievementsBox";
 import { useUser } from "@/utils/providers/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
 import { DialogPostChatRoom } from "@/chatroom/DialogPostChatroom";
+import SearchUsersBox from "./components/SearchUsersBox";
 
 export default function Page() {
   const navigate = useNavigate();
@@ -52,37 +56,42 @@ export default function Page() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex h-0 shrink-0 items-center gap-4 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
-            {/* <SidebarTrigger className="-ml-1" /> */}
-            <Separator orientation="vertical" className="mr-2 h-4" />
+            <SidebarTrigger className="-ml-1" />
           </div>
         </header>
-        <div className="grid grid-flow-col grid-rows-3 gap-8 m-16 ">
-          <FriendsBox friends={friends} />
-          <div className="col-span-2 w-full ...">
+        <div className="grid grid-flow-row-dense grid-cols-3 gap-4 p-4 auto-rows-min">
+          <div className="col-span-full">
+            <SearchUsersBox />
+          </div>
+          <div className=" col-span-1">
+            <FriendsBox friends={friends} />
+          </div>
+          <div className="col-span-1 flex flex-col gap-4">
             <Button
               onClick={handlePlayClick}
               className="p-16 font-bold text-5xl rounded-xl w-full hover:bg-primary/90"
             >
               P L A Y
             </Button>
-          </div>
-          <div className="col-span-2 row-span-2 w-full rounded-xl bg-gray-200">
-            <div className="flex items-center flex-col">
-              <div className="flex flex-row justify-between items-center gap-2 p-4 w-full">
-                <p className="font-bold text-3xl">CHAT ROOMS</p>
-                <div>
-                  <DialogPostChatRoom userId={userId} />
+            <div className="rounded-xl bg-gray-200">
+              <div className="flex items-center flex-col">
+                <div className="flex flex-row justify-between items-center gap-2 p-4 w-full">
+                  <p className="font-bold text-3xl">CHAT ROOMS</p>
+                  <div>
+                    <DialogPostChatRoom userId={userId} />
+                  </div>
                 </div>
-              </div>
-              <div className="w-full">
-                <ChatRoomContainer />
+                <div className="w-full">
+                  <ChatRoomContainer />
+                </div>
               </div>
             </div>
           </div>
-
-          <AchievementBox achievements={achievements} />
+          <div className=" col-span-1 w-full">
+            <AchievementBox achievements={achievements} />
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
