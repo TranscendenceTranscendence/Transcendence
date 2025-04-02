@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import debounce from "lodash/debounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { AvatarImage } from "@/components/ui/avatar";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SearchUserResponseDto } from "@/generated-api";
 import { useApi } from "@/utils/api";
