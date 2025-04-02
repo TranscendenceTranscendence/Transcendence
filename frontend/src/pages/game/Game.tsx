@@ -206,6 +206,7 @@ export default function Pong() {
                   onClick={() => {
                     if (socketRef.current && roomId) {
                       socketRef.current.emit("joinGame", { roomId });
+                      location.reload();
                     }
                   }}
                   style={{

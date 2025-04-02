@@ -73,7 +73,7 @@ function App() {
           <Route path="/login" element={<Login />} />
         </Route>
         {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
+        <Route>
           <Route element={<DevBarLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/update" element={<UpdateUser />} />
