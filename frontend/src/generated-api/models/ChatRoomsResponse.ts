@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from "../runtime";
+import type { ChatRoom } from "./ChatRoom";
+import {
+  ChatRoomFromJSON,
+  ChatRoomFromJSONTyped,
+  ChatRoomToJSON,
+  ChatRoomToJSONTyped,
+} from "./ChatRoom";
+
 /**
  *
  * @export
@@ -27,16 +35,16 @@ export interface ChatRoomsResponse {
   success: boolean;
   /**
    *
-   * @type {Array<string>}
+   * @type {Array<ChatRoom>}
    * @memberof ChatRoomsResponse
    */
-  chatRooms: Array<string>;
+  chatRooms?: Array<ChatRoom>;
   /**
    *
    * @type {string}
    * @memberof ChatRoomsResponse
    */
-  message: string;
+  message?: string;
 }
 
 /**
@@ -46,8 +54,6 @@ export function instanceOfChatRoomsResponse(
   value: object,
 ): value is ChatRoomsResponse {
   if (!("success" in value) || value["success"] === undefined) return false;
-  if (!("chatRooms" in value) || value["chatRooms"] === undefined) return false;
-  if (!("message" in value) || value["message"] === undefined) return false;
   return true;
 }
 
@@ -64,8 +70,11 @@ export function ChatRoomsResponseFromJSONTyped(
   }
   return {
     success: json["success"],
-    chatRooms: json["chatRooms"],
-    message: json["message"],
+    chatRooms:
+      json["chatRooms"] == null
+        ? undefined
+        : (json["chatRooms"] as Array<any>).map(ChatRoomFromJSON),
+    message: json["message"] == null ? undefined : json["message"],
   };
 }
 
@@ -83,7 +92,10 @@ export function ChatRoomsResponseToJSONTyped(
 
   return {
     success: value["success"],
-    chatRooms: value["chatRooms"],
+    chatRooms:
+      value["chatRooms"] == null
+        ? undefined
+        : (value["chatRooms"] as Array<any>).map(ChatRoomToJSON),
     message: value["message"],
   };
 }

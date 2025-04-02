@@ -1,6 +1,8 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import getAuthData from "./isAuthenticated";
 import { UserProvider } from "../providers/UserProvider";
+import { ChatProvider } from "../providers/ChatProvider";
+import ChatLayout from "../layouts/ChatLayout";
 
 const ProtectedRoute: React.FC = () => {
   const location = useLocation();
@@ -26,7 +28,10 @@ const ProtectedRoute: React.FC = () => {
 
   return (
     <UserProvider>
-      <Outlet />
+      <ChatProvider>
+        {/* Ensure ChatLayout wraps the Outlet */}
+        <ChatLayout />
+      </ChatProvider>
     </UserProvider>
   );
 };

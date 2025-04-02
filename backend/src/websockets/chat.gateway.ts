@@ -1,40 +1,93 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import {
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  ConnectedSocket,
   MessageBody,
 } from '@nestjs/websockets';
+import {
+  AuthenticatedSocket,
+  JwtAccessAuthGuard,
+} from '../auth/guards/jwt-access.guard';
+import { ChatRoomsService } from '../chat_rooms/chat_rooms.service';
 import { Server } from 'socket.io';
+import { ChatMessage } from '../chat_messages/chat_message.entity';
 
+@UseGuards(JwtAccessAuthGuard)
 @WebSocketGateway({
   cors: {
     origin: '*',
     methods: ['GET', 'POST', 'OPTIONS', 'FETCH'],
   },
+  namespace: 'chat',
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly chatRoomsService: ChatRoomsService,
+  ) {}
 
-  handleConnection(client: any) {
-    void client;
-    // console.log('Client connected:', client.id);
+  async handleConnection(
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ): Promise<void> {
+    try {
+      const token = client.handshake.auth.token;
+      const roomId = client.handshake?.auth?.roomId;
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      // Attach the decoded token to the socket
+      client.data.user = decoded;
+      client.user = { ...decoded, id: decoded.sub }; // Ensure client.user is available
+
+      if (!roomId) {
+        console.error('No roomId was given');
+        return;
+      }
+      const room = await this.chatRoomsService.findOne(roomId);
+      client.join(room.wsRoomId);
+      client.data.roomId = room.wsRoomId;
+      if (!room) {
+        console.error('No room was found');
+        return;
+      }
+    } catch (error) {
+      console.error('Error during token verification on connection:', error);
+      client.disconnect();
+    }
   }
 
-  @SubscribeMessage('newMessage')
-  onNewMessage(@MessageBody() body: any) {
-    void body;
-    // console.log(body);
+  async handleDisconnect(
+    @ConnectedSocket() client: AuthenticatedSocket,
+  ): Promise<void> {
+    const user = client.data?.user;
+    if (!user || !user.sub) {
+      console.warn(`User info missing on disconnect for socket ${client.id}`);
+      return;
+    }
+    const roomId = client.data?.roomId;
+    if (!roomId) {
+      console.warn(`Room ID missing on disconnect for socket ${client.id}`);
+      return;
+    }
   }
 
-  handleDisconnect(client: any) {
-    void client;
-    // console.log('Client disconnected:', client.id);
-  }
+  @SubscribeMessage('message')
+  async handleMessage(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: ChatMessage,
+  ): Promise<void> {
+    const roomId: string | undefined = client.data?.roomId;
+    if (!roomId || !data) {
+      console.error('Room ID or message is missing');
+      return;
+    }
 
-  @SubscribeMessage('sendMessage')
-  handleMessage(client: any, payload: { message: string; user_id: number }) {
-    client.broadcast.emit('receiveMessage', payload);
+    this.server.to(roomId).emit('message', data);
   }
 }

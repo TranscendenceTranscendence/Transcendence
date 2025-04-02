@@ -13,8 +13,14 @@
  */
 
 import * as runtime from "../runtime";
-import type { CreateChatMessageDto, MessagesResponse } from "../models/index";
+import type {
+  ChatMessage,
+  CreateChatMessageDto,
+  MessagesResponse,
+} from "../models/index";
 import {
+  ChatMessageFromJSON,
+  ChatMessageToJSON,
   CreateChatMessageDtoFromJSON,
   CreateChatMessageDtoToJSON,
   MessagesResponseFromJSON,
@@ -58,7 +64,7 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerCreateRaw(
     requestParameters: ChatMessagesControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<ChatMessage>> {
     if (requestParameters["createChatMessageDto"] == null) {
       throw new runtime.RequiredError(
         "createChatMessageDto",
@@ -72,6 +78,14 @@ export class ChatMessagesApi extends runtime.BaseAPI {
 
     headerParameters["Content-Type"] = "application/json";
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/chatMessages`,
@@ -85,7 +99,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatMessageFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -94,11 +110,12 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   async chatMessagesControllerCreate(
     requestParameters: ChatMessagesControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatMessagesControllerCreateRaw(
+  ): Promise<ChatMessage> {
+    const response = await this.chatMessagesControllerCreateRaw(
       requestParameters,
       initOverrides,
     );
+    return await response.value();
   }
 
   /**
@@ -128,6 +145,14 @@ export class ChatMessagesApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/chatMessages/find`,

@@ -20,25 +20,13 @@ import { mapValues } from "../runtime";
  */
 export interface CreateChatMessageDto {
   /**
-   * content
+   *
    * @type {string}
    * @memberof CreateChatMessageDto
    */
   content: string;
   /**
-   * sent_time
-   * @type {Date}
-   * @memberof CreateChatMessageDto
-   */
-  sentTime: Date;
-  /**
-   * user_id
-   * @type {number}
-   * @memberof CreateChatMessageDto
-   */
-  userId: number;
-  /**
-   * chat_room_id
+   *
    * @type {number}
    * @memberof CreateChatMessageDto
    */
@@ -52,8 +40,6 @@ export function instanceOfCreateChatMessageDto(
   value: object,
 ): value is CreateChatMessageDto {
   if (!("content" in value) || value["content"] === undefined) return false;
-  if (!("sentTime" in value) || value["sentTime"] === undefined) return false;
-  if (!("userId" in value) || value["userId"] === undefined) return false;
   if (!("chatRoomId" in value) || value["chatRoomId"] === undefined)
     return false;
   return true;
@@ -72,8 +58,6 @@ export function CreateChatMessageDtoFromJSONTyped(
   }
   return {
     content: json["content"],
-    sentTime: new Date(json["sent_time"]),
-    userId: json["user_id"],
     chatRoomId: json["chat_room_id"],
   };
 }
@@ -92,8 +76,6 @@ export function CreateChatMessageDtoToJSONTyped(
 
   return {
     content: value["content"],
-    sent_time: value["sentTime"].toISOString(),
-    user_id: value["userId"],
     chat_room_id: value["chatRoomId"],
   };
 }

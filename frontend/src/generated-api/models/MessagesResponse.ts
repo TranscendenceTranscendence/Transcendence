@@ -44,7 +44,7 @@ export interface MessagesResponse {
    * @type {string}
    * @memberof MessagesResponse
    */
-  message: string;
+  message?: string;
 }
 
 /**
@@ -54,7 +54,6 @@ export function instanceOfMessagesResponse(
   value: object,
 ): value is MessagesResponse {
   if (!("success" in value) || value["success"] === undefined) return false;
-  if (!("message" in value) || value["message"] === undefined) return false;
   return true;
 }
 
@@ -75,7 +74,7 @@ export function MessagesResponseFromJSONTyped(
       json["data"] == null
         ? undefined
         : (json["data"] as Array<any>).map(ChatMessageFromJSON),
-    message: json["message"],
+    message: json["message"] == null ? undefined : json["message"],
   };
 }
 
