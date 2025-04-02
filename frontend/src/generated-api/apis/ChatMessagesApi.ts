@@ -25,6 +25,12 @@ export interface ChatMessagesControllerCreateRequest {
   createChatMessageDto: CreateChatMessageDto;
 }
 
+export interface ChatMessagesControllerFindRequest {
+  chatRoomId?: number;
+  sentTimeFrom?: Date;
+  sentTimeTill?: Date;
+}
+
 export interface ChatMessagesControllerFindAllByUserAndChatRoomRequest {
   chatRoomId: string;
   userId: string;
@@ -96,11 +102,67 @@ export class ChatMessagesApi extends runtime.BaseAPI {
   }
 
   /**
+   * Find chat messages
+   */
+  async chatMessagesControllerFindRaw(
+    requestParameters: ChatMessagesControllerFindRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<MessagesResponse>> {
+    const queryParameters: any = {};
+
+    if (requestParameters["chatRoomId"] != null) {
+      queryParameters["chatRoomId"] = requestParameters["chatRoomId"];
+    }
+
+    if (requestParameters["sentTimeFrom"] != null) {
+      queryParameters["sent_time_from"] = (
+        requestParameters["sentTimeFrom"] as any
+      ).toISOString();
+    }
+
+    if (requestParameters["sentTimeTill"] != null) {
+      queryParameters["sent_time_till"] = (
+        requestParameters["sentTimeTill"] as any
+      ).toISOString();
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/chatMessages/find`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      MessagesResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Find chat messages
+   */
+  async chatMessagesControllerFind(
+    requestParameters: ChatMessagesControllerFindRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<MessagesResponse> {
+    const response = await this.chatMessagesControllerFindRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
+  }
+
+  /**
    * Retrieve all chat messages
    */
   async chatMessagesControllerFindAllRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<MessagesResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -115,7 +177,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      MessagesResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -123,8 +187,9 @@ export class ChatMessagesApi extends runtime.BaseAPI {
    */
   async chatMessagesControllerFindAll(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatMessagesControllerFindAllRaw(initOverrides);
+  ): Promise<MessagesResponse> {
+    const response = await this.chatMessagesControllerFindAllRaw(initOverrides);
+    return await response.value();
   }
 
   /**
