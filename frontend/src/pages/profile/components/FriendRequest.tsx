@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { User } from "../../../generated-api/models";
 import { useApi } from "@/utils/api";
@@ -19,50 +19,48 @@ interface ApiError {
 
 const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   const api = useApi();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [buttonText, setButtonText] = useState<string>("Send Friend Request");
+  const [friendStatus, setFriendStatus] = useState<string | null>(null);
 
-  // useEffect(() => {
-  // const checkIfFriendRequestSent = async () => {
-  //     try {
-  //         const token = localStorage.getItem('access_token');
-  //         if (!token) {
-  //             throw new Error('No authentication token found');
-  //         }
+  const fetchFriendStatus = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await api.Friends.friendsControllerGetFriendStatus({
+        id: user.id,
+      });
 
-  //         const response = await api.Friends.friendsControllerGetFriendRequestsRaw();
-  //         const friendRequests = await response.value();
+      console.log("Friend status response:", response);
+      if (response.friendStatus) {
+        setFriendStatus(response.friendStatus);
+      }
+    } catch (err) {
+      console.error("Failed to get friend status:", err);
+      setError("Failed to check friendship status");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  //         if (friendRequests && friendRequests.data) {
-  //             const friendRequestExists = friendRequests.data.some((request: any) =>
-  //                 request.sender?.id === user.id || request.receiver?.id === user.id
-  //             );
-
-  //             if (friendRequestExists) {
-  //                 setButtonText('Friend Request Sent');
-  //             }
-  //         }
-  //     } catch (err: any) {
-  //         console.error('Failed to check if friend request sent:', err);
-  //         setError('Failed to check friend request status');
-  //     }
-  // };
-
-  //     checkIfFriendRequestSent();
-  // }, [api, user.id]);
+  // Fetch friend status when component mounts or user changes
+  useEffect(() => {
+    fetchFriendStatus();
+  }, [user.id]);
 
   const handleSendRequest = async () => {
     setIsLoading(true);
     setError(null);
     try {
       await api.Friends.friendsControllerSendFriendRequest({ id: user.id });
-      setButtonText("Friend Request Sent");
+      // After sending request, refresh the status
+      await fetchFriendStatus();
     } catch (err: unknown) {
       console.error("Failed to send friend request:", err);
       const error = err as ApiError;
       if (error.response?.status === 409) {
-        setButtonText("Already Friends");
+        // Conflict error - refresh the status
+        await fetchFriendStatus();
       } else {
         setError("Failed to send friend request");
       }
@@ -71,21 +69,39 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
     }
   };
 
-  return (
-    <div>
-      <Button
-        onClick={handleSendRequest}
-        disabled={
-          isLoading ||
-          buttonText === "Friend Request Sent" ||
-          buttonText === "Already Friends"
-        }
-      >
-        {buttonText}
-      </Button>
-      {error && <p className="text-red-500">{error}</p>}
-    </div>
-  );
+  if (isLoading) {
+    return <Button disabled>Loading...</Button>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p className="text-red-500">{error}</p>
+        <Button onClick={fetchFriendStatus}>Retry</Button>
+      </div>
+    );
+  }
+
+  // Show different UI based on friendship status
+  switch (friendStatus) {
+    case "not_friends":
+      return (
+        <Button onClick={handleSendRequest} className="bg-blue-500 text-white">
+          Add Friend
+        </Button>
+      );
+    case "rejected":
+      return <div className="text-red-500">Rejected</div>;
+
+    case "pending":
+      return <div className="text-orange-500">Pending</div>;
+
+    case "accepted":
+      return <div className="text-green-500">✓ Friends</div>;
+
+    default:
+      return <div>Unknown Status</div>;
+  }
 };
 
 export default FriendRequest;
