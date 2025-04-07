@@ -44,12 +44,12 @@ const setupSwagger = (app: INestApplication) => {
 
   // app.use(cookieParser("secret"));
   app.enableCors({
-    origin: ['http://localhost:3001'],  // Match your frontend URL exactly (including protocol)
+    origin: ['http://localhost:3001'], // Match your frontend URL exactly (including protocol)
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],  // Add headers your frontend sends
+    allowedHeaders: ['Content-Type', 'Authorization'], // Add headers your frontend sends
     preflightContinue: false,
-    optionsSuccessStatus: 204
+    optionsSuccessStatus: 204,
   });
 
   app.useStaticAssets('uploads', {
