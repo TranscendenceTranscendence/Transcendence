@@ -13,6 +13,7 @@ import type { ConfigType } from '@nestjs/config';
 import { AchievementsService } from '../achievements/achievements.service';
 import { AchievementType } from '../achievements/achievement.entity';
 import { Blocked } from '../blockeds/blocked.entity';
+import { SearchUserResponseDto } from './dto/search-user.dto';
 
 @Injectable()
 export class UsersService {

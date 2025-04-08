@@ -84,17 +84,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const joinChatRoom = async (newChatRoomId: number) => {
     if (chatRoomId === newChatRoomId) return;
 
-    // Fetch chat room data via HTTP
     const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
       id: newChatRoomId,
     });
+
     const { data: messages } =
       await api.ChatMessages.chatMessagesControllerFind({
         chatRoomId: newChatRoomId,
       });
     const { chatParticipants } = chatRooms[0];
 
-    // Update state with fetched data
     setChatRooms((prev) => ({
       ...prev,
       [newChatRoomId]: {
@@ -103,7 +102,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       },
     }));
 
-    // Join the chat room via WebSocket
     if (socketRef.current) {
       socketRef.current.emit("joinRoom", { roomId: newChatRoomId });
     }

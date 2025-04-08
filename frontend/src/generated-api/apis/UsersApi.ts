@@ -14,19 +14,16 @@
 
 import * as runtime from "../runtime";
 import type {
-  CreateUserDto,
+  SearchUserResponseDto,
   UpdateAddUserToBlockedListDto,
-  UpdateUserDto,
   UpdateUserResponse,
   User,
 } from "../models/index";
 import {
-  CreateUserDtoFromJSON,
-  CreateUserDtoToJSON,
+  SearchUserResponseDtoFromJSON,
+  SearchUserResponseDtoToJSON,
   UpdateAddUserToBlockedListDtoFromJSON,
   UpdateAddUserToBlockedListDtoToJSON,
-  UpdateUserDtoFromJSON,
-  UpdateUserDtoToJSON,
   UpdateUserResponseFromJSON,
   UpdateUserResponseToJSON,
   UserFromJSON,
@@ -34,19 +31,19 @@ import {
 } from "../models/index";
 
 export interface UsersControllerCreateRequest {
-  createUserDto: CreateUserDto;
+  body: object;
 }
 
 export interface UsersControllerFindOneRequest {
   id: number;
 }
 
-export interface UsersControllerRemoveRequest {
-  id: string;
+export interface UsersControllerSearchRequest {
+  body: object;
 }
 
 export interface UsersControllerUpdateRequest {
-  updateUserDto: UpdateUserDto;
+  body: object;
 }
 
 export interface UsersControllerUpdateAddUserToBlockedListRequest {
@@ -64,10 +61,10 @@ export class UsersApi extends runtime.BaseAPI {
     requestParameters: UsersControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["createUserDto"] == null) {
+    if (requestParameters["body"] == null) {
       throw new runtime.RequiredError(
-        "createUserDto",
-        'Required parameter "createUserDto" was null or undefined when calling usersControllerCreate().',
+        "body",
+        'Required parameter "body" was null or undefined when calling usersControllerCreate().',
       );
     }
 
@@ -83,7 +80,7 @@ export class UsersApi extends runtime.BaseAPI {
         method: "POST",
         headers: headerParameters,
         query: queryParameters,
-        body: CreateUserDtoToJSON(requestParameters["createUserDto"]),
+        body: requestParameters["body"] as any,
       },
       initOverrides,
     );
@@ -99,38 +96,6 @@ export class UsersApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<void> {
     await this.usersControllerCreateRaw(requestParameters, initOverrides);
-  }
-
-  /**
-   * Get all users
-   */
-  async usersControllerFindAllRaw(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/users`,
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Get all users
-   */
-  async usersControllerFindAll(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.usersControllerFindAllRaw(initOverrides);
   }
 
   /**
@@ -151,6 +116,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/{id}`.replace(
@@ -193,6 +166,14 @@ export class UsersApi extends runtime.BaseAPI {
 
     const headerParameters: runtime.HTTPHeaders = {};
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/me`,
@@ -219,60 +200,16 @@ export class UsersApi extends runtime.BaseAPI {
   }
 
   /**
-   * Delete a user by ID
+   * Search for users by nickname or email
    */
-  async usersControllerRemoveRaw(
-    requestParameters: UsersControllerRemoveRequest,
+  async usersControllerSearchRaw(
+    requestParameters: UsersControllerSearchRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
+  ): Promise<runtime.ApiResponse<Array<SearchUserResponseDto>>> {
+    if (requestParameters["body"] == null) {
       throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling usersControllerRemove().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/users/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "DELETE",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Delete a user by ID
-   */
-  async usersControllerRemove(
-    requestParameters: UsersControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.usersControllerRemoveRaw(requestParameters, initOverrides);
-  }
-
-  /**
-   * Update current user details
-   */
-  async usersControllerUpdateRaw(
-    requestParameters: UsersControllerUpdateRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<UpdateUserResponse>> {
-    if (requestParameters["updateUserDto"] == null) {
-      throw new runtime.RequiredError(
-        "updateUserDto",
-        'Required parameter "updateUserDto" was null or undefined when calling usersControllerUpdate().',
+        "body",
+        'Required parameter "body" was null or undefined when calling usersControllerSearch().',
       );
     }
 
@@ -282,13 +219,79 @@ export class UsersApi extends runtime.BaseAPI {
 
     headerParameters["Content-Type"] = "application/json";
 
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
+    const response = await this.request(
+      {
+        path: `/users/search`,
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters["body"] as any,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      jsonValue.map(SearchUserResponseDtoFromJSON),
+    );
+  }
+
+  /**
+   * Search for users by nickname or email
+   */
+  async usersControllerSearch(
+    requestParameters: UsersControllerSearchRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Array<SearchUserResponseDto>> {
+    const response = await this.usersControllerSearchRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
+  }
+
+  /**
+   * Update current user details
+   */
+  async usersControllerUpdateRaw(
+    requestParameters: UsersControllerUpdateRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<UpdateUserResponse>> {
+    if (requestParameters["body"] == null) {
+      throw new runtime.RequiredError(
+        "body",
+        'Required parameter "body" was null or undefined when calling usersControllerUpdate().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters["Content-Type"] = "application/json";
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
     const response = await this.request(
       {
         path: `/users/me`,
         method: "PATCH",
         headers: headerParameters,
         query: queryParameters,
-        body: UpdateUserDtoToJSON(requestParameters["updateUserDto"]),
+        body: requestParameters["body"] as any,
       },
       initOverrides,
     );
