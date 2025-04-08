@@ -8,5 +8,6 @@ import { Blocked } from './blocked.entity';
   imports: [TypeOrmModule.forFeature([Blocked])],
   providers: [BlockedsService],
   controllers: [BlockedsController],
+  exports: [TypeOrmModule],
 })
 export class BlockedsModule {}

@@ -132,6 +132,7 @@ export const ChatBox = ({ socket, chatRoomId, userId }: ChatBoxProps) => {
     console.log(`${action} on user with ID: ${id}`);
     setSelectedMessage(null);
   };
+  console.log("chat niet beschikbaar dus localparticipant undefined");
   if (localParticipant == undefined) {
     return <p>Chat not available</p>;
   }

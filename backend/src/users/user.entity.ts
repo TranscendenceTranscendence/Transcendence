@@ -84,8 +84,8 @@ export class User {
   @OneToMany(() => Achievement, (achievement) => achievement.user)
   achievements?: Achievement[];
 
-  @IsOptional()
-  blockedUsers?: Blocked[];
+  // @IsOptional()
+  // blockedUsers?: Blocked[];
 
   @IsOptional()
   @OneToMany(() => Blocked, (blocked) => blocked.blockedUser)

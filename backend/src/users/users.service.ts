@@ -20,6 +20,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     private readonly achievementsService: AchievementsService,
+    @InjectRepository(Blocked)
     private readonly blockedsRepository: Repository<Blocked>,
     private jwt: JwtService,
     @Inject(JwtConfig.KEY)
