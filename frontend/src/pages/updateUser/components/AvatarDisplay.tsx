@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useConfig } from "../../../utils/config";
 import { type User, UserUserStatusEnum } from "@/generated-api";
 import { cn } from "@/lib/utils";
@@ -40,11 +40,12 @@ export default function AvatarDisplay({
     return (
       <Avatar
         className={cn(
-          "w-full h-auto aspect-square",
+          " h-auto aspect-square",
           className ? " " + className : "",
         )}
       >
         <AvatarImage src={config.backendUrl + avatarUrl} alt="User Avatar" />
+        <AvatarFallback>:(</AvatarFallback>
       </Avatar>
     );
   }
@@ -56,7 +57,7 @@ export default function AvatarDisplay({
   return (
     <Avatar
       className={cn(
-        "w-full h-auto aspect-square",
+        " h-auto aspect-square",
         className ? " " + className : "",
         userStatus ? statusStyles[userStatus] : "",
       )}

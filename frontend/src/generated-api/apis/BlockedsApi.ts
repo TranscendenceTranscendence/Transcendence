@@ -23,14 +23,6 @@ export interface BlockedsControllerCreateRequest {
   createBlockedDto: CreateBlockedDto;
 }
 
-export interface BlockedsControllerFindOneRequest {
-  id: string;
-}
-
-export interface BlockedsControllerRemoveRequest {
-  id: string;
-}
-
 /**
  *
  */
@@ -109,93 +101,5 @@ export class BlockedsApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<void> {
     await this.blockedsControllerFindAllRaw(initOverrides);
-  }
-
-  /**
-   * Retrieve a blocked entry by user ID
-   */
-  async blockedsControllerFindOneRaw(
-    requestParameters: BlockedsControllerFindOneRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
-      throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling blockedsControllerFindOne().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/blockeds/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Retrieve a blocked entry by user ID
-   */
-  async blockedsControllerFindOne(
-    requestParameters: BlockedsControllerFindOneRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.blockedsControllerFindOneRaw(requestParameters, initOverrides);
-  }
-
-  /**
-   * Delete a blocked entry by ID
-   */
-  async blockedsControllerRemoveRaw(
-    requestParameters: BlockedsControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
-      throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling blockedsControllerRemove().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/blockeds/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
-        ),
-        method: "DELETE",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.VoidApiResponse(response);
-  }
-
-  /**
-   * Delete a blocked entry by ID
-   */
-  async blockedsControllerRemove(
-    requestParameters: BlockedsControllerRemoveRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.blockedsControllerRemoveRaw(requestParameters, initOverrides);
   }
 }

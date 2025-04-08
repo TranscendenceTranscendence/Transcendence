@@ -13,7 +13,7 @@ export class ChatParticipant {
   @Column({
     type: 'enum',
     enum: chat_participant_roles,
-    default: 'guest',
+    default: chat_participant_roles.Guest,
   })
   chat_participant_role: chat_participant_roles;
 
@@ -27,10 +27,10 @@ export class ChatParticipant {
   is_muted: boolean;
 
   @Column({
-    type: 'timestamp with time zone',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  entrance_time: Date;
+  created_at: Date;
 
   @PrimaryColumn()
   user_id: number;

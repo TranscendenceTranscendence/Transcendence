@@ -133,12 +133,6 @@ export interface User {
    * @type {Array<Blocked>}
    * @memberof User
    */
-  blockedUsers?: Array<Blocked>;
-  /**
-   *
-   * @type {Array<Blocked>}
-   * @memberof User
-   */
   users?: Array<Blocked>;
   /**
    *
@@ -248,10 +242,6 @@ export function UserFromJSONTyped(
       json["achievements"] == null
         ? undefined
         : (json["achievements"] as Array<any>).map(AchievementFromJSON),
-    blockedUsers:
-      json["blockedUsers"] == null
-        ? undefined
-        : (json["blockedUsers"] as Array<any>).map(BlockedFromJSON),
     users:
       json["users"] == null
         ? undefined
@@ -314,10 +304,6 @@ export function UserToJSONTyped(
       value["achievements"] == null
         ? undefined
         : (value["achievements"] as Array<any>).map(AchievementToJSON),
-    blockedUsers:
-      value["blockedUsers"] == null
-        ? undefined
-        : (value["blockedUsers"] as Array<any>).map(BlockedToJSON),
     users:
       value["users"] == null
         ? undefined

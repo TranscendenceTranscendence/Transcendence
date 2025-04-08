@@ -45,7 +45,7 @@ export interface UpdateAddUserToBlockedListDto {
    * @type {User}
    * @memberof UpdateAddUserToBlockedListDto
    */
-  targerUser: User;
+  targetUser: User;
   /**
    * The nickname of the user.
    * @type {string}
@@ -74,7 +74,7 @@ export function instanceOfUpdateAddUserToBlockedListDto(
 ): value is UpdateAddUserToBlockedListDto {
   if (!("blockedUsers" in value) || value["blockedUsers"] === undefined)
     return false;
-  if (!("targerUser" in value) || value["targerUser"] === undefined)
+  if (!("targetUser" in value) || value["targetUser"] === undefined)
     return false;
   return true;
 }
@@ -94,7 +94,7 @@ export function UpdateAddUserToBlockedListDtoFromJSONTyped(
   }
   return {
     blockedUsers: (json["blockedUsers"] as Array<any>).map(BlockedFromJSON),
-    targerUser: UserFromJSON(json["targerUser"]),
+    targetUser: UserFromJSON(json["targetUser"]),
     nickname: json["nickname"] == null ? undefined : json["nickname"],
     avatar: json["avatar"] == null ? undefined : json["avatar"],
     twoFactorEnabled:
@@ -120,7 +120,7 @@ export function UpdateAddUserToBlockedListDtoToJSONTyped(
 
   return {
     blockedUsers: (value["blockedUsers"] as Array<any>).map(BlockedToJSON),
-    targerUser: UserToJSON(value["targerUser"]),
+    targetUser: UserToJSON(value["targetUser"]),
     nickname: value["nickname"],
     avatar: value["avatar"],
     two_factor_enabled: value["twoFactorEnabled"],

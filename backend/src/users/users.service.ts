@@ -1,15 +1,15 @@
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import {
+import { type Repository, type UpdateResult, ILike } from 'typeorm';
+import type { CreateUserDto } from './dto/create-user.dto';
+import type {
   UpdateUserDto,
   UpdateAddUserToBlockedListDto,
 } from './dto/update-user.dto';
 import { User, UserStatus } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import JwtConfig from '../config/jwt.config';
-import { ConfigType } from '@nestjs/config';
+import type { ConfigType } from '@nestjs/config';
 import { AchievementsService } from '../achievements/achievements.service';
 import { AchievementType } from '../achievements/achievement.entity';
 import { Blocked } from '../blockeds/blocked.entity';
@@ -19,7 +19,9 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @Inject(AchievementsService)
     private readonly achievementsService: AchievementsService,
+    @Inject(JwtService)
     @InjectRepository(Blocked)
     private readonly blockedsRepository: Repository<Blocked>,
     private jwt: JwtService,
@@ -189,5 +191,22 @@ export class UsersService {
     user.user_status = status;
     await this.usersRepository.save(user);
     return user.user_status;
+  }
+
+  async searchUsers(query: string): Promise<SearchUserResponseDto[]> {
+    const users = await this.usersRepository.find({
+      where: [
+        { nickname: ILike(`%${query}%`) },
+        { email: ILike(`%${query}%`) },
+      ],
+      select: ['id', 'nickname', 'email', 'avatar'],
+    });
+
+    return users.map((user) => ({
+      id: user.id,
+      nickname: user.nickname,
+      email: user.email,
+      avatar: user.avatar,
+    }));
   }
 }

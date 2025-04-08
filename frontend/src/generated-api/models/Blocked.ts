@@ -29,48 +29,33 @@ import {
 export interface Blocked {
   /**
    *
+   * @type {number}
+   * @memberof Blocked
+   */
+  id: number;
+  /**
+   *
    * @type {Date}
    * @memberof Blocked
    */
   blockedTime: Date;
   /**
    *
-   * @type {number}
-   * @memberof Blocked
-   */
-  blockedUserId: number;
-  /**
-   *
-   * @type {number}
-   * @memberof Blocked
-   */
-  userId: number;
-  /**
-   *
    * @type {User}
    * @memberof Blocked
    */
   blockedUser: User;
-  /**
-   *
-   * @type {User}
-   * @memberof Blocked
-   */
-  user: User;
 }
 
 /**
  * Check if a given object implements the Blocked interface.
  */
 export function instanceOfBlocked(value: object): value is Blocked {
+  if (!("id" in value) || value["id"] === undefined) return false;
   if (!("blockedTime" in value) || value["blockedTime"] === undefined)
     return false;
-  if (!("blockedUserId" in value) || value["blockedUserId"] === undefined)
-    return false;
-  if (!("userId" in value) || value["userId"] === undefined) return false;
   if (!("blockedUser" in value) || value["blockedUser"] === undefined)
     return false;
-  if (!("user" in value) || value["user"] === undefined) return false;
   return true;
 }
 
@@ -86,11 +71,9 @@ export function BlockedFromJSONTyped(
     return json;
   }
   return {
+    id: json["id"],
     blockedTime: new Date(json["blocked_time"]),
-    blockedUserId: json["blocked_user_id"],
-    userId: json["user_id"],
     blockedUser: UserFromJSON(json["blockedUser"]),
-    user: UserFromJSON(json["user"]),
   };
 }
 
@@ -107,10 +90,8 @@ export function BlockedToJSONTyped(
   }
 
   return {
+    id: value["id"],
     blocked_time: value["blockedTime"].toISOString(),
-    blocked_user_id: value["blockedUserId"],
-    user_id: value["userId"],
     blockedUser: UserToJSON(value["blockedUser"]),
-    user: UserToJSON(value["user"]),
   };
 }

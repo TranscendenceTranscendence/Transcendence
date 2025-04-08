@@ -13,6 +13,14 @@
  */
 
 import { mapValues } from "../runtime";
+import type { User } from "./User";
+import {
+  UserFromJSON,
+  UserFromJSONTyped,
+  UserToJSON,
+  UserToJSONTyped,
+} from "./User";
+
 /**
  *
  * @export
@@ -25,6 +33,12 @@ export interface CreateBlockedDto {
    * @memberof CreateBlockedDto
    */
   blockedTime: Date;
+  /**
+   * blocked_user_id
+   * @type {User}
+   * @memberof CreateBlockedDto
+   */
+  blockedUser: User;
 }
 
 /**
@@ -34,6 +48,8 @@ export function instanceOfCreateBlockedDto(
   value: object,
 ): value is CreateBlockedDto {
   if (!("blockedTime" in value) || value["blockedTime"] === undefined)
+    return false;
+  if (!("blockedUser" in value) || value["blockedUser"] === undefined)
     return false;
   return true;
 }
@@ -51,6 +67,7 @@ export function CreateBlockedDtoFromJSONTyped(
   }
   return {
     blockedTime: new Date(json["blocked_time"]),
+    blockedUser: UserFromJSON(json["blockedUser"]),
   };
 }
 
@@ -68,5 +85,6 @@ export function CreateBlockedDtoToJSONTyped(
 
   return {
     blocked_time: value["blockedTime"].toISOString(),
+    blockedUser: UserToJSON(value["blockedUser"]),
   };
 }
