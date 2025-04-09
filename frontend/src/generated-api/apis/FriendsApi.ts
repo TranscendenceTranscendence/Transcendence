@@ -13,11 +13,20 @@
  */
 
 import * as runtime from "../runtime";
-import type { GetFriendRequestsDto } from "../models/index";
+import type {
+  FriendsControllerGetFriendStatus200Response,
+  GetFriendRequestsDto,
+} from "../models/index";
 import {
+  FriendsControllerGetFriendStatus200ResponseFromJSON,
+  FriendsControllerGetFriendStatus200ResponseToJSON,
   GetFriendRequestsDtoFromJSON,
   GetFriendRequestsDtoToJSON,
 } from "../models/index";
+
+export interface FriendsControllerGetFriendStatusRequest {
+  id: number;
+}
 
 export interface FriendsControllerSendFriendRequestRequest {
   id: number;
@@ -60,6 +69,56 @@ export class FriendsApi extends runtime.BaseAPI {
   ): Promise<GetFriendRequestsDto> {
     const response =
       await this.friendsControllerGetFriendRequestsRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * Get friendship status with a user
+   */
+  async friendsControllerGetFriendStatusRaw(
+    requestParameters: FriendsControllerGetFriendStatusRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<FriendsControllerGetFriendStatus200Response>> {
+    if (requestParameters["id"] == null) {
+      throw new runtime.RequiredError(
+        "id",
+        'Required parameter "id" was null or undefined when calling friendsControllerGetFriendStatus().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/friends/friend-status/{id}`.replace(
+          `{${"id"}}`,
+          encodeURIComponent(String(requestParameters["id"])),
+        ),
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      FriendsControllerGetFriendStatus200ResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Get friendship status with a user
+   */
+  async friendsControllerGetFriendStatus(
+    requestParameters: FriendsControllerGetFriendStatusRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<FriendsControllerGetFriendStatus200Response> {
+    const response = await this.friendsControllerGetFriendStatusRaw(
+      requestParameters,
+      initOverrides,
+    );
     return await response.value();
   }
 

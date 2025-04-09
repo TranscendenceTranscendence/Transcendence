@@ -17,6 +17,7 @@ export * from "./CreateGameDto";
 export * from "./DevLoginResponseDto";
 export * from "./FileUploadResponseSuccess";
 export * from "./Friend";
+export * from "./FriendsControllerGetFriendStatus200Response";
 export * from "./Game";
 export * from "./GetFriendRequestsDto";
 export * from "./MessagesResponse";

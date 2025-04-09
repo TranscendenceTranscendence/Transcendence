@@ -130,4 +130,29 @@ export class FriendsService {
       );
     }
   }
+
+  async getFriendStatus(
+    userId: number,
+    friendId: number,
+  ): Promise<FriendStatus> {
+    if (userId === friendId) {
+      throw new HttpException(
+        'You cannot be friends with yourself',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const friend = await this.friendsRepository.findOne({
+      where: [{ sender_id: userId, receiver_id: friendId }],
+    });
+    if (friend) {
+      return friend.status;
+    }
+    const reverseFriend = await this.friendsRepository.findOne({
+      where: [{ sender_id: friendId, receiver_id: userId }],
+    });
+    if (reverseFriend) {
+      return reverseFriend.status;
+    }
+    return FriendStatus.NOT_FRIENDS;
+  }
 }
