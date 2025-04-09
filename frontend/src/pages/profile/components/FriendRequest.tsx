@@ -148,8 +148,7 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
         <Button
           variant="default"
           size="sm"
-          className={`bg-green-500 hover:bg-green-500 text-white font-medium ${buttonClasses}`}
-          disabled
+          className={`bg-green-500 hover:bg-green-500 text-white font-medium pointer-events-none cursor-default opacity-1 ${buttonClasses}`}
         >
           Friends
         </Button>
