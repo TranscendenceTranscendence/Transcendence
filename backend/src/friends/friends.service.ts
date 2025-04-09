@@ -82,7 +82,10 @@ export class FriendsService {
 
     // Fetch friends with pagination
     const [friends, totalFriends] = await this.friendsRepository.findAndCount({
-      where: [{ sender_id: userId, status: FriendStatus.ACCEPTED}, { receiver_id: userId, status: FriendStatus.ACCEPTED}],
+      where: [
+        { sender_id: userId, status: FriendStatus.ACCEPTED },
+        { receiver_id: userId, status: FriendStatus.ACCEPTED },
+      ],
       relations: ['sender', 'receiver'],
       take: limit,
       skip: (page - 1) * limit,
