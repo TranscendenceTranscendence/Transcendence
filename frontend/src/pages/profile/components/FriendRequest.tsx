@@ -31,7 +31,7 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
         id: user.id,
       });
 
-      console.log("Friend status response:", response);
+      // Debugging: Friend status response can be logged here in development mode if needed.
       if (response.friendStatus) {
         setFriendStatus(response.friendStatus);
       }
