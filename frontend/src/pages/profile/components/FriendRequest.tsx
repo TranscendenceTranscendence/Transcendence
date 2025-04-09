@@ -48,12 +48,10 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
     setError(null);
 
     try {
-      console.log("Fetching friend status for user:", user.id);
       const response = await api.Friends.friendsControllerGetFriendStatus({
         id: user.id,
       });
 
-      console.log("Friend status response:", response);
       if (response.friendStatus) {
         setFriendStatus(response.friendStatus);
       }
@@ -65,7 +63,6 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
     }
   };
 
-  // Fetch friend status when component mounts or user changes
   useEffect(() => {
     if (user && user.id) {
       fetchFriendStatus();
@@ -86,7 +83,6 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
       console.error("Failed to send friend request:", err);
       const error = err as ApiError;
       if (error.response?.status === 409) {
-        // Conflict error - refresh the status
         await fetchFriendStatus();
       } else {
         setError("Failed to send friend request");
@@ -117,7 +113,6 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
     );
   }
 
-  // Show different UI based on friendship status
   switch (friendStatus) {
     case "not_friends":
       return (
