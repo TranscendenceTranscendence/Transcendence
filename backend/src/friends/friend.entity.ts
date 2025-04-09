@@ -11,6 +11,7 @@ export enum FriendStatus {
   PENDING = 'pending',
   ACCEPTED = 'accepted',
   REJECTED = 'rejected',
+  NOT_FRIENDS = 'not_friends',
 }
 
 @Entity('friends')

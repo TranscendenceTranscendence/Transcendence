@@ -78,6 +78,7 @@ export const FriendStatusEnum = {
   Pending: "pending",
   Accepted: "accepted",
   Rejected: "rejected",
+  NotFriends: "not_friends",
 } as const;
 export type FriendStatusEnum =
   (typeof FriendStatusEnum)[keyof typeof FriendStatusEnum];
