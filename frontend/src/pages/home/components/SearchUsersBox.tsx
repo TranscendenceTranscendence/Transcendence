@@ -5,12 +5,12 @@ import { useForm } from "react-hook-form";
 import debounce from "lodash/debounce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SearchUserResponseDto } from "@/generated-api";
 import { useApi } from "@/utils/api";
 import { useNavigate } from "react-router-dom";
 import AvatarDisplay from "@/pages/updateUser/components/AvatarDisplay";
+import FriendRequest from "@/pages/profile/components/FriendRequest";
 
 export default function SearchUsersBox() {
   const { register, watch } = useForm<{ search: string }>({
@@ -83,7 +83,7 @@ export default function SearchUsersBox() {
                   >
                     View
                   </Button>
-                  <Button size="sm">Friend Request</Button>
+                  <FriendRequest user={user} />
                 </div>
               </div>
             ))

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { User } from "../../../generated-api/models";
+import { SearchUserResponseDto } from "@/generated-api";
 import { useApi } from "@/utils/api";
 
 interface FriendRequestProps {
-  user: User;
+  user: User | SearchUserResponseDto;
 }
 
 interface ApiError {
@@ -24,14 +25,23 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   const [friendStatus, setFriendStatus] = useState<string | null>(null);
 
   const fetchFriendStatus = async () => {
+    if (!user || !user.id) {
+      console.error("No valid user provided to FriendRequest component");
+      setError("Invalid user data");
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
+
     try {
+      console.log("Fetching friend status for user:", user.id);
       const response = await api.Friends.friendsControllerGetFriendStatus({
         id: user.id,
       });
 
-      // Debugging: Friend status response can be logged here in development mode if needed.
+      console.log("Friend status response:", response);
       if (response.friendStatus) {
         setFriendStatus(response.friendStatus);
       }
@@ -45,12 +55,17 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
 
   // Fetch friend status when component mounts or user changes
   useEffect(() => {
-    fetchFriendStatus();
-  }, [user.id]);
+    if (user && user.id) {
+      fetchFriendStatus();
+    }
+  }, [user?.id]);
 
   const handleSendRequest = async () => {
+    if (!user || !user.id) return;
+
     setIsLoading(true);
     setError(null);
+
     try {
       await api.Friends.friendsControllerSendFriendRequest({ id: user.id });
       // After sending request, refresh the status
@@ -69,15 +84,23 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
     }
   };
 
+  const buttonClasses = "w-24 justify-center text-nowrap md:w-24";
+
   if (isLoading) {
-    return <Button disabled>Loading...</Button>;
+    return (
+      <Button disabled size="sm" className={buttonClasses}>
+        Loading...
+      </Button>
+    );
   }
 
   if (error) {
     return (
       <div>
-        <p className="text-red-500">{error}</p>
-        <Button onClick={fetchFriendStatus}>Retry</Button>
+        <p className="text-red-500 text-xs">{error}</p>
+        <Button onClick={fetchFriendStatus} size="sm" className={buttonClasses}>
+          Retry
+        </Button>
       </div>
     );
   }
@@ -86,21 +109,57 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   switch (friendStatus) {
     case "not_friends":
       return (
-        <Button onClick={handleSendRequest} className="bg-blue-500 text-white">
+        <Button onClick={handleSendRequest} className={buttonClasses} size="sm">
           Add Friend
         </Button>
       );
     case "rejected":
-      return <div className="text-red-500">Rejected</div>;
+      return (
+        <Button
+          variant="default"
+          size="sm"
+          className={`bg-red-500 hover:bg-red-500 text-white font-medium ${buttonClasses}`}
+          disabled
+        >
+          Rejected
+        </Button>
+      );
 
     case "pending":
-      return <div className="text-orange-500">Pending</div>;
+      return (
+        <Button
+          variant="default"
+          size="sm"
+          className={`bg-orange-500 hover:bg-orange-500 text-white font-medium  ${buttonClasses}`}
+          disabled
+        >
+          Pending
+        </Button>
+      );
 
     case "accepted":
-      return <div className="text-green-500">✓ Friends</div>;
+      return (
+        <Button
+          variant="default"
+          size="sm"
+          className={`bg-green-500 hover:bg-green-500 text-white font-medium ${buttonClasses}`}
+          disabled
+        >
+          Friends
+        </Button>
+      );
 
     default:
-      return <div>Unknown Status</div>;
+      return (
+        <Button
+          variant="default"
+          size="sm"
+          className={`bg-gray-500 hover:bg-gray-500 text-white font-medium ${buttonClasses}`}
+          disabled
+        >
+          Unknown
+        </Button>
+      );
   }
 };
 
