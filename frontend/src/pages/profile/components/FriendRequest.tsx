@@ -25,9 +25,15 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   const [friendStatus, setFriendStatus] = useState<string | null>(null);
 
   const fetchFriendStatus = async () => {
-    if (!user || !user.id) {
-      console.error("No valid user provided to FriendRequest component");
-      setError("Invalid user data");
+    if (!user) {
+      console.error("Invalid user data: user object is null or undefined.");
+      setError("User data is missing. Please refresh the page or contact support.");
+      setIsLoading(false);
+      return;
+    }
+    if (!user.id) {
+      console.error(`Invalid user data: user object is missing the 'id' property. User: ${JSON.stringify(user)}`);
+      setError("User ID is missing. Please refresh the page or contact support.");
       setIsLoading(false);
       return;
     }
