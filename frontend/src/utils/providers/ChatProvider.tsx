@@ -9,6 +9,7 @@ import { useApi } from "@/utils/api";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { io, Socket } from "socket.io-client";
 import { useUser } from "@/utils/providers/UserProvider";
+import { chat_participant_roles } from "../PostRequest";
 
 interface ChatContextProps {
   chatRooms: {
@@ -21,6 +22,7 @@ interface ChatContextProps {
   sendMessage: (content: string) => void;
   joinChatRoom: (chatRoomId: number) => void;
   leaveChatRoom: () => void;
+  deleteSession: (participant: ChatParticipant) => void;
 }
 
 const ChatContext = createContext<ChatContextProps | null>(null);
@@ -137,6 +139,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const deleteSession = (participant: ChatParticipant) => {
+    if (participant.chatParticipantRole === chat_participant_roles.Owner)
+      console.log("delete session");
+    else console.log("Just leave the session");
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -144,6 +152,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         sendMessage,
         joinChatRoom,
         leaveChatRoom,
+        deleteSession,
+
         currentChatRoomId: chatRoomId,
       }}
     >
