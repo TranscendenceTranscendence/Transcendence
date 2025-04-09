@@ -140,9 +140,28 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const deleteSession = (participant: ChatParticipant) => {
-    if (participant.chatParticipantRole === chat_participant_roles.Owner)
-      console.log("delete session");
-    else console.log("Just leave the session");
+    console.log(participant.chatRoomId.toString());
+    if (participant.chatParticipantRole === chat_participant_roles.Owner) {
+      try {
+        const result = api.ChatRooms.chatRoomsControllerRemove({
+          id: participant.chatRoomId.toString(),
+        });
+        console.log("Chat room deleted", result);
+      } catch (error) {
+        console.error("Failed to delete chat room:", error);
+      }
+    } else {
+      try {
+        api.ChatParticipants.chatParticipantsControllerRemove({
+          chatRoomId: participant.chatRoomId.toString(),
+          id: participant.user.id.toString(),
+        });
+        console.log("Participant removed participant/leaved chatroom");
+      } catch (error) {
+        console.error("Failed to remove participant:", error);
+      }
+    }
+    leaveChatRoom();
   };
 
   return (
