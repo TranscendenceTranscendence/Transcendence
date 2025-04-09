@@ -27,13 +27,19 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   const fetchFriendStatus = async () => {
     if (!user) {
       console.error("Invalid user data: user object is null or undefined.");
-      setError("User data is missing. Please refresh the page or contact support.");
+      setError(
+        "User data is missing. Please refresh the page or contact support.",
+      );
       setIsLoading(false);
       return;
     }
     if (!user.id) {
-      console.error(`Invalid user data: user object is missing the 'id' property. User: ${JSON.stringify(user)}`);
-      setError("User ID is missing. Please refresh the page or contact support.");
+      console.error(
+        `Invalid user data: user object is missing the 'id' property. User: ${JSON.stringify(user)}`,
+      );
+      setError(
+        "User ID is missing. Please refresh the page or contact support.",
+      );
       setIsLoading(false);
       return;
     }
@@ -136,7 +142,7 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
         <Button
           variant="default"
           size="sm"
-          className={`bg-orange-500 hover:bg-orange-500 text-white font-medium  ${buttonClasses}`}
+          className={`bg-orange-500 hover:bg-orange-500 text-white font-medium ${buttonClasses}`}
           disabled
         >
           Pending
