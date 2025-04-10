@@ -226,30 +226,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] >= 3 || game.score[1] >= 3) {
+    if (game.score[0] >= 11 || game.score[1] >= 11) {
       try {
-        // Use the new atomic function instead of separate calls
         await this.gamesService.finishGameWithFinalScore(roomId, game.score);
 
         const playerArray = Object.values(game.players).map(
           (player) => player.playerName,
         );
-
-        // Let players know the game is ending
         this.server.to(roomId).emit('gameEnd', {
           winner: game.score[0] > game.score[1] ? 0 : 1,
           finalScore: game.score,
           players: playerArray,
         });
 
-        // Clean up after a brief delay to allow the gameEnd event to be processed
         setTimeout(() => {
           this.cleanupGame(roomId);
           this.server.to(roomId).emit('removePlayer');
         }, 500);
       } catch (error) {
         console.error(`Error ending game in database: ${error.message}`);
-        // Still clean up, even if there was an error
         this.cleanupGame(roomId);
         this.server.to(roomId).emit('removePlayer');
       }
