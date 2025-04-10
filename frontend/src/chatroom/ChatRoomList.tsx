@@ -30,7 +30,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
     },
     [onChatRoomChange],
   );
-  console.log(chatRooms);
   return (
     <div className="chat-room-list flex flex-col gap-3 max-h-96 overflow-y-auto p-2">
       {chatRooms?.chatRooms?.map((chatRoom) => (
