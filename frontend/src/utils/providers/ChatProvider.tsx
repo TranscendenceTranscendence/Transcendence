@@ -143,7 +143,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     // console.log(participant.chatRoomId.toString());
     if (participant.chatParticipantRole === chat_participant_roles.Owner) {
       try {
-        const result = api.ChatRooms.chatRoomsControllerRemove({
+        api.ChatRooms.chatRoomsControllerRemove({
           id: participant.chatRoomId.toString(),
         });
         // console.log("Chat room deleted", result);
