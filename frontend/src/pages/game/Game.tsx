@@ -32,6 +32,7 @@ export default function Pong() {
   const navigate = useNavigate();
   const isComponentMounted = useRef<boolean>(true);
   const [playerNumber, setPlayerNumber] = useState<number>(-1);
+  const [playerName, setPlayerName] = useState<string>("");
   const [count, setCount] = useState<number>(-1);
   const [playerNames, setPlayerNames] = useState<{
     current: string;
@@ -87,6 +88,24 @@ export default function Pong() {
         // console.log("Game started");
       });
 
+      socket.on("gameEnd", (result) => {
+        // Store final game state for result page if needed
+        sessionStorage.setItem(
+          "gameResult",
+          JSON.stringify({
+            winner: result.winner,
+            score: result.finalScore,
+            players: result.players,
+            timestamp: new Date().toISOString(),
+          }),
+        );
+
+        // Give a moment to see the final state
+        setTimeout(() => {
+          navigate("/result");
+        }, 1000);
+      });
+
       socket.on("removePlayer", () => {
         navigate("/result");
       });
@@ -103,11 +122,12 @@ export default function Pong() {
 
   async function checkPlayerNumber(game: Game) {
     try {
-      const currentUserId = (await api.Users.usersControllerMe()).id;
+      const user = await api.Users.usersControllerMe();
+      setPlayerName(user.nickname || user.id.toString());
 
-      if (currentUserId === game.player1UserId) {
+      if (user.id === game.player1UserId) {
         setPlayerNumber(0);
-      } else if (currentUserId === game.player2UserId) {
+      } else if (user.id === game.player2UserId) {
         setPlayerNumber(1);
       } else {
         setPlayerNumber(-1);
@@ -152,7 +172,7 @@ export default function Pong() {
 
         setRoomId(game.roomIdentifier);
         await checkPlayerNumber(game);
-        await fetchPlayerNames(game); // Add this line
+        await fetchPlayerNames(game);
         setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
@@ -167,7 +187,12 @@ export default function Pong() {
     if (!socketConnected || !roomId || !socketRef.current || playerNumber == -1)
       return;
 
-    socketRef.current.emit("joinGame", { roomId, playerId, playerNumber });
+    socketRef.current.emit("joinGame", {
+      roomId,
+      playerId,
+      playerName,
+      playerNumber,
+    });
 
     return () => {
       // console.log("Cleaning up socket connection");
@@ -233,7 +258,6 @@ export default function Pong() {
                   onClick={() => {
                     if (socketRef.current && roomId) {
                       socketRef.current.emit("joinGame", { roomId });
-                      location.reload();
                     }
                   }}
                   style={{
