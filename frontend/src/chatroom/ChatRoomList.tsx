@@ -52,9 +52,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
                     status={chatRoom.chatParticipants.some(
                       (p: ChatParticipant) => {
                         const isParticipant = p.userId === userId;
-                        console.log(
-                          `Comparing participant user_id: ${p.userId} with userId: ${userId} - Result: ${isParticipant}`,
-                        );
                         return isParticipant;
                       },
                     )}
