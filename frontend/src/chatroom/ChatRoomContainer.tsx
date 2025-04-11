@@ -26,11 +26,13 @@ export const ChatRoomContainer = () => {
       joinChatRoom(newChatRoom.id);
     }
   };
+  console.log("chatRoomContaner", userId);
   return (
     <div className="chatRoomBox">
       <ChatRoomList
         chatRooms={chatRooms}
-        userId={userId}
+        // particpants={chatRooms.chatRooms.}
+        userId={me.user.id}
         onChatRoomChange={handleChatRoomChange}
         askPassword={askPassword}
         setAskPassword={setAskPassword}

@@ -8,6 +8,7 @@ import {
   ChatRoomsResponse,
   ChatRoomChatRoomTypeEnum,
 } from "@/generated-api/index.ts";
+import { ChatParticipant } from "@/generated-api/index.ts";
 
 interface ChatRoomListProps {
   chatRooms?: ChatRoomsResponse;
@@ -19,8 +20,8 @@ interface ChatRoomListProps {
 
 const ChatRoomList: React.FC<ChatRoomListProps> = ({
   chatRooms = [],
-  onChatRoomChange,
   userId,
+  onChatRoomChange,
   askPassword,
   setAskPassword,
 }) => {
@@ -30,7 +31,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
     },
     [onChatRoomChange],
   );
-
   return (
     <div className="chat-room-list flex flex-col gap-3 max-h-96 overflow-y-auto p-2">
       {chatRooms?.chatRooms?.map((chatRoom) => (
@@ -50,7 +50,13 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
                   </h3>
                   <OnlineDot
                     status={chatRoom.chatParticipants.some(
-                      (p) => p.user_id === userId,
+                      (p: ChatParticipant) => {
+                        const isParticipant = p.userId === userId;
+                        console.log(
+                          `Comparing participant user_id: ${p.userId} with userId: ${userId} - Result: ${isParticipant}`,
+                        );
+                        return isParticipant;
+                      },
                     )}
                   />
                 </div>
