@@ -9,3 +9,12 @@ export class ChatRoomsResponse {
   @ApiProperty()
   message?: string;
 }
+
+export class ChatRoomResponse {
+  @ApiProperty()
+  success: boolean;
+  @ApiProperty()
+  chatRooms?: ChatRoom[];
+  @ApiProperty()
+  message?: string;
+}
