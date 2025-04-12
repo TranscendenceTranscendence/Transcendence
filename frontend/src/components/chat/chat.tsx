@@ -243,11 +243,12 @@ const Chat = () => {
           )}
         </CardFooter>
       </Card>
+
       {dialogChangePassword && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-lg font-bold mb-4">Change Password</h2>
-            {/* Add your dialog content here */}
+
             <Button
               variant="ghost"
               onClick={() => setDialogChangePassword(false)}
