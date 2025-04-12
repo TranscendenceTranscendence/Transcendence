@@ -2,7 +2,7 @@ import { useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { XIcon, SendIcon } from "lucide-react";
+import { XIcon, SendIcon, User } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect, useRef } from "react";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { useNavigate } from "react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, Lock } from "lucide-react";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -98,6 +98,7 @@ const Chat = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  const [dialogChangePassword, setDialogChangePassword] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -161,71 +162,102 @@ const Chat = () => {
   }
 
   return (
-    <Card
-      ref={cardRef}
-      className="w-[400px] overflow-hidden pointer-events-auto shadow-lg absolute bg-white border border-gray-300 rounded-lg"
-      style={{
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-      }}
-    >
-      <CardHeader
-        className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
-        onMouseDown={handleMouseDown}
+    <>
+      <Card
+        ref={cardRef}
+        className="w-[400px] overflow-hidden pointer-events-auto shadow-lg absolute bg-white border border-gray-300 rounded-lg"
+        style={{
+          top: `${position.y}px`,
+          left: `${position.x}px`,
+        }}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            deleteSession(
-              currentChatRoom.participants.find(
-                (participant) => participant.user.id === me.user?.id,
-              ),
-            )
-          }
+        <CardHeader
+          className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
+          onMouseDown={handleMouseDown}
         >
-          <LogOut className="w-5 h-5" />
-        </Button>
-        <h3>Chat Room {currentChatRoomId}</h3>
-        <Button
-          variant="ghost"
-          onClick={leaveChatRoom}
-          size="icon"
-          className="text-xl mt-0"
-          aria-label="Leave chat room"
-        >
-          <XIcon />
-        </Button>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2 pt-4 max-h-[400px] overflow-y-auto">
-        <ChatMessages
-          messages={currentChatRoom.messages ?? []}
-          participants={currentChatRoom.participants}
-          currentUserId={me.user?.id}
-        />
-      </CardContent>
-      <CardFooter className="space-x-2 py-3">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex w-full space-x-2"
-        >
-          <Input
-            type="text"
-            {...register("message")}
-            placeholder="Type a message"
-            aria-label="Message input"
-          />
-          <Button type="submit" size="icon" aria-label="Send message">
-            <SendIcon />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              deleteSession(
+                currentChatRoom.participants.find(
+                  (participant) => participant.user.id === me.user?.id,
+                ),
+              )
+            }
+          >
+            <LogOut className="w-5 h-5" />
           </Button>
-        </form>
-        {errors.message && (
-          <p className="text-red-500 text-sm">
-            {errors.message.message.toString()}
-          </p>
-        )}
-      </CardFooter>
-    </Card>
+          {currentChatRoom.participants.find(
+            (participant) =>
+              participant.user.id === me.user?.id &&
+              participant.chatParticipantRole === "owner",
+          ) && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setDialogChangePassword(true);
+              }}
+            >
+              <Lock className="w-5 h-5" />
+            </Button>
+          )}
+          <h3>Chat Room {currentChatRoomId}</h3>
+          <Button
+            variant="ghost"
+            onClick={leaveChatRoom}
+            size="icon"
+            className="text-xl mt-0"
+            aria-label="Leave chat room"
+          >
+            <XIcon />
+          </Button>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2 pt-4 max-h-[400px] overflow-y-auto">
+          <ChatMessages
+            messages={currentChatRoom.messages ?? []}
+            participants={currentChatRoom.participants}
+            currentUserId={me.user?.id}
+          />
+        </CardContent>
+        <CardFooter className="space-x-2 py-3">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full space-x-2"
+          >
+            <Input
+              type="text"
+              {...register("message")}
+              placeholder="Type a message"
+              aria-label="Message input"
+            />
+            <Button type="submit" size="icon" aria-label="Send message">
+              <SendIcon />
+            </Button>
+          </form>
+          {errors.message && (
+            <p className="text-red-500 text-sm">
+              {errors.message.message.toString()}
+            </p>
+          )}
+        </CardFooter>
+      </Card>
+      {dialogChangePassword && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-bold mb-4">Change Password</h2>
+            {/* Add your dialog content here */}
+            <Button
+              variant="ghost"
+              onClick={() => setDialogChangePassword(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
