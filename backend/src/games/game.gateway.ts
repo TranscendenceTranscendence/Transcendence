@@ -15,7 +15,6 @@ interface Player {
   x: number;
 }
 
-// Update the GameState interface to include score
 interface GameState {
   id: string;
   ball: { x: number; y: number; dx: number; dy: number };
@@ -65,7 +64,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!game) {
         game = this.createGame(roomId);
       }
-      console.log('{userId, roomId}', { userId, roomId });
 
       if (userId && this.userIdToSocket.has(userId)) {
         console.error('User is already connected to a game');
