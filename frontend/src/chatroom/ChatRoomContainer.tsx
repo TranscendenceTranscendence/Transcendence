@@ -11,7 +11,6 @@ export const ChatRoomContainer = () => {
   const { joinChatRoom } = useChat();
   const me = useUser();
   const userId = me?.user?.id;
-  console.log(joinChatRoom);
   const { addParticipant } = useAddParticipant();
 
   const handleAddParticipant = async (userId: number, chatRoomId: number) => {
