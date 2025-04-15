@@ -40,7 +40,10 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
-    const userData = await this.usersRepository.findOneBy({ id });
+    const userData = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['chatParticipants'],
+    });
     return userData;
   }
 

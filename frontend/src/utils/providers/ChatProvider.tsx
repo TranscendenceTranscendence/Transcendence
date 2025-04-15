@@ -107,6 +107,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     setChatRoomId(newChatRoomId);
+
+    console.log("Current", chatRoomId);
   };
 
   const leaveChatRoom = () => {
@@ -134,7 +136,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Failed to send message:", error);
     }
   };
-
   return (
     <ChatContext.Provider
       value={{
