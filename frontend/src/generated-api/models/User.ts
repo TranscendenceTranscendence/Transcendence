@@ -48,13 +48,6 @@ import {
   AchievementToJSON,
   AchievementToJSONTyped,
 } from "./Achievement";
-import type { Blocked } from "./Blocked";
-import {
-  BlockedFromJSON,
-  BlockedFromJSONTyped,
-  BlockedToJSON,
-  BlockedToJSONTyped,
-} from "./Blocked";
 
 /**
  *
@@ -123,17 +116,17 @@ export interface User {
    */
   lastActive: Date;
   /**
+   * The IDs of blocked users.
+   * @type {Array<number>}
+   * @memberof User
+   */
+  blockedUsers?: Array<number>;
+  /**
    *
    * @type {Array<Achievement>}
    * @memberof User
    */
   achievements?: Array<Achievement>;
-  /**
-   *
-   * @type {Array<Blocked>}
-   * @memberof User
-   */
-  users?: Array<Blocked>;
   /**
    *
    * @type {Array<ChatMessage>}
@@ -238,14 +231,12 @@ export function UserFromJSONTyped(
     ladderLevel: json["ladder_level"],
     userStatus: json["user_status"],
     lastActive: json["lastActive"],
+    blockedUsers:
+      json["blockedUsers"] == null ? undefined : json["blockedUsers"],
     achievements:
       json["achievements"] == null
         ? undefined
         : (json["achievements"] as Array<any>).map(AchievementFromJSON),
-    users:
-      json["users"] == null
-        ? undefined
-        : (json["users"] as Array<any>).map(BlockedFromJSON),
     chatMessages:
       json["chatMessages"] == null
         ? undefined
@@ -300,14 +291,11 @@ export function UserToJSONTyped(
     ladder_level: value["ladderLevel"],
     user_status: value["userStatus"],
     lastActive: value["lastActive"],
+    blockedUsers: value["blockedUsers"],
     achievements:
       value["achievements"] == null
         ? undefined
         : (value["achievements"] as Array<any>).map(AchievementToJSON),
-    users:
-      value["users"] == null
-        ? undefined
-        : (value["users"] as Array<any>).map(BlockedToJSON),
     chatMessages:
       value["chatMessages"] == null
         ? undefined

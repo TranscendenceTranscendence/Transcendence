@@ -12,6 +12,12 @@ import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { useNavigate } from "react-router";
 import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
 import { set } from "date-fns";
+import {
+  PromoteUser,
+  KickUser,
+  MuteUser,
+  BlockUser,
+} from "@/chat/ChatApiCalls";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -197,6 +203,16 @@ const Chat = () => {
     }
   };
 
+  const handleAction = (action: string, id: number) => {
+    if (action == "Kick") KickUser(currentChatRoomId, id);
+    else if (action == "Promote") PromoteUser(currentChatRoomId, id);
+    else if (action == "Mute") MuteUser(currentChatRoomId, id);
+    else if (action == "Block") BlockUser(currentChatRoomId, id);
+
+    console.log(`${action} user with ID: ${id}`);
+    setSelectedMessage(null);
+  };
+
   const currentChatRoom = currentChatRoomId
     ? chatRooms[currentChatRoomId]
     : null;
@@ -282,23 +298,41 @@ const Chat = () => {
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button>Kick</button>
+                <button
+                  onClick={() => handleAction("Kick", selectedMessage.userId)}
+                >
+                  Kick
+                </button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button>Promote</button>
+                <button
+                  onClick={() =>
+                    handleAction("Promote", selectedMessage.userId)
+                  }
+                >
+                  Promote
+                </button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button>Mute</button>
+                <button
+                  onClick={() => handleAction("Mute", selectedMessage.userId)}
+                >
+                  Mute
+                </button>
               )}
-            <button>Block</button>
+            <button
+              onClick={() => handleAction("Block", selectedMessage.userId)}
+            >
+              Block
+            </button>
           </Card>
         )}
       </CardFooter>

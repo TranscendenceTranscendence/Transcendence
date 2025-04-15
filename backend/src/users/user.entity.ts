@@ -2,7 +2,6 @@ import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { Achievement } from '../achievements/achievement.entity';
 import { ChatMessage } from '../chat_messages/chat_message.entity';
 import { Friend } from '../friends/friend.entity';
-import { Blocked } from '../blockeds/blocked.entity';
 import { Game } from '../games/game.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 import { IsOptional } from 'class-validator';
@@ -88,8 +87,9 @@ export class User {
   // blockedUsers?: Blocked[];
 
   @IsOptional()
-  @OneToMany(() => Blocked, (blocked) => blocked.blockedUser)
-  users?: Blocked[];
+  @ApiProperty({ type: [Number], description: 'The IDs of blocked users.' })
+  @Column('int', { array: true, default: [] })
+  blockedUsers?: number[];
 
   @IsOptional()
   @OneToMany(() => ChatMessage, (message) => message.user)

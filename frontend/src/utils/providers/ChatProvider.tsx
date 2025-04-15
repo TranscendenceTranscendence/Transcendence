@@ -91,6 +91,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: messages } =
       await api.ChatMessages.chatMessagesControllerFind({
         chatRoomId: newChatRoomId,
+        blockedUsers: [4],
       });
     const { chatParticipants } = chatRooms[0];
 

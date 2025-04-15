@@ -177,46 +177,46 @@ export class UsersController {
     }
   }
 
-  @Patch('blockUser')
-  @ApiOperation({ summary: 'Update add user to blocked list' })
-  @ApiResponse({
-    status: 200,
-    description: 'User updated successfully.',
-    type: UpdateUserResponse,
-  })
-  @ApiResponse({ status: 400, description: 'Invalid data provided.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized access.' })
-  @UseGuards(JwtAccessAuthGuard)
-  async updateAddUserToBlockedList(
-    @Body() body: UpdateAddUserToBlockedListDto,
-    @Req() req: AuthenticatedRequest,
-  ): Promise<UpdateUserResponse> {
-    try {
-      const alreadyBlocked = !(await this.usersService.blockUser(
-        req.user.id,
-        body,
-      ));
-      if (alreadyBlocked) {
-        return {
-          success: false,
-          errors: {
-            nickname: 'User is already blocked',
-          },
-        };
-      }
-      return {
-        success: true,
-        message: 'User Updated Successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        errors: {
-          global: error.message,
-        },
-      };
-    }
-  }
+  // @Patch('blockUser')
+  // @ApiOperation({ summary: 'Update add user to blocked list' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'User updated successfully.',
+  //   type: UpdateUserResponse,
+  // })
+  // @ApiResponse({ status: 400, description: 'Invalid data provided.' })
+  // @ApiResponse({ status: 401, description: 'Unauthorized access.' })
+  // @UseGuards(JwtAccessAuthGuard)
+  // async updateAddUserToBlockedList(
+  //   @Body() body: UpdateAddUserToBlockedListDto,
+  //   @Req() req: AuthenticatedRequest,
+  // ): Promise<UpdateUserResponse> {
+  //   try {
+  //     const alreadyBlocked = !(await this.usersService.blockUser(
+  //       req.user.id,
+  //       body,
+  //     ));
+  //     if (alreadyBlocked) {
+  //       return {
+  //         success: false,
+  //         errors: {
+  //           nickname: 'User is already blocked',
+  //         },
+  //       };
+  //     }
+  //     return {
+  //       success: true,
+  //       message: 'User Updated Successfully',
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       errors: {
+  //         global: error.message,
+  //       },
+  //     };
+  //   }
+  // }
 
   @Post('search')
   @ApiOperation({ summary: 'Search for users by nickname or email' })

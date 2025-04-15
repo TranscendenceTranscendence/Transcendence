@@ -1,7 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Blocked } from '../../blockeds/blocked.entity';
 import { IsOptional } from 'class-validator';
 import { User } from '../user.entity';
 
@@ -27,9 +26,6 @@ export class UpdateUserResponse {
 }
 
 export class UpdateAddUserToBlockedListDto {
-  @ApiProperty({ description: 'The ID of the user to block.' })
-  blockedUsers: Blocked[];
-
   @ApiProperty({ type: 'User', description: 'The ID of the user to block.' })
   targetUser: User;
 

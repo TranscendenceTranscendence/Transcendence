@@ -15,15 +15,12 @@
 import * as runtime from "../runtime";
 import type {
   SearchUserResponseDto,
-  UpdateAddUserToBlockedListDto,
   UpdateUserResponse,
   User,
 } from "../models/index";
 import {
   SearchUserResponseDtoFromJSON,
   SearchUserResponseDtoToJSON,
-  UpdateAddUserToBlockedListDtoFromJSON,
-  UpdateAddUserToBlockedListDtoToJSON,
   UpdateUserResponseFromJSON,
   UpdateUserResponseToJSON,
   UserFromJSON,
@@ -44,10 +41,6 @@ export interface UsersControllerSearchRequest {
 
 export interface UsersControllerUpdateRequest {
   body: object;
-}
-
-export interface UsersControllerUpdateAddUserToBlockedListRequest {
-  updateAddUserToBlockedListDto: UpdateAddUserToBlockedListDto;
 }
 
 /**
@@ -309,58 +302,6 @@ export class UsersApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<UpdateUserResponse> {
     const response = await this.usersControllerUpdateRaw(
-      requestParameters,
-      initOverrides,
-    );
-    return await response.value();
-  }
-
-  /**
-   * Update add user to blocked list
-   */
-  async usersControllerUpdateAddUserToBlockedListRaw(
-    requestParameters: UsersControllerUpdateAddUserToBlockedListRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<UpdateUserResponse>> {
-    if (requestParameters["updateAddUserToBlockedListDto"] == null) {
-      throw new runtime.RequiredError(
-        "updateAddUserToBlockedListDto",
-        'Required parameter "updateAddUserToBlockedListDto" was null or undefined when calling usersControllerUpdateAddUserToBlockedList().',
-      );
-    }
-
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    headerParameters["Content-Type"] = "application/json";
-
-    const response = await this.request(
-      {
-        path: `/users/blockUser`,
-        method: "PATCH",
-        headers: headerParameters,
-        query: queryParameters,
-        body: UpdateAddUserToBlockedListDtoToJSON(
-          requestParameters["updateAddUserToBlockedListDto"],
-        ),
-      },
-      initOverrides,
-    );
-
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      UpdateUserResponseFromJSON(jsonValue),
-    );
-  }
-
-  /**
-   * Update add user to blocked list
-   */
-  async usersControllerUpdateAddUserToBlockedList(
-    requestParameters: UsersControllerUpdateAddUserToBlockedListRequest,
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<UpdateUserResponse> {
-    const response = await this.usersControllerUpdateAddUserToBlockedListRaw(
       requestParameters,
       initOverrides,
     );
