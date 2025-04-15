@@ -24,7 +24,7 @@ interface GameState {
   countdownActive: boolean;
 }
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
@@ -227,7 +227,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] >= 11 || game.score[1] >= 11) {
+    if (game.score[0] >= 1111 || game.score[1] >= 1111) {
       try {
         this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);

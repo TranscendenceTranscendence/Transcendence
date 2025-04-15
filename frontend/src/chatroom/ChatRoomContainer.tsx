@@ -15,7 +15,6 @@ export const ChatRoomContainer = () => {
   );
   const [passwordInput, setPasswordInput] = useState("");
   const me = useUser();
-  let userId: number;
 
   const { addParticipant } = useAddParticipant();
 
@@ -67,7 +66,6 @@ export const ChatRoomContainer = () => {
     return isValid;
   };
 
-  console.log("chatRoomContaner", userId);
   return (
     <div className="chatRoomBox">
       <Dialog open={askPassword} onOpenChange={setAskPassword}>
