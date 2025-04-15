@@ -20,6 +20,7 @@ models/ChatParticipant.ts
 models/ChatParticipantResponse.ts
 models/ChatParticipantsResponse.ts
 models/ChatRoom.ts
+models/ChatRoomResponse.ts
 models/ChatRoomsResponse.ts
 models/CreateBlockedDto.ts
 models/CreateChatMessageDto.ts
@@ -29,6 +30,7 @@ models/CreateGameDto.ts
 models/DevLoginResponseDto.ts
 models/FileUploadResponseSuccess.ts
 models/Friend.ts
+models/FriendsControllerGetFriendStatus200Response.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
 models/MessagesResponse.ts

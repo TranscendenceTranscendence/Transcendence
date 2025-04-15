@@ -82,7 +82,10 @@ export class FriendsService {
 
     // Fetch friends with pagination
     const [friends, totalFriends] = await this.friendsRepository.findAndCount({
-      where: [{ sender_id: userId }, { receiver_id: userId }],
+      where: [
+        { sender_id: userId, status: FriendStatus.ACCEPTED },
+        { receiver_id: userId, status: FriendStatus.ACCEPTED },
+      ],
       relations: ['sender', 'receiver'],
       take: limit,
       skip: (page - 1) * limit,
@@ -126,5 +129,30 @@ export class FriendsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async getFriendStatus(
+    userId: number,
+    friendId: number,
+  ): Promise<FriendStatus> {
+    if (userId === friendId) {
+      throw new HttpException(
+        'You cannot be friends with yourself',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const friend = await this.friendsRepository.findOne({
+      where: [{ sender_id: userId, receiver_id: friendId }],
+    });
+    if (friend) {
+      return friend.status;
+    }
+    const reverseFriend = await this.friendsRepository.findOne({
+      where: [{ sender_id: friendId, receiver_id: userId }],
+    });
+    if (reverseFriend) {
+      return reverseFriend.status;
+    }
+    return FriendStatus.NOT_FRIENDS;
   }
 }

@@ -94,4 +94,38 @@ export class FriendsController {
       ...data,
     };
   }
+
+  @Get('friend-status/:id')
+  @ApiOperation({ summary: 'Get friendship status with a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved friend status',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        friendStatus: {
+          type: 'string',
+          enum: ['pending', 'accepted', 'rejected', 'not_friends'],
+        },
+      },
+    },
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async getFriendStatus(
+    @Req() req: AuthenticatedRequest,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    const friendStatus = await this.friendsService.getFriendStatus(userId, id);
+
+    return {
+      success: true,
+      friendStatus: friendStatus,
+    };
+  }
 }
