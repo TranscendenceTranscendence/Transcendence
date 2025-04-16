@@ -133,7 +133,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       // Send the new message to the WebSocket
       socketRef.current.emit("message", newMessage);
     } catch (error) {
-      console.error("Failed to send message:", error);
+      if (error.response.status === 401) {
+        console.error("participant is muted");
+        return;
+      } else console.error("Failed to send message:", error);
     }
   };
   return (

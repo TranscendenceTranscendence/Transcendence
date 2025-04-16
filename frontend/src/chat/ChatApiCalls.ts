@@ -157,7 +157,7 @@ export const PromoteUser = async (chatRoomId, id) => {
 export const MuteUser = async (chatRoomId, id) => {
   const api = useApi();
   const updateDto: UpdateChatParticipantDto = {
-    chatParticipantRole: UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
+    isMuted: true,
   };
   try {
     const response: ChatParticipant =
