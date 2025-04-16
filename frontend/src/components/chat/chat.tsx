@@ -207,7 +207,7 @@ const Chat = () => {
     if (action == "Kick") KickUser(currentChatRoomId, id);
     else if (action == "Promote") PromoteUser(currentChatRoomId, id);
     else if (action == "Mute") MuteUser(currentChatRoomId, id);
-    else if (action == "Block") BlockUser(currentChatRoomId, id);
+    else if (action == "Block") BlockUser(id);
 
     console.log(`${action} user with ID: ${id}`);
     setSelectedMessage(null);

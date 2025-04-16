@@ -9,7 +9,10 @@ import {
   UpdateChatParticipantDto,
   UpdateChatParticipantDtoChatParticipantRoleEnum,
 } from "@/generated-api/index.ts";
-import { ChatParticipant } from "@/generated-api/index.ts";
+import {
+  ChatParticipant,
+  UpdateAddUserToBlockedListDto,
+} from "@/generated-api/index.ts";
 
 export const useChatRooms = () => {
   const api = useApi();
@@ -169,20 +172,17 @@ export const MuteUser = async (chatRoomId, id) => {
   }
 };
 
-export const BlockUser = async (chatRoomId, id) => {
+export const BlockUser = async (targetUser: number) => {
   const api = useApi();
-  const updateDto: UpdateChatParticipantDto = {
-    chatParticipantRole: UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
+  const updateDto: UpdateAddUserToBlockedListDto = {
+    targetUserId: targetUser,
   };
   try {
-    const response: ChatParticipant =
-      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
-        chatRoomId,
-        id,
-        updateChatParticipantDto: updateDto,
-      });
-    console.log("Update Successful:", response);
+    const response = await api.Users.usersControllerUpdateAddUserToBlockedList({
+      updateAddUserToBlockedListDto: updateDto,
+    });
+    console.log("User successfully blocked:", response);
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error blocking user:", error);
   }
 };

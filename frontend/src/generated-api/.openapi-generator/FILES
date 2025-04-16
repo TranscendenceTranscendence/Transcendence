@@ -33,6 +33,7 @@ models/Game.ts
 models/GetFriendRequestsDto.ts
 models/MessagesResponse.ts
 models/SearchUserResponseDto.ts
+models/UpdateAddUserToBlockedListDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserResponse.ts
 models/User.ts
