@@ -2,7 +2,6 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { User } from '../user.entity';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
