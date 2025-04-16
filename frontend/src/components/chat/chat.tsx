@@ -257,20 +257,33 @@ const Chat = () => {
         />
       </CardContent>
       <CardFooter className="space-x-2 py-3">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex w-full space-x-2"
-        >
-          <Input
-            type="text"
-            {...register("message")}
-            placeholder="Type a message"
-            aria-label="Message input"
-          />
-          <Button type="submit" size="icon" aria-label="Send message">
-            <SendIcon />
-          </Button>
-        </form>
+        {localParticipant.isMuted ? (
+          <div>
+            <p className="text-gray-500 text-sm">
+              You are currently muted you can send messages again at
+            </p>
+            <p>
+              {localParticipant.bannedUntil
+                ? new Date(localParticipant.bannedUntil).toLocaleString()
+                : "Not banned"}
+            </p>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full space-x-2"
+          >
+            <Input
+              type="text"
+              {...register("message")}
+              placeholder="Type a message"
+              aria-label="Message input"
+            />
+            <Button type="submit" size="icon" aria-label="Send message">
+              <SendIcon />
+            </Button>
+          </form>
+        )}
         {errors.message && (
           <p className="text-red-500 text-sm">
             {errors.message.message.toString()}

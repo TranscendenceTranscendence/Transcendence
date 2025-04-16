@@ -158,6 +158,7 @@ export const MuteUser = async (chatRoomId, id) => {
   const api = useApi();
   const updateDto: UpdateChatParticipantDto = {
     isMuted: true,
+    bannedUntil: new Date(Date.now() + 10 * 60 * 1000),
   };
   try {
     const response: ChatParticipant =
