@@ -88,7 +88,7 @@ export class User {
 
   @IsOptional()
   @ApiProperty({ type: [Number], description: 'The IDs of blocked users.' })
-  @Column('int', { array: true, default: [] })
+  @Column('int', { array: true, default: [-1, -1] })
   blockedUsers?: number[];
 
   @IsOptional()

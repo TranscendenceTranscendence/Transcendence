@@ -26,8 +26,8 @@ export class UpdateUserResponse {
 }
 
 export class UpdateAddUserToBlockedListDto {
-  @ApiProperty({ type: 'User', description: 'The ID of the user to block.' })
-  targetUser: User;
+  @ApiProperty({ type: 'number', description: 'The ID of the user to block.' })
+  targetUserId: number;
 
   @ApiProperty({ type: 'string', description: 'The nickname of the user.' })
   @IsOptional()

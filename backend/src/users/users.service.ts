@@ -67,28 +67,23 @@ export class UsersService {
     return await this.usersRepository.save(userData);
   }
 
-  // async blockUser(
-  //   id: number,
-  //   AddBlockedUser: UpdateAddUserToBlockedListDto,
-  // ): Promise<User | false> {
-  //   const existingUser = await this.findOne(id);
-  //   const userData = this.usersRepository.merge(existingUser, AddBlockedUser);
-  //   if (!existingUser) return false;
+  async blockUser(
+    id: number,
+    AddBlockedUser: UpdateAddUserToBlockedListDto,
+  ): Promise<User | false> {
+    const existingUser = await this.findOne(id);
+    // const userData = this.usersRepository.merge(existingUser, AddBlockedUser);
+    if (!existingUser) return false;
 
-  //   if (
-  //     AddBlockedUser.blockedUsers.find(
-  //       (blockedUser) =>
-  //         blockedUser.blockedUser.id === AddBlockedUser.targetUser.id,
-  //     )
-  //   )
-  //     return false;
-  //   const newBlocked = this.blockedsRepository.create({
-  //     blockedUser: AddBlockedUser.targetUser,
-  //   });
-  //   AddBlockedUser.blockedUsers.push(newBlocked);
-  //   console.log('userData', userData);
-  //   return await this.usersRepository.save(userData);
-  // }
+    if (
+      existingUser.blockedUsers.find(
+        (blockedUser) => AddBlockedUser.targetUserId === blockedUser,
+      )
+    )
+      return false;
+    existingUser.blockedUsers.push(AddBlockedUser.targetUserId);
+    return await this.usersRepository.save(existingUser);
+  }
 
   async remove(id: number): Promise<User> {
     const existingUser = await this.findOne(id);
