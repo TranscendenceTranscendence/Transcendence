@@ -27,7 +27,6 @@ import {
 @Controller('chatroom')
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
-
   @Post()
   @ApiOperation({
     summary: 'Create a new chat room and add the creator as an owner',
@@ -46,7 +45,7 @@ export class ChatRoomsController {
       return {
         success: true,
         message: 'ChatRoom Created Successfully',
-        chatRoom,
+        data: chatRoom,
       };
     } catch (error) {
       return {

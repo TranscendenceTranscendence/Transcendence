@@ -9,6 +9,9 @@ import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/utils/providers/UserProvider";
+import { Button } from "@/components/ui/button";
+import { useChat } from "@/utils/providers/ChatProvider";
+import { postDmChatRoom } from "../../chat/ChatApiCalls";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +20,13 @@ export default function VisitingProfile() {
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
+  const {
+    chatRooms,
+    sendMessage,
+    currentChatRoomId,
+    leaveChatRoom,
+    joinChatRoom,
+  } = useChat();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   useEffect(() => {
@@ -105,6 +115,15 @@ export default function VisitingProfile() {
             <div className="flex flex-col items-end gap-2 justify-end">
               <div>
                 <FriendRequest user={visitingUser} />
+                <Button
+                  onClick={async () => {
+                    if (!visitingUser) return;
+
+                    await postDmChatRoom(api, me.user.id, visitingUser.id);
+                  }}
+                >
+                  DM {visitingUser.nickname}
+                </Button>
               </div>
               <div className="flex items-end gap-2">
                 <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>

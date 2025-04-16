@@ -5,6 +5,7 @@ import {
 } from "@/generated-api/index.ts";
 import { useApi } from "@/utils/api/index.ts";
 import { useEffect, useState } from "react";
+import { ChatRoomsControllerCreateRequest } from "@/generated-api/index.ts";
 
 export const useChatRooms = () => {
   const api = useApi();
@@ -112,5 +113,29 @@ export const useAddMessage = async (
     // console.log("Participant added:", response);
   } catch (error) {
     console.error("Error adding participant:", error);
+  }
+};
+
+export const postDmChatRoom = async (
+  api: ReturnType<typeof useApi>,
+  userId: number,
+  targetUser: number,
+) => {
+  try {
+    const chatRoomData: ChatRoomsControllerCreateRequest = {
+      createChatRoomDto: {
+        title: "Dm",
+        password: "",
+        creationDate: new Date(),
+        chatRoomType: "Dm",
+        userId: userId,
+        role: "guest",
+        invitedUserId: targetUser,
+      },
+    };
+
+    await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
+  } catch (error) {
+    console.error("Error creating chat room:", error);
   }
 };
