@@ -42,6 +42,12 @@ export interface ChatParticipant {
   chatParticipantRole: ChatParticipantChatParticipantRoleEnum;
   /**
    *
+   * @type {Date}
+   * @memberof ChatParticipant
+   */
+  leftAt: Date;
+  /**
+   *
    * @type {boolean}
    * @memberof ChatParticipant
    */
@@ -106,6 +112,7 @@ export function instanceOfChatParticipant(
     value["chatParticipantRole"] === undefined
   )
     return false;
+  if (!("leftAt" in value) || value["leftAt"] === undefined) return false;
   if (!("isBanned" in value) || value["isBanned"] === undefined) return false;
   if (!("isMuted" in value) || value["isMuted"] === undefined) return false;
   if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
@@ -130,6 +137,7 @@ export function ChatParticipantFromJSONTyped(
   }
   return {
     chatParticipantRole: json["chat_participant_role"],
+    leftAt: new Date(json["leftAt"]),
     isBanned: json["is_banned"],
     isMuted: json["is_muted"],
     createdAt: new Date(json["created_at"]),
@@ -154,6 +162,7 @@ export function ChatParticipantToJSONTyped(
 
   return {
     chat_participant_role: value["chatParticipantRole"],
+    leftAt: value["leftAt"].toISOString(),
     is_banned: value["isBanned"],
     is_muted: value["isMuted"],
     created_at: value["createdAt"].toISOString(),

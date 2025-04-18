@@ -26,6 +26,12 @@ export interface CreateChatParticipantDto {
    */
   chatParticipantRole?: CreateChatParticipantDtoChatParticipantRoleEnum;
   /**
+   * left at this date
+   * @type {Date}
+   * @memberof CreateChatParticipantDto
+   */
+  leftAt?: Date;
+  /**
    * Is banned
    * @type {boolean}
    * @memberof CreateChatParticipantDto
@@ -98,6 +104,7 @@ export function CreateChatParticipantDtoFromJSONTyped(
       json["chat_participant_role"] == null
         ? undefined
         : json["chat_participant_role"],
+    leftAt: json["leftAt"] == null ? undefined : new Date(json["leftAt"]),
     isBanned: json["is_banned"] == null ? undefined : json["is_banned"],
     isMuted: json["is_muted"] == null ? undefined : json["is_muted"],
     entranceTime:
@@ -125,6 +132,7 @@ export function CreateChatParticipantDtoToJSONTyped(
 
   return {
     chat_participant_role: value["chatParticipantRole"],
+    leftAt: value["leftAt"] == null ? undefined : value["leftAt"].toISOString(),
     is_banned: value["isBanned"],
     is_muted: value["isMuted"],
     entrance_time:

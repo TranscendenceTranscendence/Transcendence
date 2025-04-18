@@ -19,6 +19,10 @@ export class CreateChatParticipantDto extends PartialType(ChatParticipant) {
   @IsEnum(chat_participant_roles)
   chat_participant_role?: chat_participant_roles;
 
+  @ApiProperty({ description: 'left at this date' })
+  @IsOptional()
+  leftAt?: Date;
+
   @ApiProperty({ description: 'Is banned' })
   @IsOptional()
   @IsBoolean()
