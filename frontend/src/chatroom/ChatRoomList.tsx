@@ -8,6 +8,7 @@ import {
   ChatRoomsResponse,
   ChatRoomChatRoomTypeEnum,
 } from "@/generated-api/index.ts";
+import { ChatParticipant } from "@/generated-api/index.ts";
 
 interface ChatRoomListProps {
   chatRooms?: ChatRoomsResponse;
@@ -19,8 +20,8 @@ interface ChatRoomListProps {
 
 const ChatRoomList: React.FC<ChatRoomListProps> = ({
   chatRooms = [],
-  onChatRoomChange,
   userId,
+  onChatRoomChange,
   askPassword,
   setAskPassword,
 }) => {
@@ -49,7 +50,10 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
                   </h3>
                   <OnlineDot
                     status={chatRoom.chatParticipants.some(
-                      (p) => p.user_id === userId,
+                      (p: ChatParticipant) => {
+                        const isParticipant = p.userId === userId;
+                        return isParticipant;
+                      },
                     )}
                   />
                 </div>
