@@ -12,6 +12,7 @@ import { useUser } from "@/utils/providers/UserProvider";
 
 interface ChatContextProps {
   chatRooms: {
+    find(arg0: (chatRoom: any) => boolean): unknown;
     [key: number]: {
       messages: ChatMessage[];
       participants: ChatParticipant[];

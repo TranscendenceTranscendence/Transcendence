@@ -12,6 +12,7 @@ import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/utils/providers/ChatProvider";
 import { postDmChatRoom } from "../../chat/ChatApiCalls";
+import { ChatRoom } from "@/generated-api/models/ChatRoom";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -118,7 +119,32 @@ export default function VisitingProfile() {
                 <Button
                   onClick={async () => {
                     if (!visitingUser) return;
+                    if (Array.isArray(chatRooms)) {
+                      const existingChatRoom = chatRooms.find((chatRoom) => {
+                        return (
+                          chatRoom.chat_room_type === "Dm" &&
+                          (chatRoom.participants[0]?.id === visitingUser.id ||
+                            chatRoom.participants[1]?.id === visitingUser.id)
+                        );
+                      });
+                      if (existingChatRoom) {
+                        console.log("Already a dm session");
+                        joinChatRoom(existingChatRoom.id);
+                        return;
+                      } else console.log("needs a new one");
+                      console.log("olla");
+                    }
+                    console.log(chatRooms);
 
+                    // if (existingChatRoom) {
+                    //   joinChatRoom(existingChatRoom.id);
+                    //   return;
+                    // }
+                    // chatRooms[currentchatRoomId].chatParticipant
+                    // is er al een dm sessie waarvan de user deel van is
+                    // is er een chatroom dat waarbij deze user een participant heeft
+                    //  waar bij de andere participant
+                    // participant [0] of [1] gelijk is aan de visitingUser
                     await postDmChatRoom(api, me.user.id, visitingUser.id);
                   }}
                 >
