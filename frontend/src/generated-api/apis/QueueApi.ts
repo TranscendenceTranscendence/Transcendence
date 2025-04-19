@@ -13,6 +13,13 @@
  */
 
 import * as runtime from "../runtime";
+import type { QueueJoinResponse, QueueStatusResponse } from "../models/index";
+import {
+  QueueJoinResponseFromJSON,
+  QueueJoinResponseToJSON,
+  QueueStatusResponseFromJSON,
+  QueueStatusResponseToJSON,
+} from "../models/index";
 
 /**
  *
@@ -23,7 +30,7 @@ export class QueueApi extends runtime.BaseAPI {
    */
   async queueControllerGetQueueStatusRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<QueueStatusResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -46,7 +53,9 @@ export class QueueApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      QueueStatusResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -54,8 +63,9 @@ export class QueueApi extends runtime.BaseAPI {
    */
   async queueControllerGetQueueStatus(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.queueControllerGetQueueStatusRaw(initOverrides);
+  ): Promise<QueueStatusResponse> {
+    const response = await this.queueControllerGetQueueStatusRaw(initOverrides);
+    return await response.value();
   }
 
   /**
@@ -63,7 +73,7 @@ export class QueueApi extends runtime.BaseAPI {
    */
   async queueControllerJoinQueueRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<QueueJoinResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -86,7 +96,9 @@ export class QueueApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      QueueJoinResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -94,8 +106,9 @@ export class QueueApi extends runtime.BaseAPI {
    */
   async queueControllerJoinQueue(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.queueControllerJoinQueueRaw(initOverrides);
+  ): Promise<QueueJoinResponse> {
+    const response = await this.queueControllerJoinQueueRaw(initOverrides);
+    return await response.value();
   }
 
   /**
@@ -103,7 +116,7 @@ export class QueueApi extends runtime.BaseAPI {
    */
   async queueControllerLeaveQueueRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<QueueJoinResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -126,7 +139,9 @@ export class QueueApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      QueueJoinResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -134,7 +149,8 @@ export class QueueApi extends runtime.BaseAPI {
    */
   async queueControllerLeaveQueue(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.queueControllerLeaveQueueRaw(initOverrides);
+  ): Promise<QueueJoinResponse> {
+    const response = await this.queueControllerLeaveQueueRaw(initOverrides);
+    return await response.value();
   }
 }

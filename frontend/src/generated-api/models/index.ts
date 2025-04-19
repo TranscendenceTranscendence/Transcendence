@@ -22,6 +22,8 @@ export * from "./FriendsControllerGetFriendStatus200Response";
 export * from "./Game";
 export * from "./GetFriendRequestsDto";
 export * from "./MessagesResponse";
+export * from "./QueueJoinResponse";
+export * from "./QueueStatusResponse";
 export * from "./SearchUserResponseDto";
 export * from "./UpdateChatParticipantDto";
 export * from "./UpdateUserResponse";

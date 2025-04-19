@@ -4,16 +4,59 @@ import { useApi } from "@/utils/api";
 import "./Queue.css";
 
 const Queue = () => {
+  const [inQueue, setInQueue] = useState(false);
   const [searchTime, setSearchTime] = useState(0);
+  const [queuePosition, setQueuePosition] = useState(0);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const api = useApi();
+
+  const formatTime = (milliseconds: number) => {
+    const seconds = Math.floor(milliseconds / 1000);
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handleJoinQueue = async () => {
+    try {
+      const response = await api.Queue.queueControllerJoinQueue();
+      if (response && response.success) {
+        setInQueue(true);
+        setMessage("Joined queue successfully");
+      } else {
+        setError("Failed to join queue");
+      }
+    } catch (error) {
+      console.error("Error joining queue:", error);
+      setError("Error joining queue");
+    }
+  };
+
+  const handleLeaveQueue = async () => {
+    try {
+      const response = await api.Queue.queueControllerLeaveQueue();
+      if (response && response.success) {
+        setInQueue(false);
+        setSearchTime(0);
+        setQueuePosition(0);
+        setMessage("Left queue successfully");
+      } else {
+        setError("Failed to leave queue");
+      }
+    } catch (error) {
+      console.error("Error leaving queue:", error);
+      setError("Error leaving queue");
+    }
+  };
 
   useEffect(() => {
     const checkCurrentGame = async () => {
       try {
         const response = await api.Games.gamesControllerFindCurrentGame();
-        if (response)
-        {
+        console.log("Current game response:", response);
+        if (response.id !== undefined) {
           navigate(`/game`);
           return true;
         }
@@ -24,20 +67,36 @@ const Queue = () => {
       }
     };
 
-    const handleJoinQueue = async () => {
+    const checkQueueStatus = async () => {
       try {
-        const response = await api.Queues.
+        const response = await api.Queue.queueControllerGetQueueStatus();
+        console.log("Queue status response:", response);
+        if (response) {
+          if (response.message === "Pair found in queue") {
+            navigate(`/game`);
+          } else {
+            // Update queue stats
+            console.log("Queue seconds:", response.secondsInQueue);
+            setSearchTime(response.secondsInQueue || 0);
+            // You might need to update other state here based on your API response
+          }
+        }
+      } catch (error) {
+        console.error("Error checking queue status:", error);
       }
-    }
+    };
 
-
-    setInterval(() => {
-      checkCurrentGame();
+    const interval = setInterval(() => {
+      console.log("Checking for current game...");
+      checkCurrentGame().then((hasGame) => {
+        if (!hasGame && inQueue) {
+          checkQueueStatus();
+        }
+      });
     }, 1000);
-    });
-    return () => {
-    }
-  }, [navigate, api];
+
+    return () => clearInterval(interval);
+  }, [navigate, api, inQueue]);
 
   return (
     <div className="queue-page">

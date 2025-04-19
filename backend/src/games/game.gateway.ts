@@ -46,14 +46,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('joinGame')
   async handleJoinGame(client: Socket, data: any) {
     try {
+      console.log('Client ID:', client.id);
       const roomId = typeof data === 'object' ? data.roomId : data;
-      const userId = typeof data === 'object' ? data.userId : null;
+      const userId = typeof data === 'object' ? data.socketId : null;
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
       if (!roomId || roomId === undefined || playerNumber === -1) {
         console.error('Invalid roomId or playerNumber');
         return;
       }
+      console.log('Room ID:', roomId);
+      console.log('User ID:', userId);
+      console.log('Player Number:', playerNumber);
 
       let game = this.games.get(roomId);
       if (!game) {
@@ -79,7 +83,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         y: 50,
         x,
       };
-
+      console.log("Game players:", game.players);
       try {
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
 
@@ -88,6 +92,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           Object.keys(game.players).length == 2 &&
           dbGame.status == 'countdown'
         )
+         console.log('Starting countdown...');
           this.startCountdown(roomId);
       } catch (error) {
         console.error(`Error fetching game from database: ${error.message}`);

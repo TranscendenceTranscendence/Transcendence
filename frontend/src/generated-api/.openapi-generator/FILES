@@ -35,6 +35,8 @@ models/FriendsControllerGetFriendStatus200Response.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
 models/MessagesResponse.ts
+models/QueueJoinResponse.ts
+models/QueueStatusResponse.ts
 models/SearchUserResponseDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserResponse.ts

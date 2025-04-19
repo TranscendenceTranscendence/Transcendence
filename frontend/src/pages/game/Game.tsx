@@ -23,7 +23,7 @@ export default function Pong() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [gameFetched, setGameFetched] = useState<boolean>(false);
-  const [playerId, setPlayerId] = useState<string | null>(null);
+  const [socketId, setSocketId] = useState<string | null>(null);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
@@ -60,8 +60,9 @@ export default function Pong() {
       const socket = socketRef.current;
 
       socket.on("connect", () => {
+        console.log("Socket connected:", socket.id);
         setSocketConnected(true);
-        setPlayerId(socket.id);
+        setSocketId(socket.id);
       });
 
       socket.on("connect_error", (err) => {
@@ -84,7 +85,7 @@ export default function Pong() {
       });
 
       socket.on("gameStart", () => {
-        // console.log("Game started");
+        console.log("Game started");
       });
 
       socket.on("removePlayer", () => {
@@ -167,7 +168,15 @@ export default function Pong() {
     if (!socketConnected || !roomId || !socketRef.current || playerNumber == -1)
       return;
 
-    socketRef.current.emit("joinGame", { roomId, playerId, playerNumber });
+    console.log("Joining game with ID:", roomId);
+    console.log("socketRef.current", socketRef.current);
+    console.log("socketId", socketId);
+    console.log("playerNumber", playerNumber);
+    socketRef.current.emit("joinGame", {
+      roomId,
+      socketId,
+      playerNumber,
+    });
 
     return () => {
       // console.log("Cleaning up socket connection");
@@ -175,7 +184,7 @@ export default function Pong() {
   }, [socketConnected, roomId, playerNumber]);
 
   const movePaddle = (event: React.MouseEvent) => {
-    if (playerId && socketRef.current && roomId && socketConnected) {
+    if (socketId && socketRef.current && roomId && socketConnected) {
       const tableElement = document.getElementById("table");
 
       if (tableElement) {

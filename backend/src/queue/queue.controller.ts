@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Req, Delete } from '@nestjs/common';
 import { QueueService } from './queue.service';
 import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
 import { AuthenticatedRequest } from '../auth/guards/jwt-access.guard';
@@ -8,9 +8,13 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Game } from 'games/game.entity';
+import {
+  QueueJoinResponse,
+  QueueStatusResponse,
+} from './dto/queue-responses.dto';
 
 @ApiTags('Queue')
+@ApiBearerAuth()
 @Controller('queue')
 export class QueueController {
   constructor(private readonly queueService: QueueService) {}
@@ -18,24 +22,53 @@ export class QueueController {
   @Post('join')
   @UseGuards(JwtAccessAuthGuard)
   @ApiOperation({ summary: 'Join queue' })
-  @ApiResponse({ status: 200, description: 'Successfully joined queue' })
-  async joinQueue(req: AuthenticatedRequest) {
-    return this.queueService.addToQueue(req.user.id);
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully joined queue',
+    type: QueueJoinResponse,
+  })
+  async joinQueue(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<QueueJoinResponse> {
+    const success = await this.queueService.addToQueue(req.user.id);
+    return {
+      success,
+      message: success ? 'Joined queue successfully' : 'Already in queue',
+    };
+  }
+
+  @Delete('leave')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Leave queue' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully left queue',
+    type: QueueJoinResponse,
+  })
+  async leaveQueue(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<QueueJoinResponse> {
+    const success = await this.queueService.removeFromQueue(req.user.id);
+    return {
+      success,
+      message: success ? 'Left queue successfully' : 'Not in queue',
+    };
   }
 
   @Get('status')
   @UseGuards(JwtAccessAuthGuard)
   @ApiOperation({ summary: 'Get queue status' })
-  @ApiResponse({ status: 200, description: 'Queue status retrieved' })
-  async getQueueStatus(req: AuthenticatedRequest): Promise<{
-    Game: Game | [];
-    SecondsInQueue: number;
-    success: boolean;
-    message: string;
-  }> {
+  @ApiResponse({
+    status: 200,
+    description: 'Queue status retrieved',
+    type: QueueStatusResponse,
+  })
+  async getQueueStatus(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<QueueStatusResponse> {
     const time = await this.queueService.getTimeInQueue(req.user.id);
 
-    if (this.queueService.moreThan2()) {
+    if (await this.queueService.moreThan2()) {
       console.log('Found pair in queue');
       const game = await this.queueService.removePair();
       console.log('Game created: ', game);
