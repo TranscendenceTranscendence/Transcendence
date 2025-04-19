@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AchievementsModule } from './achievements/achievements.module';
 import { ChatMessagesModule } from './chat_messages/chat_messages.module';
-import { BlockedsModule } from './blockeds/blockeds.module';
 import { ChatParticipantsModule } from './chat_participants/chat_participants.module';
 import { ChatRoomsModule } from './chat_rooms/chat_rooms.module';
 import { FriendsModule } from './friends/friends.module';
@@ -42,7 +41,6 @@ import { MulterModule } from '@nestjs/platform-express';
     ChatModule,
     UsersModule,
     AchievementsModule,
-    BlockedsModule,
     ChatMessagesModule,
     ChatParticipantsModule,
     ChatRoomsModule,
