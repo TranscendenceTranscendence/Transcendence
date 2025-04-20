@@ -23,6 +23,7 @@ export class ChatParticipantsService {
     const chatParticipantData = await this.chatParticipantsRepository.create(
       createChatParticipantDto,
     );
+    console.log('Particpant added in backend service create');
     return this.chatParticipantsRepository.save(chatParticipantData);
   }
 
@@ -33,7 +34,7 @@ export class ChatParticipantsService {
   async findByChatRoomId(id: number): Promise<ChatParticipant[]> {
     const chatRoomData = await this.chatParticipantsRepository.find({
       where: { chatRoom: { id } },
-      relations: ['user'],
+      relations: ['user', 'user.blockedUsers'],
       loadEagerRelations: true,
     });
     if (!chatRoomData)

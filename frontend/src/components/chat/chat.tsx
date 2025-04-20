@@ -11,6 +11,13 @@ import { useState, useEffect, useRef } from "react";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { useNavigate } from "react-router";
 import { LogOut } from "lucide-react";
+import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
+import {
+  PromoteUser,
+  KickUser,
+  MuteUser,
+  BlockUser,
+} from "@/chat/ChatApiCalls";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -21,24 +28,51 @@ const ChatMessages = ({
   messages,
   participants,
   currentUserId,
+  setSelectedMessage,
+  chatComponentRef,
 }: {
   messages: ChatMessage[];
   participants: ChatParticipant[];
   currentUserId: number;
+  setSelectedMessage: React.Dispatch<
+    React.SetStateAction<{
+      userId: number;
+      x: number;
+      y: number;
+    } | null>
+  >;
+  chatComponentRef: React.RefObject<HTMLDivElement>;
 }) => {
   const navigate = useNavigate();
-  if (messages.length === 0) {
-    return <p className="text-center text-gray-500">No messages yet.</p>;
-  }
+  const handleMessageClick = (
+    e: React.MouseEvent,
+    user_id: number,
+    chatComponentRef: React.RefObject<HTMLDivElement>,
+  ) => {
+    e.stopPropagation();
 
+    if (chatComponentRef.current) {
+      const rect = chatComponentRef.current.getBoundingClientRect();
+      const relativeX = e.clientX - rect.left;
+      const relativeY = e.clientY - rect.top;
+
+      console.log("handleMessageClick", relativeX, relativeY);
+
+      setSelectedMessage({
+        userId: user_id,
+        x: relativeX,
+        y: relativeY,
+      });
+    }
+  };
+  console.log("in the message is de user", participants);
   return (
     <>
       {messages.map((msg, index) => {
         const user = participants.find((p) => p.user.id === msg.userId)?.user;
         if (!user) return null;
 
-        const isCurrentUser = user.id === currentUserId;
-
+        const isCurrentUser: boolean = user.id === currentUserId;
         return (
           <div
             key={index}
@@ -46,7 +80,7 @@ const ChatMessages = ({
               isCurrentUser ? "items-end" : "items-start"
             }`}
           >
-            {!isCurrentUser && (
+            {isCurrentUser == false && (
               <Button
                 variant="ghost"
                 className="text-xs text-gray-500"
@@ -65,6 +99,10 @@ const ChatMessages = ({
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted"
               }`}
+              onClick={(e) =>
+                !isCurrentUser &&
+                handleMessageClick(e, msg.userId, chatComponentRef)
+              }
             >
               {msg.content}
             </div>
@@ -85,7 +123,6 @@ const Chat = () => {
   } = useChat();
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
-
   const {
     register,
     handleSubmit,
@@ -94,11 +131,28 @@ const Chat = () => {
   } = useForm({
     resolver: zodResolver(messageSchema),
   });
-
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
-
+  const [selectedMessage, setSelectedMessage] = useState<{
+    userId: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const localParticipant: ChatParticipant | undefined =
+    me.user?.chatParticipants?.find((p: ChatParticipant) => {
+      console.log("Comparing:", p.chatRoomId, "with", currentChatRoomId);
+      return p.chatRoomId === currentChatRoomId;
+    });
+  const handleOutsideClick = () => {
+    setSelectedMessage(null);
+  };
+  useEffect(() => {
+    window.addEventListener("click", handleOutsideClick);
+    return () => {
+      window.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setStartPosition({
@@ -152,6 +206,16 @@ const Chat = () => {
     }
   };
 
+  const handleAction = (action: string, id: number) => {
+    if (action == "Kick") KickUser(currentChatRoomId, id);
+    else if (action == "Promote") PromoteUser(currentChatRoomId, id);
+    else if (action == "Mute") MuteUser(currentChatRoomId, id);
+    else if (action == "Block") BlockUser(id);
+
+    console.log(`${action} user with ID: ${id}`);
+    setSelectedMessage(null);
+  };
+
   const currentChatRoom = currentChatRoomId
     ? chatRooms[currentChatRoomId]
     : null;
@@ -159,7 +223,9 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-
+  if (localParticipant) {
+    console.log("deze", localParticipant);
+  } else console.log("localParticipant is undefined");
   return (
     <Card
       ref={cardRef}
@@ -202,27 +268,101 @@ const Chat = () => {
           messages={currentChatRoom.messages ?? []}
           participants={currentChatRoom.participants}
           currentUserId={me.user?.id}
+          setSelectedMessage={setSelectedMessage}
+          chatComponentRef={cardRef}
         />
       </CardContent>
       <CardFooter className="space-x-2 py-3">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex w-full space-x-2"
-        >
-          <Input
-            type="text"
-            {...register("message")}
-            placeholder="Type a message"
-            aria-label="Message input"
-          />
-          <Button type="submit" size="icon" aria-label="Send message">
-            <SendIcon />
-          </Button>
-        </form>
+        {localParticipant.isMuted ? (
+          <div>
+            <p className="text-gray-500 text-sm">
+              You are currently muted you can send messages again at
+            </p>
+            <p>
+              {localParticipant.bannedUntil
+                ? new Date(localParticipant.bannedUntil).toLocaleString()
+                : "Not banned"}
+            </p>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full space-x-2"
+          >
+            <Input
+              type="text"
+              {...register("message")}
+              placeholder="Type a message"
+              aria-label="Message input"
+            />
+            <Button type="submit" size="icon" aria-label="Send message">
+              <SendIcon />
+            </Button>
+          </form>
+        )}
         {errors.message && (
           <p className="text-red-500 text-sm">
             {errors.message.message.toString()}
           </p>
+        )}
+
+        {selectedMessage && (
+          <Card
+            className="messagePrompt"
+            style={{
+              position: "absolute",
+              top: selectedMessage.y,
+              left: selectedMessage.x,
+              background: "black",
+              color: "white",
+              border: "1px solid black",
+              padding: "10px",
+              zIndex: 1000,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p>Actions for User {selectedMessage.userId}:</p>
+            {localParticipant &&
+              (localParticipant.chatParticipantRole ==
+                ChatParticipantChatParticipantRoleEnum.Owner ||
+                localParticipant.chatParticipantRole ==
+                  ChatParticipantChatParticipantRoleEnum.Admin) && (
+                <button
+                  onClick={() => handleAction("Kick", selectedMessage.userId)}
+                >
+                  Kick
+                </button>
+              )}
+            {localParticipant &&
+              (localParticipant.chatParticipantRole ==
+                ChatParticipantChatParticipantRoleEnum.Owner ||
+                localParticipant.chatParticipantRole ==
+                  ChatParticipantChatParticipantRoleEnum.Admin) && (
+                <button
+                  onClick={() =>
+                    handleAction("Promote", selectedMessage.userId)
+                  }
+                >
+                  Promote
+                </button>
+              )}
+            {localParticipant &&
+              (localParticipant.chatParticipantRole ==
+                ChatParticipantChatParticipantRoleEnum.Owner ||
+                localParticipant.chatParticipantRole ==
+                  ChatParticipantChatParticipantRoleEnum.Admin) && (
+                <button
+                  onClick={() => handleAction("Mute", selectedMessage.userId)}
+                >
+                  Mute
+                </button>
+              )}
+            <button
+              onClick={() => handleAction("Block", selectedMessage.userId)}
+            >
+              Block
+            </button>
+          </Card>
         )}
       </CardFooter>
     </Card>

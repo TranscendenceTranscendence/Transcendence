@@ -13,8 +13,14 @@
  */
 
 import * as runtime from "../runtime";
-import type { ChatRoomsResponse, CreateChatRoomDto } from "../models/index";
+import type {
+  ChatRoomResponse,
+  ChatRoomsResponse,
+  CreateChatRoomDto,
+} from "../models/index";
 import {
+  ChatRoomResponseFromJSON,
+  ChatRoomResponseToJSON,
   ChatRoomsResponseFromJSON,
   ChatRoomsResponseToJSON,
   CreateChatRoomDtoFromJSON,
@@ -30,11 +36,11 @@ export interface ChatRoomsControllerFindOneRequest {
 }
 
 export interface ChatRoomsControllerRemoveRequest {
-  id: string;
+  id: number;
 }
 
 export interface ChatRoomsControllerUpdateRequest {
-  id: string;
+  id: number;
   body: object;
 }
 
@@ -192,7 +198,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerFindOneRaw(
     requestParameters: ChatRoomsControllerFindOneRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
+  ): Promise<runtime.ApiResponse<ChatRoomResponse>> {
     if (requestParameters["id"] == null) {
       throw new runtime.RequiredError(
         "id",
@@ -218,7 +224,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     );
 
     return new runtime.JSONApiResponse(response, (jsonValue) =>
-      ChatRoomsResponseFromJSON(jsonValue),
+      ChatRoomResponseFromJSON(jsonValue),
     );
   }
 
@@ -228,7 +234,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerFindOne(
     requestParameters: ChatRoomsControllerFindOneRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<ChatRoomsResponse> {
+  ): Promise<ChatRoomResponse> {
     const response = await this.chatRoomsControllerFindOneRaw(
       requestParameters,
       initOverrides,

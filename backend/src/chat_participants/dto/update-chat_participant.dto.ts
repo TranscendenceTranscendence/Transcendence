@@ -25,4 +25,8 @@ export class UpdateChatParticipantDto extends PartialType(
   @ApiProperty({ description: 'left at this date' })
   @IsOptional()
   leftAt?: Date;
+
+  @ApiProperty({ description: 'Banned until date' })
+  @IsOptional()
+  banned_until?: Date;
 }

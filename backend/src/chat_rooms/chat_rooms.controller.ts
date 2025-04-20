@@ -18,7 +18,10 @@ import {
   AuthenticatedRequest,
   JwtAccessAuthGuard,
 } from '../auth/guards/jwt-access.guard';
-import { ChatRoomsResponse } from './dto/chat_rooms-response.dto';
+import {
+  ChatRoomResponse,
+  ChatRoomsResponse,
+} from './dto/chat_rooms-response.dto';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
@@ -148,7 +151,7 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 200,
     description: 'Chat room fetched successfully.',
-    type: ChatRoomsResponse,
+    type: ChatRoomResponse,
   })
   @ApiResponse({
     status: 404,
@@ -156,7 +159,7 @@ export class ChatRoomsController {
   })
   async findOne(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<ChatRoomsResponse> {
+  ): Promise<ChatRoomResponse> {
     try {
       const data = await this.chatRoomsService.findOne(id);
       return {
@@ -187,7 +190,7 @@ export class ChatRoomsController {
     description: 'Invalid input data.',
   })
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateChatRoomDto: UpdateChatRoomDto,
   ) {
     try {
@@ -214,7 +217,7 @@ export class ChatRoomsController {
     status: 404,
     description: 'Chat room not found.',
   })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: number) {
     try {
       await this.chatRoomsService.remove(+id);
       return {
