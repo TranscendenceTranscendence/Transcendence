@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
+import { GameStatus } from './game.entity';
 
 interface Player {
   id: string;
@@ -86,13 +87,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log("Game players:", game.players);
       try {
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
+        console.log("DB Game:", dbGame);
 
         this.server.to(client.id).emit('update', game);
         if (
-          Object.keys(game.players).length == 2 &&
-          dbGame.status == 'countdown'
+          Object.keys(game.players).length == 2
+          && dbGame.status === GameStatus.PENDING
         )
-         console.log('Starting countdown...');
           this.startCountdown(roomId);
       } catch (error) {
         console.error(`Error fetching game from database: ${error.message}`);
@@ -109,6 +110,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!game || game.countdownActive) return;
 
     game.countdownActive = true;
+    this.gamesService.updateGameStatus(roomId, GameStatus.COUNTDOWN);
 
     const countdownInterval = setInterval(() => {
       this.server.to(roomId).emit('countdown', count);
@@ -135,6 +137,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       count--;
     }, 1000);
+    this.gamesService.updateGameStatus(roomId, GameStatus.ONGOING);
   }
 
   @SubscribeMessage('move')
