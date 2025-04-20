@@ -141,7 +141,6 @@ const Chat = () => {
   } | null>(null);
   const localParticipant: ChatParticipant | undefined =
     me.user?.chatParticipants?.find((p: ChatParticipant) => {
-      console.log("Comparing:", p.chatRoomId, "with", currentChatRoomId);
       return p.chatRoomId === currentChatRoomId;
     });
   const handleOutsideClick = () => {

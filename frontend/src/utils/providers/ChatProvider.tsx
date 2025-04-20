@@ -10,6 +10,7 @@ import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { io, Socket } from "socket.io-client";
 import { useUser } from "@/utils/providers/UserProvider";
 import { chat_participant_roles } from "../PostRequest";
+import { UpdateParticipant } from "@/chat/ChatApiCalls";
 
 interface ChatContextProps {
   chatRooms: {
@@ -155,13 +156,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } else {
       try {
-        api.ChatParticipants.chatParticipantsControllerRemove({
-          chatRoomId: participant.chatRoomId.toString(),
-          id: participant.user.id.toString(),
-        });
-        // console.log("Participant removed participant/leaved chatroom");
+        UpdateParticipant(participant.chatRoomId, participant.userId);
+        console.log("Participant leftAt is updated");
       } catch (error) {
-        // console.error("Failed to remove participant:", error);
+        // console.error("Failed to update leftAt participant:", error);
       }
     }
     leaveChatRoom();

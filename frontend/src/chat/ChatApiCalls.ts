@@ -187,3 +187,21 @@ export const BlockUser = async (targetUser: number) => {
     console.error("Error blocking user:", error);
   }
 };
+
+export const UpdateParticipant = async (chatRoomId: number, id: number) => {
+  // const api = useApi();
+  // const updateDto: UpdateChatParticipantDto = {
+  //   leftAt: new Date(),
+  // };
+  // try {
+  //   const response: ChatParticipant =
+  //     await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+  //       chatRoomId,
+  //       id,
+  //       updateChatParticipantDto: updateDto,
+  //     });
+  //   console.log("Update Successful:", response);
+  // } catch (error) {
+  //   console.error("Error updating user:", error);
+  // }
+};
