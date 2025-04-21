@@ -4,4 +4,6 @@ export class findChatMessageDto {
   sent_time_from?: Date;
 
   sent_time_till?: Date;
+
+  blockedUsers?: number[];
 }

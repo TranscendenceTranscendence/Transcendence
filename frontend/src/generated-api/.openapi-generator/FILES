@@ -1,7 +1,7 @@
+.openapi-generator-ignore
 apis/AchievementsApi.ts
 apis/AppApi.ts
 apis/AuthApi.ts
-apis/BlockedsApi.ts
 apis/ChatMessagesApi.ts
 apis/ChatParticipantsApi.ts
 apis/ChatRoomsApi.ts
@@ -15,7 +15,6 @@ apis/index.ts
 index.ts
 models/Achievement.ts
 models/AchievementsResponse.ts
-models/Blocked.ts
 models/ChatMessage.ts
 models/ChatParticipant.ts
 models/ChatParticipantResponse.ts
@@ -23,7 +22,6 @@ models/ChatParticipantsResponse.ts
 models/ChatRoom.ts
 models/ChatRoomResponse.ts
 models/ChatRoomsResponse.ts
-models/CreateBlockedDto.ts
 models/CreateChatMessageDto.ts
 models/CreateChatParticipantDto.ts
 models/CreateChatRoomDto.ts
@@ -39,6 +37,7 @@ models/QueueJoinResponse.ts
 models/QueueStatusResponse.ts
 models/QueueUserInQueueResponse.ts
 models/SearchUserResponseDto.ts
+models/UpdateAddUserToBlockedListDto.ts
 models/UpdateChatParticipantDto.ts
 models/UpdateUserResponse.ts
 models/User.ts

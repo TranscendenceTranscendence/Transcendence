@@ -15,10 +15,15 @@ export const ChatRoomContainer = () => {
   );
   const [passwordInput, setPasswordInput] = useState("");
   const me = useUser();
+  let userId: number;
 
   const { addParticipant } = useAddParticipant();
 
   const handleAddParticipant = async (userId: number, chatRoomId: number) => {
+    if (!userId || !chatRoomId) {
+      console.error("Invalid userId or chatRoomId");
+      return;
+    }
     await addParticipant(userId, chatRoomId);
   };
   const handeSwitchChatRoom = (

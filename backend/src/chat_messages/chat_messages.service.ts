@@ -44,7 +44,8 @@ export class ChatMessagesService {
   async find(
     findDto: findChatMessageDto & { currentUserId: number },
   ): Promise<ChatMessage[]> {
-    const { chatRoomId, sent_time_from, sent_time_till } = findDto;
+    const { chatRoomId, sent_time_from, sent_time_till, blockedUsers } =
+      findDto;
     const chatParticipant = await this.chatParticipantRepository.findOne({
       where: {
         user_id: findDto.currentUserId,
@@ -66,6 +67,12 @@ export class ChatMessagesService {
       queryBuilder.andWhere('chat_message.sent_time BETWEEN :from AND :to', {
         from: sent_time_from,
         to: sent_time_till,
+      });
+    }
+    console.log('Blocked Users:', blockedUsers);
+    if (Array.isArray(blockedUsers) && blockedUsers.length > 0) {
+      queryBuilder.andWhere('chat_message.user_id NOT IN (:...blockedUsers)', {
+        blockedUsers,
       });
     }
     return queryBuilder.getMany();

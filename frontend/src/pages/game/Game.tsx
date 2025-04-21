@@ -24,6 +24,7 @@ export default function Pong() {
   const [roomId, setRoomId] = useState<string>("");
   const [gameFetched, setGameFetched] = useState<boolean>(false);
   const [socketId, setSocketId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
@@ -42,56 +43,71 @@ export default function Pong() {
   });
 
   useEffect(() => {
-    if (!socketRef.current) {
-      const token = localStorage.getItem("access_token");
+    const fetchUserData = async () => {
+      try {
+        const userData = await api.Users.usersControllerMe();
 
-      if (!token) {
-        setError("No authentication token found");
-        return;
+        if (!socketRef.current) {
+          const token = localStorage.getItem("access_token");
+
+          if (!token) {
+            setError("No authentication token found");
+            return;
+          }
+
+          socketRef.current = io(config.backendUrl, {
+            auth: { token },
+            transports: ["websocket"],
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
+          });
+
+          const socket = socketRef.current;
+
+          socket.on("connect", () => {
+            setSocketConnected(true);
+            setSocketId(socket.id);
+            setUserId(userData.id);
+          });
+
+          socket.on("connect_error", (err) => {
+            console.error("Socket connection error:", err);
+            setError(`Connection error: ${err.message}`);
+            setSocketConnected(false);
+          });
+
+          socket.on("disconnect", (reason) => {
+            void reason;
+            setSocketConnected(false);
+          });
+
+          socket.on("update", (state) => {
+            setGameState(state);
+          });
+
+          socket.on("countdown", (count) => {
+            setCount(count);
+          });
+
+          socket.on("gameStart", () => {
+            // console.log("Game started");
+          });
+
+          socket.on("removePlayer", () => {
+            navigate("/result");
+          });
+
+          socket.on("alreadyConnected", () => {
+            setError("You are already connected to this game");
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        setError("Authentication failed");
       }
+    };
 
-      socketRef.current = io(config.backendUrl + "/game", {
-        auth: { token },
-        transports: ["websocket"],
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      });
-
-      const socket = socketRef.current;
-
-      socket.on("connect", () => {
-        console.log("Socket connected:", socket.id);
-        setSocketConnected(true);
-        setSocketId(socket.id);
-      });
-
-      socket.on("connect_error", (err) => {
-        console.error("Socket connection error:", err);
-        setError(`Connection error: ${err.message}`);
-        setSocketConnected(false);
-      });
-
-      socket.on("disconnect", (reason) => {
-        void reason;
-        setSocketConnected(false);
-      });
-
-      socket.on("update", (state) => {
-        setGameState(state);
-      });
-
-      socket.on("countdown", (count) => {
-        setCount(count);
-      });
-
-      socket.on("gameStart", () => {
-        console.log("Game started");
-      });
-
-      socket.on("removePlayer", () => {
-        navigate("/result");
-      });
-    }
+    fetchUserData();
 
     return () => {
       isComponentMounted.current = false;
@@ -153,7 +169,7 @@ export default function Pong() {
 
         setRoomId(game.roomIdentifier);
         await checkPlayerNumber(game);
-        await fetchPlayerNames(game); // Add this line
+        await fetchPlayerNames(game);
         setGameFetched(true);
       } catch (e) {
         console.error("Error fetching game:", e);
@@ -168,14 +184,10 @@ export default function Pong() {
     if (!socketConnected || !roomId || !socketRef.current || playerNumber == -1)
       return;
 
-    console.log("Joining game with ID:", roomId);
-    console.log("socketRef.current", socketRef.current);
-    console.log("socketId", socketId);
-    console.log("playerNumber", playerNumber);
     socketRef.current.emit("joinGame", {
-      roomId,
-      socketId,
-      playerNumber,
+      roomId: roomId,
+      userId: userId,
+      playerNumber: playerNumber,
     });
 
     return () => {
@@ -241,7 +253,11 @@ export default function Pong() {
                 <button
                   onClick={() => {
                     if (socketRef.current && roomId) {
-                      socketRef.current.emit("joinGame", { roomId });
+                      socketRef.current.emit("joinGame", {
+                        roomId: roomId,
+                        userId: userId,
+                        playerNumber: playerNumber,
+                      });
                       location.reload();
                     }
                   }}

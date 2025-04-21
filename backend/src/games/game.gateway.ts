@@ -16,7 +16,6 @@ interface Player {
   x: number;
 }
 
-// Update the GameState interface to include score
 interface GameState {
   id: string;
   ball: { x: number; y: number; dx: number; dy: number };
@@ -31,6 +30,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private playerToRoom = new Map<string, string>();
   private socketToUserId = new Map<string, number>();
+  private userIdToSocket = new Map<number, string>();
 
   constructor(private readonly gamesService: GamesService) {}
   private games = new Map<string, GameState>();
@@ -52,7 +52,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const userId = typeof data === 'object' ? data.socketId : null;
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
-      if (!roomId || roomId === undefined || playerNumber === -1) {
+      if (
+        !roomId ||
+        roomId === undefined ||
+        playerNumber > 1 ||
+        playerNumber < 0
+      ) {
         console.error('Invalid roomId or playerNumber');
         return;
       }
@@ -65,6 +70,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         game = this.createGame(roomId);
       }
 
+      if (userId && this.userIdToSocket.has(userId)) {
+        console.error('User is already connected to a game');
+        this.server.to(client.id).emit('alreadyConnected');
+        return;
+      }
+
       if (
         Object.keys(game.players).length >= 2 ||
         this.playerToRoom.has(client.id)
@@ -74,6 +85,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       this.playerToRoom.set(client.id, roomId);
       this.socketToUserId.set(client.id, userId);
+      this.userIdToSocket.set(userId, client.id);
 
       client.join(roomId);
 
@@ -235,7 +247,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] >= 11 || game.score[1] >= 11) {
+    if (game.score[0] >= 1111 || game.score[1] >= 1111) {
       try {
         this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);
@@ -276,7 +288,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!roomId) return;
 
     this.playerToRoom.delete(client.id);
+    const userId = this.socketToUserId.get(client.id);
     this.socketToUserId.delete(client.id);
+    if (userId) {
+      this.userIdToSocket.delete(userId);
+    }
 
     const game = this.games.get(roomId);
     if (game && game.players[client.id]) {
