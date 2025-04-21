@@ -6,7 +6,6 @@ import "./Queue.css";
 const Queue = () => {
   const [inQueue, setInQueue] = useState(false);
   const [searchTime, setSearchTime] = useState(0);
-  const [queuePosition, setQueuePosition] = useState(0);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -18,6 +17,27 @@ const Queue = () => {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
+
+  useEffect(() => {
+    const isUserAlreadyInQueue = async () => {
+      console.log("Component mounted or page reloaded");
+      try {
+        const response = await api.Queue.queueControllerIsInQueue();
+        if (response && response.isInQueue) {
+          setInQueue(true);
+        }
+      } catch {
+        console.error("Error checking if user is in queue:", error);
+        setError("Error checking queue status");
+      }
+    };
+
+    isUserAlreadyInQueue();
+
+    return () => {
+      console.log("Component unmounted");
+    };
+  }, []);
 
   const handleJoinQueue = async () => {
     try {
@@ -40,7 +60,6 @@ const Queue = () => {
       if (response && response.success) {
         setInQueue(false);
         setSearchTime(0);
-        setQueuePosition(0);
         setMessage("Left queue successfully");
       } else {
         setError("Failed to leave queue");
@@ -75,10 +94,8 @@ const Queue = () => {
           if (response.message === "Pair found in queue") {
             navigate(`/game`);
           } else {
-            // Update queue stats
             console.log("Queue seconds:", response.secondsInQueue);
             setSearchTime(response.secondsInQueue || 0);
-            // You might need to update other state here based on your API response
           }
         }
       } catch (error) {
@@ -113,9 +130,6 @@ const Queue = () => {
               <div className="queue-info">
                 <h2>Searching for opponent...</h2>
                 <div className="search-time">{formatTime(searchTime)}</div>
-                <div className="queue-position">
-                  Position in queue: {queuePosition}
-                </div>
                 <div className="queue-spinner"></div>
               </div>
               <button className="leave-queue-btn" onClick={handleLeaveQueue}>

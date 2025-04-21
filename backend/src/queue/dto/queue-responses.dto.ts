@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Game } from '../../games/game.entity';
 
+export class QueueUserInQueueResponse {
+  @ApiProperty({
+    example: true,
+    description: 'If user is in queue or not',
+  })
+  isInQueue: boolean;
+}
 export class QueueJoinResponse {
   @ApiProperty({
     example: true,

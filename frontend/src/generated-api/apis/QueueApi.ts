@@ -13,12 +13,18 @@
  */
 
 import * as runtime from "../runtime";
-import type { QueueJoinResponse, QueueStatusResponse } from "../models/index";
+import type {
+  QueueJoinResponse,
+  QueueStatusResponse,
+  QueueUserInQueueResponse,
+} from "../models/index";
 import {
   QueueJoinResponseFromJSON,
   QueueJoinResponseToJSON,
   QueueStatusResponseFromJSON,
   QueueStatusResponseToJSON,
+  QueueUserInQueueResponseFromJSON,
+  QueueUserInQueueResponseToJSON,
 } from "../models/index";
 
 /**
@@ -65,6 +71,49 @@ export class QueueApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<QueueStatusResponse> {
     const response = await this.queueControllerGetQueueStatusRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * Check if user is in queue
+   */
+  async queueControllerIsInQueueRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<QueueUserInQueueResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
+    const response = await this.request(
+      {
+        path: `/queue/isInQueue`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      QueueUserInQueueResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Check if user is in queue
+   */
+  async queueControllerIsInQueue(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<QueueUserInQueueResponse> {
+    const response = await this.queueControllerIsInQueueRaw(initOverrides);
     return await response.value();
   }
 

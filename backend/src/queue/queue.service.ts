@@ -57,6 +57,10 @@ export class QueueService {
     return true;
   }
 
+  async isPersonInQueue(userId: number): Promise<boolean> {
+    return this.queues.some((queue) => queue.userId === userId);
+  }
+
   async removeFromQueue(userId: number): Promise<boolean> {
     const initialLength = this.queues.length;
     this.queues = this.queues.filter((queue) => queue.userId !== userId);

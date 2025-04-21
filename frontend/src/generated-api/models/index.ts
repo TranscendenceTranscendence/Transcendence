@@ -24,6 +24,7 @@ export * from "./GetFriendRequestsDto";
 export * from "./MessagesResponse";
 export * from "./QueueJoinResponse";
 export * from "./QueueStatusResponse";
+export * from "./QueueUserInQueueResponse";
 export * from "./SearchUserResponseDto";
 export * from "./UpdateChatParticipantDto";
 export * from "./UpdateUserResponse";

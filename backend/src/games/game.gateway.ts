@@ -84,15 +84,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         y: 50,
         x,
       };
-      console.log("Game players:", game.players);
+      console.log('Game players:', game.players);
       try {
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
-        console.log("DB Game:", dbGame);
+        console.log('DB Game:', dbGame);
 
         this.server.to(client.id).emit('update', game);
         if (
-          Object.keys(game.players).length == 2
-          && dbGame.status === GameStatus.PENDING
+          Object.keys(game.players).length == 2 &&
+          dbGame.status === GameStatus.PENDING
         )
           this.startCountdown(roomId);
       } catch (error) {
@@ -235,7 +235,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] >= 1111 || game.score[1] >= 1111) {
+    if (game.score[0] >= 11 || game.score[1] >= 11) {
       try {
         this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);

@@ -11,6 +11,7 @@ import {
 import {
   QueueJoinResponse,
   QueueStatusResponse,
+  QueueUserInQueueResponse,
 } from './dto/queue-responses.dto';
 
 @ApiTags('Queue')
@@ -85,6 +86,23 @@ export class QueueController {
       SecondsInQueue: time,
       success: true,
       message: 'No pair found in queue',
+    };
+  }
+
+  @Get('isInQueue')
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiOperation({ summary: 'Check if user is in queue' })
+  @ApiResponse({
+    status: 200,
+    description: 'User is in queue',
+    type: QueueUserInQueueResponse,
+  })
+  async isInQueue(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<QueueUserInQueueResponse> {
+    const isInQueue = await this.queueService.isPersonInQueue(req.user.id);
+    return {
+      isInQueue,
     };
   }
 }
