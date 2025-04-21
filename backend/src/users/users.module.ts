@@ -9,10 +9,11 @@ import { ConfigModule } from '@nestjs/config';
 import FortyTwoOauthConfig from '../config/ft-oauth.config';
 import { UsersGateway } from './users.gateway';
 import { AchievementsModule } from '../achievements/achievements.module';
+import { Achievement } from '../achievements/achievement.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Achievement]),
     ConfigModule.forFeature(FortyTwoOauthConfig),
     AchievementsModule,
     ConfigModule.forFeature(JwtConfig),
