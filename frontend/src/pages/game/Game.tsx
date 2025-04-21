@@ -55,7 +55,7 @@ export default function Pong() {
             return;
           }
 
-          socketRef.current = io(config.backendUrl, {
+          socketRef.current = io(`${config.backendUrl}/game`, {
             auth: { token },
             transports: ["websocket"],
             reconnectionAttempts: 5,
