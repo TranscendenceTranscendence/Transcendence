@@ -37,6 +37,12 @@ export interface UpdateChatParticipantDto {
    * @memberof UpdateChatParticipantDto
    */
   isMuted?: boolean;
+  /**
+   * Banned until date
+   * @type {Date}
+   * @memberof UpdateChatParticipantDto
+   */
+  bannedUntil?: Date;
 }
 
 /**
@@ -79,6 +85,8 @@ export function UpdateChatParticipantDtoFromJSONTyped(
         : json["chat_participant_role"],
     isBanned: json["is_banned"] == null ? undefined : json["is_banned"],
     isMuted: json["is_muted"] == null ? undefined : json["is_muted"],
+    bannedUntil:
+      json["banned_until"] == null ? undefined : new Date(json["banned_until"]),
   };
 }
 
@@ -100,5 +108,9 @@ export function UpdateChatParticipantDtoToJSONTyped(
     chat_participant_role: value["chatParticipantRole"],
     is_banned: value["isBanned"],
     is_muted: value["isMuted"],
+    banned_until:
+      value["bannedUntil"] == null
+        ? undefined
+        : value["bannedUntil"].toISOString(),
   };
 }

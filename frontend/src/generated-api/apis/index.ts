@@ -3,7 +3,6 @@
 export * from "./AchievementsApi";
 export * from "./AppApi";
 export * from "./AuthApi";
-export * from "./BlockedsApi";
 export * from "./ChatMessagesApi";
 export * from "./ChatParticipantsApi";
 export * from "./ChatRoomsApi";

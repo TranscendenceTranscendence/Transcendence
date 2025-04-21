@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { PostChatRoom } from "./PostChatRoom";
 
 export const DialogPostChatRoom = ({ userId }) => {
-  if (typeof userId !== "number") return null; // Ensure userId is a number
+  if (typeof userId !== "number") return null;
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -30,7 +30,6 @@ export const DialogPostChatRoom = ({ userId }) => {
   );
 };
 
-// ✅ Prop Validation: Ensure userId is a required number
 DialogPostChatRoom.propTypes = {
   userId: PropTypes.number.isRequired,
 };
