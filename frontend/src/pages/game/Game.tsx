@@ -88,37 +88,27 @@ export default function Pong() {
             setCount(count);
           });
 
-      socket.on("gameStart", () => {
-        // console.log("Game started");
-      });
-
-      socket.on("gameEnd", (result) => {
-        // Store final game state for result page if needed
-        sessionStorage.setItem(
-          "gameResult",
-          JSON.stringify({
-            winner: result.winner,
-            score: result.finalScore,
-            players: result.players,
-            timestamp: new Date().toISOString(),
-          }),
-        );
-
-        // Give a moment to see the final state
-        setTimeout(() => {
-          navigate("/result");
-        }, 1000);
-      });
-          socket.on("gameStart", () => {
-            // console.log("Game started");
-          });
-
           socket.on("removePlayer", () => {
             navigate("/result");
           });
 
           socket.on("alreadyConnected", () => {
             setError("You are already connected to this game");
+          });
+          socket.on("gameEnd", (result) => {
+            sessionStorage.setItem(
+              "gameResult",
+              JSON.stringify({
+                winner: result.winner,
+                score: result.finalScore,
+                players: result.players,
+                timestamp: new Date().toISOString(),
+              }),
+            );
+
+            setTimeout(() => {
+              navigate("/result");
+            }, 1000);
           });
         }
       } catch (error) {
@@ -276,9 +266,10 @@ export default function Pong() {
                   onClick={() => {
                     if (socketRef.current && roomId) {
                       socketRef.current.emit("joinGame", {
-                        roomId: roomId,
-                        userId: playerId,
-                        playerNumber: playerNumber,
+                        roomId,
+                        playerId,
+                        playerName,
+                        playerNumber,
                       });
                       location.reload();
                     }
