@@ -49,9 +49,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       console.log('Client ID:', client.id);
       const roomId = typeof data === 'object' ? data.roomId : data;
-      const userId = typeof data === 'object' ? data.socketId : null;
+      const userId = typeof data === 'object' ? data.userId : null; // Use userId, not socketId
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
+      console.log('Data:', data);
       if (
         !roomId ||
         roomId === undefined ||
@@ -247,7 +248,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.updateScoreInDatabase(roomId, game.score);
     }
 
-    if (game.score[0] >= 1111 || game.score[1] >= 1111) {
+    if (game.score[0] >= 11 || game.score[1] >= 11) {
       try {
         this.updateScoreInDatabase(roomId, game.score);
         this.gamesService.closeGame(roomId);
