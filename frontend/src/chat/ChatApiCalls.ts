@@ -188,20 +188,25 @@ export const BlockUser = async (targetUser: number) => {
   }
 };
 
-export const UpdateParticipant = async (chatRoomId: number, id: number) => {
-  // const api = useApi();
-  // const updateDto: UpdateChatParticipantDto = {
-  //   leftAt: new Date(),
-  // };
-  // try {
-  //   const response: ChatParticipant =
-  //     await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
-  //       chatRoomId,
-  //       id,
-  //       updateChatParticipantDto: updateDto,
-  //     });
-  //   console.log("Update Successful:", response);
-  // } catch (error) {
-  //   console.error("Error updating user:", error);
-  // }
+export const UpdateParticipant = async (
+  chatRoomId: number,
+  id: number,
+  reset: boolean,
+) => {
+  const api = useApi();
+  const updateDto: UpdateChatParticipantDto = {
+    leftAt: reset ? new Date(0) : new Date(),
+  };
+  console.log("Update DTO:", updateDto, id, chatRoomId);
+  try {
+    const response: ChatParticipant =
+      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+        id,
+        chatRoomId,
+        updateChatParticipantDto: updateDto,
+      });
+    console.log("Update Successful:", response);
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
 };

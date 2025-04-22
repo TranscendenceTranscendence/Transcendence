@@ -156,7 +156,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } else {
       try {
-        UpdateParticipant(participant.chatRoomId, participant.userId);
+        participant.leftAt = new Date();
+        UpdateParticipant(participant.chatRoomId, participant.userId, false);
         console.log("Participant leftAt is updated");
       } catch (error) {
         // console.error("Failed to update leftAt participant:", error);

@@ -40,89 +40,89 @@ export const ChatRoomContainer = () => {
         console.error("Participant not found");
         return;
       }
-      participant.leftAt = null;
+      participant.leftAt = new Date(0);
       try {
-        await UpdateParticipant(participant.userId, participant.chatRoomId);
+        await UpdateParticipant(
+          participant.chatRoomId,
+          participant.userId,
+          true,
+        );
+        console.log("Update participant", participant);
       } catch (error) {
         console.error("Error updating participant:", error);
       }
       joinChatRoom(newChatRoom.id);
     }
-
-    const handleChatRoomChange = (newChatRoom: ChatRoom) => {
-      if (newChatRoom != null) {
-        if (
-          newChatRoom.chatParticipants.some((p) => p.userId === me?.user.id)
-        ) {
-          console.log("already in chat room");
-          handeSwitchChatRoom(newChatRoom, true);
-          return;
-        }
-        if (newChatRoom.chatRoomType === "protected") {
-          console.log("ask password");
-          setAskPassword(true);
-          setSelectedChatRoom(newChatRoom);
-          return;
-        }
-        handeSwitchChatRoom(newChatRoom, false);
-      }
-    };
-    const validatePassword = async (password: string): Promise<boolean> => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(password === selectedChatRoom?.password);
-        }, 1000);
-      });
-    };
-
-    const handlePasswordSubmit = async (password: string) => {
-      console.log(
-        password + " real password ---> " + selectedChatRoom?.password,
-      );
-      const isValid = await validatePassword(password);
-      setAskPassword(false);
-      if (isValid) {
-        handeSwitchChatRoom(selectedChatRoom, false);
-      } else {
-        console.log("Invalid password");
-      }
-      return isValid;
-    };
-
-    console.log("chatRoomContaner", userId);
-    return (
-      <div className="chatRoomBox">
-        <Dialog open={askPassword} onOpenChange={setAskPassword}>
-          <DialogContent>
-            {
-              <div className="flex flex-col gap-4">
-                <h1>This chat room requires a password</h1>
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    await handlePasswordSubmit(passwordInput);
-                  }}
-                >
-                  <input
-                    type="password"
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                  />
-                  <button type="submit">Submit</button>
-                </form>
-                <p>test</p>
-              </div>
-            }
-          </DialogContent>
-        </Dialog>
-        <ChatRoomList
-          chatRooms={chatRooms}
-          userId={me.user.id}
-          onChatRoomChange={handleChatRoomChange}
-          askPassword={askPassword}
-          setAskPassword={setAskPassword}
-        />
-      </div>
-    );
   };
+
+  const handleChatRoomChange = (newChatRoom: ChatRoom) => {
+    if (newChatRoom != null) {
+      if (newChatRoom.chatParticipants.some((p) => p.userId === me?.user.id)) {
+        console.log("already in chat room");
+        handeSwitchChatRoom(newChatRoom, true);
+        return;
+      }
+      if (newChatRoom.chatRoomType === "protected") {
+        console.log("ask password");
+        setAskPassword(true);
+        setSelectedChatRoom(newChatRoom);
+        return;
+      }
+      handeSwitchChatRoom(newChatRoom, false);
+    }
+  };
+  const validatePassword = async (password: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(password === selectedChatRoom?.password);
+      }, 1000);
+    });
+  };
+
+  const handlePasswordSubmit = async (password: string) => {
+    console.log(password + " real password ---> " + selectedChatRoom?.password);
+    const isValid = await validatePassword(password);
+    setAskPassword(false);
+    if (isValid) {
+      handeSwitchChatRoom(selectedChatRoom, false);
+    } else {
+      console.log("Invalid password");
+    }
+    return isValid;
+  };
+  console.log("chatRoomContaner", userId);
+  return (
+    <div className="chatRoomBox">
+      <Dialog open={askPassword} onOpenChange={setAskPassword}>
+        <DialogContent>
+          {
+            <div className="flex flex-col gap-4">
+              <h1>This chat room requires a password</h1>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  await handlePasswordSubmit(passwordInput);
+                }}
+              >
+                <input
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                />
+                <button type="submit">Submit</button>
+              </form>
+              <p>test</p>
+            </div>
+          }
+        </DialogContent>
+      </Dialog>
+      <ChatRoomList
+        chatRooms={chatRooms}
+        userId={me.user.id}
+        onChatRoomChange={handleChatRoomChange}
+        askPassword={askPassword}
+        setAskPassword={setAskPassword}
+      />
+    </div>
+  );
 };

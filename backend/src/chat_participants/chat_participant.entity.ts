@@ -17,16 +17,13 @@ export class ChatParticipant {
   })
   chat_participant_role: chat_participant_roles;
 
-  @Column({
-    type: 'timestamp',
-    default: () => `'1970-01-01 00:00:00'`,
-  })
+  @Column({ default: new Date(0) })
   leftAt: Date;
 
   @Column({ default: false })
   is_banned: boolean;
 
-  @Column({ default: null })
+  @Column({ default: new Date(0) })
   banned_until: Date;
 
   @Column({ default: false })
