@@ -11,6 +11,7 @@ import { GameStatus } from './game.entity';
 
 interface Player {
   id: string;
+  playerName: string;
   playerNumber: number;
   y: number;
   x: number;
@@ -47,9 +48,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('joinGame')
   async handleJoinGame(client: Socket, data: any) {
     try {
-      console.log('Client ID:', client.id);
       const roomId = typeof data === 'object' ? data.roomId : data;
-      const userId = typeof data === 'object' ? data.userId : null; // Use userId, not socketId
+      const userId = typeof data === 'object' ? data.userId : null;
+      const playerName = typeof data === 'object' ? data.playerName : null;
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
       console.log('Data:', data);
@@ -79,7 +80,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (
         Object.keys(game.players).length >= 2 ||
-        this.playerToRoom.has(client.id)
+        this.playerToRoom.has(client.id) ||
+        this.playerToRoom.has(userId)
       ) {
         console.error('Game is full or player already in a game');
         return;
@@ -93,6 +95,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const x = playerNumber == 0 ? 5 : 95;
       game.players[client.id] = {
         id: client.id,
+        playerName: playerName,
         playerNumber: playerNumber,
         y: 50,
         x,
@@ -177,15 +180,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   private startGameLoop(roomId: string) {
     const loop = setInterval(() => {
-      this.updateGame(roomId);
+      this.updateGame(roomId, this.games.get(roomId));
       this.server.to(roomId).emit('update', this.games.get(roomId));
     }, 1000 / 60);
 
     this.gameLoops.set(roomId, loop);
   }
 
-  private updateGame(roomId: string) {
-    const game = this.games.get(roomId);
+  private async updateGame(roomId: string, game: GameState) {
     if (!game) return;
 
     const { ball, players } = game;
@@ -196,8 +198,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ball.y += ball.dy;
 
     if (ball.y <= 0 || ball.y >= 100) ball.dy *= -1;
-
-    // let paddleCollision = false;
 
     Object.values(players).forEach((player) => {
       const isLeftPaddle = player.playerNumber === 0;
@@ -216,8 +216,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const isAtPaddleHeight = Math.abs(paddleY - ball.y) < paddleHeight / 2;
 
       if ((crossedLeftPaddle || crossedRightPaddle) && isAtPaddleHeight) {
-        // paddleCollision = true;
-
         ball.dx *= -1.05;
 
         if (isLeftPaddle) {
@@ -250,15 +248,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     if (game.score[0] >= 11 || game.score[1] >= 11) {
       try {
-        this.updateScoreInDatabase(roomId, game.score);
-        this.gamesService.closeGame(roomId);
-      } catch (error) {
-        console.error(
-          `Error updating game status in database: ${error.message}`,
+        await this.gamesService.finishGameWithFinalScore(roomId, game.score);
+
+        const playerArray = Object.values(game.players).map(
+          (player) => player.playerName,
         );
+        this.server.to(roomId).emit('gameEnd', {
+          winner: game.score[0] > game.score[1] ? 0 : 1,
+          finalScore: game.score,
+          players: playerArray,
+        });
+
+        setTimeout(() => {
+          this.cleanupGame(roomId);
+          this.server.to(roomId).emit('removePlayer');
+        }, 500);
+      } catch (error) {
+        console.error(`Error ending game in database: ${error.message}`);
+        this.cleanupGame(roomId);
+        this.server.to(roomId).emit('removePlayer');
       }
-      this.cleanupGame(roomId);
-      this.server.to(roomId).emit('removePlayer');
     }
   }
 

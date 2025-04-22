@@ -15,7 +15,6 @@ export const ChatRoomContainer = () => {
   );
   const [passwordInput, setPasswordInput] = useState("");
   const me = useUser();
-  let userId: number;
 
   const { addParticipant } = useAddParticipant();
 

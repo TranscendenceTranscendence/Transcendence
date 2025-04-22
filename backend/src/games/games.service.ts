@@ -1,13 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Not } from 'typeorm';
+import { Repository, In, Not, DataSource } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
+
 @Injectable()
 export class GamesService {
   constructor(
     @InjectRepository(Game)
     private readonly gamesRepository: Repository<Game>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createGameDto: CreateGameDto): Promise<Game> {
@@ -335,6 +337,7 @@ export class GamesService {
       );
     }
   }
+
   async closeGame(gameId: string): Promise<Game> {
     try {
       const game = await this.gamesRepository.findOne({
@@ -359,6 +362,7 @@ export class GamesService {
       );
     }
   }
+
   async cancelGame(gameId: string): Promise<Game> {
     try {
       const game = await this.gamesRepository.findOne({
@@ -376,6 +380,97 @@ export class GamesService {
         `Failed to end game`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  async finishGame(
+    gameId: string,
+    finalScore: [number, number],
+  ): Promise<Game> {
+    try {
+      return await this.dataSource.transaction(async (manager) => {
+        const gameRepo = manager.getRepository(Game);
+
+        const game = await gameRepo.findOne({
+          where: { room_identifier: gameId },
+        });
+
+        if (!game) {
+          throw new Error(`Game with ID ${gameId} not found`);
+        }
+
+        game.score = finalScore;
+
+        if (finalScore[0] >= 11) {
+          game.winner_user_id = game.player1_user_id;
+        } else if (finalScore[1] >= 11) {
+          game.winner_user_id = game.player2_user_id;
+        }
+
+        game.status = GameStatus.CLOSED;
+        game.ended_at = new Date();
+
+        return await gameRepo.save(game);
+      });
+    } catch (error) {
+      console.error(`Failed to finish game ${gameId}:`, error);
+      throw new Error(`Failed to finish game: ${error.message}`);
+    }
+  }
+
+  async finishGameWithFinalScore(
+    gameId: string,
+    finalScore: [number, number],
+  ): Promise<Game> {
+    const queryRunner =
+      this.gamesRepository.manager.connection.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const game = await queryRunner.manager.findOne(Game, {
+        where: { room_identifier: gameId },
+        lock: { mode: 'pessimistic_write' }, // Lock the row to prevent race conditions
+      });
+
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+
+      // Update score first
+      game.score = finalScore;
+
+      // Determine the winner based on the FINAL score
+      if (finalScore[0] >= 11) {
+        game.winner_user_id = game.player1_user_id;
+      } else if (finalScore[1] >= 11) {
+        game.winner_user_id = game.player2_user_id;
+      }
+
+      // Set game as closed
+      game.status = GameStatus.CLOSED;
+      game.ended_at = new Date();
+
+      // Save everything in a single transaction
+      const updatedGame = await queryRunner.manager.save(Game, game);
+      await queryRunner.commitTransaction();
+
+      return updatedGame;
+    } catch (error) {
+      if (queryRunner.isTransactionActive) {
+        await queryRunner.rollbackTransaction();
+      }
+
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        `Failed to finish game with final score: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } finally {
+      if (!queryRunner.isReleased) {
+        await queryRunner.release();
+      }
     }
   }
 }
