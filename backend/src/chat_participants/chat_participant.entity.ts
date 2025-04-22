@@ -26,6 +26,9 @@ export class ChatParticipant {
   @Column({ default: false })
   is_banned: boolean;
 
+  @Column({ default: null })
+  banned_until: Date;
+
   @Column({ default: false })
   is_muted: boolean;
 

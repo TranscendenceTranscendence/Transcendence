@@ -2,14 +2,17 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { type Repository, type UpdateResult, ILike } from 'typeorm';
 import type { CreateUserDto } from './dto/create-user.dto';
-import type { UpdateUserDto } from './dto/update-user.dto';
+import type {
+  UpdateUserDto,
+  UpdateAddUserToBlockedListDto,
+} from './dto/update-user.dto';
 import { User, UserStatus } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import JwtConfig from '../config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { AchievementsService } from '../achievements/achievements.service';
 import { AchievementType } from '../achievements/achievement.entity';
-import type { SearchUserResponseDto } from './dto/search-user.dto';
+import { SearchUserResponseDto } from './dto/search-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +22,8 @@ export class UsersService {
     @Inject(AchievementsService)
     private readonly achievementsService: AchievementsService,
     @Inject(JwtService)
+    // @InjectRepository(Blocked)
+    // private readonly blockedsRepository: Repository<Blocked>,
     private jwt: JwtService,
     @Inject(JwtConfig.KEY)
     private jwtConfig: ConfigType<typeof JwtConfig>,
@@ -34,7 +39,10 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
-    const userData = await this.usersRepository.findOneBy({ id });
+    const userData = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['chatParticipants'],
+    });
     return userData;
   }
 
@@ -57,6 +65,24 @@ export class UsersService {
     if (userWithSameNickname && userWithSameNickname.id !== id) return false;
 
     return await this.usersRepository.save(userData);
+  }
+
+  async blockUser(
+    id: number,
+    AddBlockedUser: UpdateAddUserToBlockedListDto,
+  ): Promise<User | false> {
+    const existingUser = await this.findOne(id);
+    // const userData = this.usersRepository.merge(existingUser, AddBlockedUser);
+    if (!existingUser) return false;
+
+    if (
+      existingUser.blockedUsers.find(
+        (blockedUser) => AddBlockedUser.targetUserId === blockedUser,
+      )
+    )
+      return false;
+    existingUser.blockedUsers.push(AddBlockedUser.targetUserId);
+    return await this.usersRepository.save(existingUser);
   }
 
   async remove(id: number): Promise<User> {

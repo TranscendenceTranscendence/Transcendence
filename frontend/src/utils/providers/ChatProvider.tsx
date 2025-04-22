@@ -10,6 +10,7 @@ import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { io, Socket } from "socket.io-client";
 import { useUser } from "@/utils/providers/UserProvider";
 import { chat_participant_roles } from "../PostRequest";
+import { UpdateParticipant } from "@/chat/ChatApiCalls";
 
 interface ChatContextProps {
   chatRooms: {
@@ -86,17 +87,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const joinChatRoom = async (newChatRoomId: number) => {
     if (chatRoomId === newChatRoomId) return;
 
-    // Fetch chat room data via HTTP
     const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
       id: newChatRoomId,
     });
     const { data: messages } =
       await api.ChatMessages.chatMessagesControllerFind({
         chatRoomId: newChatRoomId,
+        blockedUsers: user?.blockedUsers,
       });
     const { chatParticipants } = chatRooms[0];
 
-    // Update state with fetched data
     setChatRooms((prev) => ({
       ...prev,
       [newChatRoomId]: {
@@ -105,12 +105,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       },
     }));
 
-    // Join the chat room via WebSocket
     if (socketRef.current) {
       socketRef.current.emit("joinRoom", { roomId: newChatRoomId });
     }
 
     setChatRoomId(newChatRoomId);
+
+    console.log("Current", chatRoomId);
   };
 
   const leaveChatRoom = () => {
@@ -135,7 +136,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       // Send the new message to the WebSocket
       socketRef.current.emit("message", newMessage);
     } catch (error) {
-      console.error("Failed to send message:", error);
+      if (error.response.status === 401) {
+        console.error("participant is muted");
+        return;
+      } else console.error("Failed to send message:", error);
     }
   };
 
@@ -152,18 +156,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } else {
       try {
-        api.ChatParticipants.chatParticipantsControllerRemove({
-          chatRoomId: participant.chatRoomId.toString(),
-          id: participant.user.id.toString(),
-        });
-        // console.log("Participant removed participant/leaved chatroom");
+        UpdateParticipant(participant.chatRoomId, participant.userId);
+        console.log("Participant leftAt is updated");
       } catch (error) {
-        // console.error("Failed to remove participant:", error);
+        // console.error("Failed to update leftAt participant:", error);
       }
     }
     leaveChatRoom();
   };
-
   return (
     <ChatContext.Provider
       value={{

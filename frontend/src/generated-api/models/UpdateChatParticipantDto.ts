@@ -43,6 +43,12 @@ export interface UpdateChatParticipantDto {
    * @memberof UpdateChatParticipantDto
    */
   leftAt?: Date;
+  /**
+   * Banned until date
+   * @type {Date}
+   * @memberof UpdateChatParticipantDto
+   */
+  bannedUntil?: Date;
 }
 
 /**
@@ -86,6 +92,8 @@ export function UpdateChatParticipantDtoFromJSONTyped(
     isBanned: json["is_banned"] == null ? undefined : json["is_banned"],
     isMuted: json["is_muted"] == null ? undefined : json["is_muted"],
     leftAt: json["leftAt"] == null ? undefined : new Date(json["leftAt"]),
+    bannedUntil:
+      json["banned_until"] == null ? undefined : new Date(json["banned_until"]),
   };
 }
 
@@ -108,5 +116,9 @@ export function UpdateChatParticipantDtoToJSONTyped(
     is_banned: value["isBanned"],
     is_muted: value["isMuted"],
     leftAt: value["leftAt"] == null ? undefined : value["leftAt"].toISOString(),
+    banned_until:
+      value["bannedUntil"] == null
+        ? undefined
+        : value["bannedUntil"].toISOString(),
   };
 }
