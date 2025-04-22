@@ -9,6 +9,7 @@ import { useApi } from "@/utils/api";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { io, Socket } from "socket.io-client";
 import { useUser } from "@/utils/providers/UserProvider";
+import { ChatRoomChatRoomTypeEnum } from "@/generated-api/models/ChatRoom";
 
 interface ChatContextProps {
   chatRooms: {
@@ -16,6 +17,7 @@ interface ChatContextProps {
     [key: number]: {
       messages: ChatMessage[];
       participants: ChatParticipant[];
+      chat_room_type: ChatRoomChatRoomTypeEnum;
     };
   };
   currentChatRoomId: number | null;

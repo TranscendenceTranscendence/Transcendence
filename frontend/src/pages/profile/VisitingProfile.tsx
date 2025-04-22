@@ -12,7 +12,6 @@ import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/utils/providers/ChatProvider";
 import { postDmChatRoom } from "../../chat/ChatApiCalls";
-import { ChatRoom } from "@/generated-api/models/ChatRoom";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -118,22 +117,42 @@ export default function VisitingProfile() {
                 <FriendRequest user={visitingUser} />
                 <Button
                   onClick={async () => {
-                    if (!visitingUser) return;
-                    if (Array.isArray(chatRooms)) {
-                      const existingChatRoom = chatRooms.find((chatRoom) => {
-                        return (
-                          chatRoom.chat_room_type === "Dm" &&
-                          (chatRoom.participants[0]?.id === visitingUser.id ||
-                            chatRoom.participants[1]?.id === visitingUser.id)
-                        );
-                      });
-                      if (existingChatRoom) {
-                        console.log("Already a dm session");
-                        joinChatRoom(existingChatRoom.id);
-                        return;
-                      } else console.log("needs a new one");
-                      console.log("olla");
+                    if (!visitingUser) {
+                      console.error("Visiting user not found");
+                      return;
                     }
+                    const chatRoomKeys = Object.keys(chatRooms);
+                    const chatRoomsArray = chatRoomKeys.map(
+                      (key) => chatRooms[Number(key)],
+                    );
+                    console.log("chatRooms -->", chatRoomsArray);
+                    console.log("chatRoomKeys -->", chatRoomKeys);
+                    if (chatRoomKeys.length > 0) {
+                      const existingChatRoomKey = chatRoomKeys.find((key) => {
+                        const chatRoom = chatRooms[Number(key)];
+                        console.log("chatroom -->", chatRoom);
+                        const isMatch =
+                          chatRoom.chat_room_type === "Dm" &&
+                          chatRoom.participants.some(
+                            (p) => p.userId === visitingUser.id,
+                          );
+                        console.log("Match found:", isMatch);
+                        console.log("----------------");
+                        return isMatch;
+                      });
+
+                      if (existingChatRoomKey) {
+                        console.log("Already a dm session");
+                        joinChatRoom(Number(existingChatRoomKey));
+                        return;
+                      } else {
+                        await postDmChatRoom(api, me.user.id, visitingUser.id);
+                      }
+                      console.log("olla");
+                    } else {
+                      console.error("chatRooms is empty or not an object");
+                    }
+
                     console.log(chatRooms);
 
                     // if (existingChatRoom) {
@@ -145,7 +164,6 @@ export default function VisitingProfile() {
                     // is er een chatroom dat waarbij deze user een participant heeft
                     //  waar bij de andere participant
                     // participant [0] of [1] gelijk is aan de visitingUser
-                    await postDmChatRoom(api, me.user.id, visitingUser.id);
                   }}
                 >
                   DM {visitingUser.nickname}
