@@ -20,11 +20,12 @@ const Queue = () => {
 
   useEffect(() => {
     const isUserAlreadyInQueue = async () => {
-      console.log("Component mounted or page reloaded");
       try {
         const response = await api.Queue.queueControllerIsInQueue();
         if (response && response.isInQueue) {
           setInQueue(true);
+        } else {
+          setInQueue(false);
         }
       } catch {
         console.error("Error checking if user is in queue:", error);
@@ -33,10 +34,6 @@ const Queue = () => {
     };
 
     isUserAlreadyInQueue();
-
-    return () => {
-      console.log("Component unmounted");
-    };
   }, []);
 
   const handleJoinQueue = async () => {
@@ -74,7 +71,6 @@ const Queue = () => {
     const checkCurrentGame = async () => {
       try {
         const response = await api.Games.gamesControllerFindCurrentGame();
-        console.log("Current game response:", response);
         if (response.id !== undefined) {
           navigate(`/game`);
           return true;
@@ -88,13 +84,19 @@ const Queue = () => {
 
     const checkQueueStatus = async () => {
       try {
+        const inQueue = await api.Queue.queueControllerIsInQueue();
+        if (inQueue && inQueue.isInQueue) {
+          setInQueue(true);
+        } else {
+          setInQueue(false);
+        }
+
         const response = await api.Queue.queueControllerGetQueueStatus();
         console.log("Queue status response:", response);
         if (response) {
           if (response.message === "Pair found in queue") {
             navigate(`/game`);
           } else {
-            console.log("Queue seconds:", response.secondsInQueue);
             setSearchTime(response.secondsInQueue || 0);
           }
         }

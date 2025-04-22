@@ -11,9 +11,9 @@ interface QueueEntry {
 
 @Injectable()
 export class QueueService {
-  private queues: QueueEntry[] = []; // Initialize the array!
+  private queues: QueueEntry[] = [];
 
-  constructor(private readonly gamesService: GamesService) {} // Proper injection
+  constructor(private readonly gamesService: GamesService) {}
 
   async moreThan2(): Promise<boolean> {
     return this.queues.length > 1;
@@ -23,6 +23,10 @@ export class QueueService {
     const queue = this.queues.find((q) => q.userId === userId);
     if (queue) {
       const timeInQueue = new Date().getTime() - queue.timeJoined.getTime();
+      if (timeInQueue > 600000) {
+        this.removeFromQueue(userId);
+        return 0;
+      }
       return timeInQueue;
     }
     return 0;
