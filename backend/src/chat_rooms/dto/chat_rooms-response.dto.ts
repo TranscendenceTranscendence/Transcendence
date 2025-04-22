@@ -14,7 +14,7 @@ export class ChatRoomResponse {
   @ApiProperty()
   success: boolean;
   @ApiProperty()
-  chatRooms?: ChatRoom[];
+  chatRoom?: ChatRoom;
   @ApiProperty()
   message?: string;
 }

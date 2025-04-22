@@ -12,6 +12,7 @@ import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/utils/providers/ChatProvider";
 import { postDmChatRoom } from "../../chat/ChatApiCalls";
+import { useChatRooms } from "@/chatroom/ApiRequest";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -20,14 +21,11 @@ export default function VisitingProfile() {
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
-  const {
-    chatRooms,
-    sendMessage,
-    currentChatRoomId,
-    leaveChatRoom,
-    joinChatRoom,
-  } = useChat();
+  const { sendMessage, currentChatRoomId, leaveChatRoom, joinChatRoom } =
+    useChat();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
+
+  const { chatRooms } = useChatRooms();
 
   useEffect(() => {
     const userIdNumber = Number(id);
@@ -121,32 +119,36 @@ export default function VisitingProfile() {
                       console.error("Visiting user not found");
                       return;
                     }
-                    const chatRoomKeys = Object.keys(chatRooms);
-                    const chatRoomsArray = chatRoomKeys.map(
-                      (key) => chatRooms[Number(key)],
-                    );
-                    console.log("chatRooms -->", chatRoomsArray);
-                    console.log("chatRoomKeys -->", chatRoomKeys);
-                    if (chatRoomKeys.length > 0) {
-                      const existingChatRoomKey = chatRoomKeys.find((key) => {
-                        const chatRoom = chatRooms[Number(key)];
-                        console.log("chatroom -->", chatRoom);
-                        const isMatch =
-                          chatRoom.chat_room_type === "Dm" &&
-                          chatRoom.participants.some(
-                            (p) => p.userId === visitingUser.id,
-                          );
-                        console.log("Match found:", isMatch);
-                        console.log("----------------");
-                        return isMatch;
-                      });
+                    if (chatRooms.chatRooms.length > 0) {
+                      const existingChatRoom = chatRooms.chatRooms.find(
+                        (chatRoom) => {
+                          console.log("chatroom -->", chatRoom);
+                          const isMatch =
+                            chatRoom.chatRoomType === "Dm" &&
+                            chatRoom.chatParticipants.some(
+                              (p) => p.userId === visitingUser.id,
+                            );
+                          console.log("Match found:", isMatch);
+                          console.log("----------------");
+                          return isMatch;
+                        },
+                      );
 
-                      if (existingChatRoomKey) {
+                      if (existingChatRoom) {
                         console.log("Already a dm session");
-                        joinChatRoom(Number(existingChatRoomKey));
+                        joinChatRoom(existingChatRoom.id);
                         return;
                       } else {
-                        await postDmChatRoom(api, me.user.id, visitingUser.id);
+                        const response = await postDmChatRoom(
+                          api,
+                          me.user.id,
+                          visitingUser.id,
+                        );
+                        console.log("Response from postDmChatRoom:", response);
+                        // if (response && response.response) {
+                        //   chatRooms.chatRooms.push(response.chatRoom);
+                        //   joinChatRoom(response.chatRoom.id);
+                        // }
                       }
                       console.log("olla");
                     } else {

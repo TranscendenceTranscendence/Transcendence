@@ -44,7 +44,12 @@ export class ChatRoomsService {
     }
 
     await this.chatParticipantsRepository.save(participant);
-    return savedChatRoom;
+    const value = await this.chatRoomsRepository.findOne({
+      where: { id: savedChatRoom.id },
+      relations: ['chatParticipants', 'chatParticipants.user'],
+    });
+    console.log(value);
+    return value;
   }
 
   async findAll(): Promise<ChatRoom[]> {

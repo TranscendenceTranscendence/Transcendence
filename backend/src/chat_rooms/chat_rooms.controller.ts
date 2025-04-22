@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
+import { ChatRoom } from './chat_room.entity'; // Adjust the path if necessary
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import {
@@ -39,13 +40,18 @@ export class ChatRoomsController {
     status: 400,
     description: 'Invalid input data.',
   })
-  async create(@Body() createChatRoomDto: CreateChatRoomDto) {
+  async create(
+    @Body() createChatRoomDto: CreateChatRoomDto,
+  ): Promise<ChatRoomResponse> {
     try {
-      const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
+      const chatRoom: ChatRoom =
+        await this.chatRoomsService.create(createChatRoomDto);
+      console.log('Saved ChatRoom:', chatRoom);
+      console.log(chatRoom);
       return {
         success: true,
+        chatRoom: chatRoom,
         message: 'ChatRoom Created Successfully',
-        data: chatRoom,
       };
     } catch (error) {
       return {
@@ -163,7 +169,7 @@ export class ChatRoomsController {
       const data = await this.chatRoomsService.findOne(id);
       return {
         success: true,
-        chatRooms: [data],
+        chatRoom: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {

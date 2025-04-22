@@ -31,9 +31,9 @@ const ChatContext = createContext<ChatContextProps | null>(null);
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const api = useApi();
   const { user } = useUser();
-  const [chatRooms, setChatRooms] = useState<ChatContextProps["chatRooms"]>({});
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const [chatRooms, setChatRooms] = useState<ChatContextProps["chatRooms"]>({});
 
   useEffect(() => {
     if (!user || !chatRoomId) return;
@@ -88,14 +88,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (chatRoomId === newChatRoomId) return;
 
     // Fetch chat room data via HTTP
-    const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
+    const { chatRoom } = await api.ChatRooms.chatRoomsControllerFindOne({
       id: newChatRoomId,
     });
     const { data: messages } =
       await api.ChatMessages.chatMessagesControllerFind({
         chatRoomId: newChatRoomId,
       });
-    const { chatParticipants } = chatRooms[0];
+    const { chatParticipants } = chatRoom;
 
     // Update state with fetched data
     setChatRooms((prev) => ({

@@ -1,5 +1,6 @@
 import {
   ChatRoomsResponse,
+  ChatRoomResponse,
   MessagesResponse,
   ChatParticipantsResponse,
 } from "@/generated-api/index.ts";
@@ -134,8 +135,17 @@ export const postDmChatRoom = async (
       },
     };
 
-    await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
+    const response: ChatRoomResponse =
+      await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
+    console.log("deze-->", response.chatRoom);
+    if (response.success) {
+      return response;
+    } else {
+      console.error("Failed to create chat room:", response.message);
+      return null;
+    }
   } catch (error) {
     console.error("Error creating chat room:", error);
+    return null;
   }
 };
