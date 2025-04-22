@@ -94,8 +94,7 @@ export class GamesService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (gameData) console.log('Joining game:', gameData);
-      else console.log('Game not found:', gameId);
+
       gameData.player2_user_id = playerId;
       gameData.status = GameStatus.COUNTDOWN;
 

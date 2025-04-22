@@ -53,7 +53,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const playerName = typeof data === 'object' ? data.playerName : null;
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;
 
-      console.log('Data:', data);
       if (
         !roomId ||
         roomId === undefined ||
@@ -63,10 +62,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.error('Invalid roomId or playerNumber');
         return;
       }
-      console.log('Room ID:', roomId);
-      console.log('User ID:', userId);
-      console.log('Player Number:', playerNumber);
-
       let game = this.games.get(roomId);
       if (!game) {
         game = this.createGame(roomId);
@@ -100,10 +95,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         y: 50,
         x,
       };
-      console.log('Game players:', game.players);
       try {
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
-        console.log('DB Game:', dbGame);
 
         this.server.to(client.id).emit('update', game);
         if (
