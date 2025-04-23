@@ -21,8 +21,7 @@ export default function VisitingProfile() {
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
-  const { sendMessage, currentChatRoomId, leaveChatRoom, joinChatRoom } =
-    useChat();
+  const { joinChatRoom } = useChat();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   const { chatRooms } = useChatRooms();
@@ -128,8 +127,6 @@ export default function VisitingProfile() {
                             chatRoom.chatParticipants.some(
                               (p) => p.userId === visitingUser.id,
                             );
-                          console.log("Match found:", isMatch);
-                          console.log("----------------");
                           return isMatch;
                         },
                       );

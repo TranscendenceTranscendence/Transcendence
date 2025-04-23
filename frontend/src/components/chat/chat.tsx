@@ -2,7 +2,7 @@ import { useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { XIcon, SendIcon, Heading3 } from "lucide-react";
+import { XIcon, SendIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,7 +11,6 @@ import { useState, useEffect, useRef } from "react";
 import {
   ChatMessage,
   ChatParticipant,
-  ChatRoom,
   ChatRoomChatRoomTypeEnum,
 } from "@/generated-api";
 import { useNavigate } from "react-router";
