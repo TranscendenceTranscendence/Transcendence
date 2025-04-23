@@ -2,13 +2,18 @@ import { useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { XIcon, SendIcon } from "lucide-react";
+import { XIcon, SendIcon, Heading3 } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect, useRef } from "react";
-import { ChatMessage, ChatParticipant } from "@/generated-api";
+import {
+  ChatMessage,
+  ChatParticipant,
+  ChatRoom,
+  ChatRoomChatRoomTypeEnum,
+} from "@/generated-api";
 import { useNavigate } from "react-router";
 
 const messageSchema = z.object({
@@ -153,7 +158,7 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-
+  console.log("Deze", currentChatRoom);
   return (
     <Card
       ref={cardRef}
@@ -167,7 +172,19 @@ const Chat = () => {
         className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
         onMouseDown={handleMouseDown}
       >
-        <h3>Chat Room {currentChatRoomId}</h3>
+        {currentChatRoom.chat_room_type === ChatRoomChatRoomTypeEnum.Dm && (
+          <h3>
+            DM with{" "}
+            {
+              currentChatRoom.participants.find(
+                (participant) => participant.user.id !== me.user?.id,
+              )?.user.nickname
+            }
+          </h3>
+        )}
+        {currentChatRoom.chat_room_type !== ChatRoomChatRoomTypeEnum.Dm && (
+          <h3>Chat Room {currentChatRoomId}</h3>
+        )}
         <Button
           variant="ghost"
           onClick={leaveChatRoom}

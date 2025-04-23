@@ -103,6 +103,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       [newChatRoomId]: {
         messages: messages,
         participants: chatParticipants,
+        chat_room_type: chatRoom.chatRoomType,
       },
     }));
 
