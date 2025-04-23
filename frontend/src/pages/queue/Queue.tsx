@@ -19,22 +19,68 @@ const Queue = () => {
   };
 
   useEffect(() => {
-    const isUserAlreadyInQueue = async () => {
+    const checkInitialState = async () => {
       try {
-        const response = await api.Queue.queueControllerIsInQueue();
-        if (response && response.isInQueue) {
+        const currentGameResponse =
+          await api.Games.gamesControllerFindCurrentGame();
+        if (currentGameResponse.id !== undefined) {
+          navigate(`/game`);
+          return;
+        }
+
+        const queueResponse = await api.Queue.queueControllerIsInQueue();
+        if (queueResponse && queueResponse.isInQueue) {
           setInQueue(true);
+          const queueStatusResponse =
+            await api.Queue.queueControllerGetQueueStatus();
+          if (queueStatusResponse) {
+            setSearchTime(queueStatusResponse.secondsInQueue || 0);
+          }
         } else {
           setInQueue(false);
         }
-      } catch {
-        console.error("Error checking if user is in queue:", error);
+      } catch (error) {
+        console.error("Error checking initial state:", error);
         setError("Error checking queue status");
       }
     };
 
-    isUserAlreadyInQueue();
-  }, []);
+    checkInitialState();
+
+    const interval = setInterval(() => {
+      const checkStatus = async () => {
+        try {
+          const gameResponse = await api.Games.gamesControllerFindCurrentGame();
+          if (gameResponse.id !== undefined) {
+            navigate(`/game`);
+            return;
+          }
+
+          if (inQueue) {
+            const queueStatus = await api.Queue.queueControllerGetQueueStatus();
+            if (queueStatus) {
+              if (queueStatus.message === "Pair found in queue") {
+                navigate(`/game`);
+              } else {
+                setSearchTime(queueStatus.secondsInQueue || 0);
+              }
+            }
+
+            const inQueueCheck = await api.Queue.queueControllerIsInQueue();
+            if (!inQueueCheck || !inQueueCheck.isInQueue) {
+              setInQueue(false);
+            }
+          }
+        } catch (error) {
+          console.error("Error in status check:", error);
+        }
+      };
+
+      checkStatus();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [api, navigate]);
 
   const handleJoinQueue = async () => {
     try {
@@ -66,56 +112,6 @@ const Queue = () => {
       setError("Error leaving queue");
     }
   };
-
-  useEffect(() => {
-    const checkCurrentGame = async () => {
-      try {
-        const response = await api.Games.gamesControllerFindCurrentGame();
-        if (response.id !== undefined) {
-          navigate(`/game`);
-          return true;
-        }
-        return false;
-      } catch (error) {
-        console.error("Error checking current game:", error);
-        return false;
-      }
-    };
-
-    const checkQueueStatus = async () => {
-      try {
-        const inQueue = await api.Queue.queueControllerIsInQueue();
-        if (inQueue && inQueue.isInQueue) {
-          setInQueue(true);
-        } else {
-          setInQueue(false);
-        }
-
-        const response = await api.Queue.queueControllerGetQueueStatus();
-        console.log("Queue status response:", response);
-        if (response) {
-          if (response.message === "Pair found in queue") {
-            navigate(`/game`);
-          } else {
-            setSearchTime(response.secondsInQueue || 0);
-          }
-        }
-      } catch (error) {
-        console.error("Error checking queue status:", error);
-      }
-    };
-
-    const interval = setInterval(() => {
-      console.log("Checking for current game...");
-      checkCurrentGame().then((hasGame) => {
-        if (!hasGame && inQueue) {
-          checkQueueStatus();
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [navigate, api, inQueue]);
 
   return (
     <div className="queue-page">
