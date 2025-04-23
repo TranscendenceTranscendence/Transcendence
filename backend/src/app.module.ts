@@ -14,6 +14,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ChatModule } from './websockets/chat.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MulterModule } from '@nestjs/platform-express';
       // logging: true,
       // logger: 'advanced-console', // Makes the logs easier to read
     }),
+    StatisticsModule,
     ChatModule,
     UsersModule,
     AchievementsModule,

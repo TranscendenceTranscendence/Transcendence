@@ -19,6 +19,7 @@ import Lobby from "./pages/lobby/Lobby.tsx";
 import Game from "./pages/game/Game.tsx";
 import Result from "./pages/result/result.tsx";
 import { useApi } from "@/utils/api";
+import Statistics from "./pages/statistics/Statistics.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -79,6 +80,7 @@ function App() {
             <Route path="/update" element={<UpdateUser />} />
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/profile/:id" element={<VisitingProfile />} />
+            <Route path="/statistics" element={<Statistics />} />
             <Route path="/Matchmaking" element={<Matchmaking />} />
             <Route path="/lobby/:roomIdentifier" element={<Lobby />} />
             <Route path="/game" element={<Game />} />
