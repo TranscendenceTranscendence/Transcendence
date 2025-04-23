@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useApi } from "@/utils/api/index.ts";
 import {
   ChatParticipantChatParticipantRoleEnum,
+  ChatRoomChatRoomTypeEnum,
   ChatRoomsControllerCreateRequest,
   CreateChatRoomDtoChatRoomTypeEnum,
 } from "@/generated-api/index.ts";
 import PropTypes from "prop-types";
+import { Card } from "@/components/ui/card";
 
 export const PostChatRoom = ({ userId }) => {
   const [name, setName] = useState("");
@@ -54,13 +56,15 @@ export const PostChatRoom = ({ userId }) => {
           placeholder="Add title"
           required
         />
-
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Add password (optional)"
-        />
+        {type === CreateChatRoomDtoChatRoomTypeEnum.Protected && (
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Add password"
+            required
+          />
+        )}
 
         <div>
           <p>Select chat type:</p>
