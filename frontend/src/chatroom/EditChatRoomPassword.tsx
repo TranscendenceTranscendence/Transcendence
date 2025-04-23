@@ -18,7 +18,7 @@ const EditChatRoomPassword = () => {
   };
   return (
     <div>
-      <form action={onSubmit}>
+      <form onSubmit={onSubmit}>
         <input type="text" />
         <button type="submit">Submit</button>
       </form>

@@ -10,6 +10,9 @@ import { chat_participant_roles } from '../chat_participants/chat_participant.en
 
 @Injectable()
 export class ChatRoomsService {
+  findParticipantByUserIdAndRoomId(id: number, arg1: number) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @InjectRepository(ChatRoom)
     private readonly chatRoomsRepository: Repository<ChatRoom>,
@@ -82,6 +85,36 @@ export class ChatRoomsService {
     UpdateChatRoomDto: UpdateChatRoomDto,
   ): Promise<ChatRoom> {
     const existingChatRoom = await this.findOne(id);
+    const chatRoomData = this.chatRoomsRepository.merge(
+      existingChatRoom,
+      UpdateChatRoomDto,
+    );
+    return await this.chatRoomsRepository.save(chatRoomData);
+  }
+
+  async editPassword(
+    id: number,
+    UpdateChatRoomDto: UpdateChatRoomDto,
+  ): Promise<ChatRoom> {
+    const existingChatRoom = await this.findOne(id);
+
+    if (
+      existingChatRoom.chat_room_type === chat_room_types.Protected &&
+      existingChatRoom.password === ''
+    ) {
+      // change to public
+    } else if (
+      existingChatRoom.chat_room_type === chat_room_types.Protected &&
+      existingChatRoom.password !== ''
+    ) {
+      // change the password of the protected chatroom
+    } else if (
+      existingChatRoom.chat_room_type !== chat_room_types.Protected &&
+      existingChatRoom.password !== ''
+    ) {
+      // Change public or private(if its necassery) to a protected chatRoom with the password
+    }
+
     const chatRoomData = this.chatRoomsRepository.merge(
       existingChatRoom,
       UpdateChatRoomDto,

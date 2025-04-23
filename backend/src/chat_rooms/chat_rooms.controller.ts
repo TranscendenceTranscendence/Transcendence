@@ -22,6 +22,8 @@ import {
   ChatRoomResponse,
   ChatRoomsResponse,
 } from './dto/chat_rooms-response.dto';
+import { ChatRoom } from './chat_room.entity';
+import { chat_participant_roles } from 'chat_participants/chat_participant.entity';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
@@ -195,6 +197,58 @@ export class ChatRoomsController {
   ) {
     try {
       await this.chatRoomsService.update(+id, updateChatRoomDto);
+      return {
+        success: true,
+        message: 'ChatRoom Updated Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Change password of chatRoom by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat room updated successfully.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Chat room not found.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async editPassword(
+    @Param('id') id: number,
+    @Body() updateChatRoomDto: UpdateChatRoomDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+    const chatRoom: ChatRoom = await this.chatRoomsService.findOne(+id);
+    const participant = chatRoom.chatParticipants.find(
+      (participant) => participant.user_id === user.id,
+    );
+    if (!participant) {
+      return {
+        success: false,
+        message: 'Participant not found in the chat room.',
+      };
+    }
+    if (participant.chat_participant_role !== chat_participant_roles.Owner)
+    {
+      return {
+        succes: false,
+        message: 'Participant is not the owner',
+      };
+    }
+    try {
+      await this.chatRoomsService.editPassword(+id, updateChatRoomDto);
       return {
         success: true,
         message: 'ChatRoom Updated Successfully',
