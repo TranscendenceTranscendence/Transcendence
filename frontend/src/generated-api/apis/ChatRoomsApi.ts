@@ -54,7 +54,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerCreateRaw(
     requestParameters: ChatRoomsControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<ChatRoomResponse>> {
     if (requestParameters["createChatRoomDto"] == null) {
       throw new runtime.RequiredError(
         "createChatRoomDto",
@@ -79,7 +79,9 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -88,8 +90,12 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerCreate(
     requestParameters: ChatRoomsControllerCreateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatRoomsControllerCreateRaw(requestParameters, initOverrides);
+  ): Promise<ChatRoomResponse> {
+    const response = await this.chatRoomsControllerCreateRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
   }
 
   /**

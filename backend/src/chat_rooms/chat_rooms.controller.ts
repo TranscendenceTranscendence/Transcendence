@@ -35,6 +35,7 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 201,
     description: 'Chat room created successfully.',
+    type: ChatRoomResponse,
   })
   @ApiResponse({
     status: 400,

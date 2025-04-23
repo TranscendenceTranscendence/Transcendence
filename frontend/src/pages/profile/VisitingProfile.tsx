@@ -145,27 +145,16 @@ export default function VisitingProfile() {
                           visitingUser.id,
                         );
                         console.log("Response from postDmChatRoom:", response);
-                        // if (response && response.response) {
-                        //   chatRooms.chatRooms.push(response.chatRoom);
-                        //   joinChatRoom(response.chatRoom.id);
-                        // }
+                        if (response && response.chatRoom) {
+                          chatRooms.chatRooms.push(response.chatRoom);
+                          joinChatRoom(response.chatRoom.id);
+                        }
                       }
                       console.log("olla");
                     } else {
                       console.error("chatRooms is empty or not an object");
                     }
-
                     console.log(chatRooms);
-
-                    // if (existingChatRoom) {
-                    //   joinChatRoom(existingChatRoom.id);
-                    //   return;
-                    // }
-                    // chatRooms[currentchatRoomId].chatParticipant
-                    // is er al een dm sessie waarvan de user deel van is
-                    // is er een chatroom dat waarbij deze user een participant heeft
-                    //  waar bij de andere participant
-                    // participant [0] of [1] gelijk is aan de visitingUser
                   }}
                 >
                   DM {visitingUser.nickname}
