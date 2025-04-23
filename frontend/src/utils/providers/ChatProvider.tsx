@@ -94,10 +94,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: messages } =
       await api.ChatMessages.chatMessagesControllerFind({
         chatRoomId: newChatRoomId,
+        blockedUsers: user?.blockedUsers,
       });
     const { chatParticipants } = chatRoom;
 
-    // Update state with fetched data
     setChatRooms((prev) => ({
       ...prev,
       [newChatRoomId]: {
@@ -107,12 +107,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       },
     }));
 
-    // Join the chat room via WebSocket
     if (socketRef.current) {
       socketRef.current.emit("joinRoom", { roomId: newChatRoomId });
     }
 
     setChatRoomId(newChatRoomId);
+
+    console.log("Current", chatRoomId);
   };
 
   const leaveChatRoom = () => {
@@ -137,10 +138,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       // Send the new message to the WebSocket
       socketRef.current.emit("message", newMessage);
     } catch (error) {
-      console.error("Failed to send message:", error);
+      if (error.response.status === 401) {
+        console.error("participant is muted");
+        return;
+      } else console.error("Failed to send message:", error);
     }
   };
-
   return (
     <ChatContext.Provider
       value={{

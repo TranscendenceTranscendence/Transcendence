@@ -36,11 +36,11 @@ export interface ChatRoomsControllerFindOneRequest {
 }
 
 export interface ChatRoomsControllerRemoveRequest {
-  id: string;
+  id: number;
 }
 
 export interface ChatRoomsControllerUpdateRequest {
-  id: string;
+  id: number;
   body: object;
 }
 

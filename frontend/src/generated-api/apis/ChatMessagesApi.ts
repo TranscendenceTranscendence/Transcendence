@@ -35,6 +35,7 @@ export interface ChatMessagesControllerFindRequest {
   chatRoomId?: number;
   sentTimeFrom?: Date;
   sentTimeTill?: Date;
+  blockedUsers?: Array<number>;
 }
 
 export interface ChatMessagesControllerFindAllByUserAndChatRoomRequest {
@@ -141,6 +142,10 @@ export class ChatMessagesApi extends runtime.BaseAPI {
       queryParameters["sent_time_till"] = (
         requestParameters["sentTimeTill"] as any
       ).toISOString();
+    }
+
+    if (requestParameters["blockedUsers"] != null) {
+      queryParameters["blockedUsers"] = requestParameters["blockedUsers"];
     }
 
     const headerParameters: runtime.HTTPHeaders = {};

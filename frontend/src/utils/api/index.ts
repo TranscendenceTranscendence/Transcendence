@@ -12,7 +12,6 @@ export const useApi = () => {
     Auth: new generatedApi.AuthApi(config),
     Users: new generatedApi.UsersApi(config),
     Achievements: new generatedApi.AchievementsApi(config),
-    Blockeds: new generatedApi.BlockedsApi(config),
     ChatMessages: new generatedApi.ChatMessagesApi(config),
     ChatParticipants: new generatedApi.ChatParticipantsApi(config),
     ChatRooms: new generatedApi.ChatRoomsApi(config),

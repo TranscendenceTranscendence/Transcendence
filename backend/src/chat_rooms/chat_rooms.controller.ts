@@ -196,7 +196,7 @@ export class ChatRoomsController {
     description: 'Invalid input data.',
   })
   async update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateChatRoomDto: UpdateChatRoomDto,
   ) {
     try {
@@ -223,7 +223,7 @@ export class ChatRoomsController {
     status: 404,
     description: 'Chat room not found.',
   })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: number) {
     try {
       await this.chatRoomsService.remove(+id);
       return {

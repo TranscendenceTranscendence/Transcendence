@@ -56,6 +56,19 @@ export class ChatMessagesController {
   ): Promise<ChatMessage> {
     try {
       const { chat_room_id: chatRoomId, content } = createChatMessageDto;
+
+      if (
+        req.user.chatParticipants.find(
+          (chatParticipant) =>
+            chatParticipant.chat_room_id === chatRoomId &&
+            chatParticipant.is_muted,
+        )
+      ) {
+        throw new HttpException(
+          'You are muted in this chat room.',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
       if (!chatRoomId || !content) {
         throw new HttpException(
           'Chat room ID and message are required.',
@@ -79,8 +92,11 @@ export class ChatMessagesController {
         req.user.id,
       );
     } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
       throw new HttpException(
-        error.message || 'Internal server error.',
+        'Internal server error.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
