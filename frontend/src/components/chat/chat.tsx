@@ -157,7 +157,6 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-  console.log("Deze", currentChatRoom);
   return (
     <Card
       ref={cardRef}
