@@ -74,7 +74,7 @@ export class ChatRoomsService {
   async findOne(id: number): Promise<ChatRoom> {
     const chatRoomData = await this.chatRoomsRepository.findOne({
       where: { id },
-      relations: ['chatParticipants.user'],
+      relations: ['chatParticipants'],
     });
     if (!chatRoomData) throw new HttpException('ChatRoom Not Found', 404);
     return chatRoomData;
@@ -96,29 +96,29 @@ export class ChatRoomsService {
     id: number,
     UpdateChatRoomDto: UpdateChatRoomDto,
   ): Promise<ChatRoom> {
-    const existingChatRoom = await this.findOne(id);
+    const existingChatRoom = await this.findOne(+id);
 
     if (
       existingChatRoom.chat_room_type === chat_room_types.Protected &&
-      existingChatRoom.password === ''
+      existingChatRoom.password !== '' &&
+      UpdateChatRoomDto.password === ''
     ) {
-      // change to public
-    } else if (
-      existingChatRoom.chat_room_type === chat_room_types.Protected &&
-      existingChatRoom.password !== ''
-    ) {
-      // change the password of the protected chatroom
+      UpdateChatRoomDto.chat_room_type = chat_room_types.Public;
+      console.log('Removing password', existingChatRoom.password);
     } else if (
       existingChatRoom.chat_room_type !== chat_room_types.Protected &&
-      existingChatRoom.password !== ''
+      existingChatRoom.password === '' &&
+      UpdateChatRoomDto.password !== ''
     ) {
-      // Change public or private(if its necassery) to a protected chatRoom with the password
+      console.log('Making chatRoom protected');
+      UpdateChatRoomDto.chat_room_type = chat_room_types.Protected;
     }
 
     const chatRoomData = this.chatRoomsRepository.merge(
       existingChatRoom,
       UpdateChatRoomDto,
     );
+    console.log(UpdateChatRoomDto);
     return await this.chatRoomsRepository.save(chatRoomData);
   }
 

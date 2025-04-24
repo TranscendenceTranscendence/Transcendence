@@ -10,7 +10,12 @@ import {
   Req,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
@@ -23,7 +28,7 @@ import {
   ChatRoomsResponse,
 } from './dto/chat_rooms-response.dto';
 import { ChatRoom } from './chat_room.entity';
-import { chat_participant_roles } from 'chat_participants/chat_participant.entity';
+import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
@@ -209,7 +214,7 @@ export class ChatRoomsController {
     }
   }
 
-  @Patch(':id')
+  @Patch('editPassword/:id')
   @ApiOperation({ summary: 'Change password of chatRoom by id' })
   @ApiResponse({
     status: 200,
@@ -224,6 +229,7 @@ export class ChatRoomsController {
     description: 'Invalid input data.',
   })
   @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
   async editPassword(
     @Param('id') id: number,
     @Body() updateChatRoomDto: UpdateChatRoomDto,
@@ -231,17 +237,19 @@ export class ChatRoomsController {
   ) {
     const user = req.user;
     const chatRoom: ChatRoom = await this.chatRoomsService.findOne(+id);
-    const participant = chatRoom.chatParticipants.find(
-      (participant) => participant.user_id === user.id,
-    );
+    const participant = chatRoom.chatParticipants.find((participant) => {
+      console.log(
+        `Comparing participant.user_id: ${participant.user_id} with user.id: ${user.id}`,
+      );
+      return participant.user_id === user.id;
+    });
     if (!participant) {
       return {
         success: false,
         message: 'Participant not found in the chat room.',
       };
     }
-    if (participant.chat_participant_role !== chat_participant_roles.Owner)
-    {
+    if (participant.chat_participant_role !== chat_participant_roles.Owner) {
       return {
         succes: false,
         message: 'Participant is not the owner',

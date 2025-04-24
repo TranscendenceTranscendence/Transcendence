@@ -17,6 +17,7 @@ import type {
   ChatRoomResponse,
   ChatRoomsResponse,
   CreateChatRoomDto,
+  UpdateChatRoomDto,
 } from "../models/index";
 import {
   ChatRoomResponseFromJSON,
@@ -25,10 +26,17 @@ import {
   ChatRoomsResponseToJSON,
   CreateChatRoomDtoFromJSON,
   CreateChatRoomDtoToJSON,
+  UpdateChatRoomDtoFromJSON,
+  UpdateChatRoomDtoToJSON,
 } from "../models/index";
 
 export interface ChatRoomsControllerCreateRequest {
   createChatRoomDto: CreateChatRoomDto;
+}
+
+export interface ChatRoomsControllerEditPasswordRequest {
+  id: number;
+  updateChatRoomDto: UpdateChatRoomDto;
 }
 
 export interface ChatRoomsControllerFindOneRequest {
@@ -41,7 +49,7 @@ export interface ChatRoomsControllerRemoveRequest {
 
 export interface ChatRoomsControllerUpdateRequest {
   id: number;
-  body: object;
+  updateChatRoomDto: UpdateChatRoomDto;
 }
 
 /**
@@ -90,6 +98,71 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<void> {
     await this.chatRoomsControllerCreateRaw(requestParameters, initOverrides);
+  }
+
+  /**
+   * Change password of chatRoom by id
+   */
+  async chatRoomsControllerEditPasswordRaw(
+    requestParameters: ChatRoomsControllerEditPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters["id"] == null) {
+      throw new runtime.RequiredError(
+        "id",
+        'Required parameter "id" was null or undefined when calling chatRoomsControllerEditPassword().',
+      );
+    }
+
+    if (requestParameters["updateChatRoomDto"] == null) {
+      throw new runtime.RequiredError(
+        "updateChatRoomDto",
+        'Required parameter "updateChatRoomDto" was null or undefined when calling chatRoomsControllerEditPassword().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters["Content-Type"] = "application/json";
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
+    const response = await this.request(
+      {
+        path: `/chatroom/editPassword/{id}`.replace(
+          `{${"id"}}`,
+          encodeURIComponent(String(requestParameters["id"])),
+        ),
+        method: "PATCH",
+        headers: headerParameters,
+        query: queryParameters,
+        body: UpdateChatRoomDtoToJSON(requestParameters["updateChatRoomDto"]),
+      },
+      initOverrides,
+    );
+
+    return new runtime.VoidApiResponse(response);
+  }
+
+  /**
+   * Change password of chatRoom by id
+   */
+  async chatRoomsControllerEditPassword(
+    requestParameters: ChatRoomsControllerEditPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<void> {
+    await this.chatRoomsControllerEditPasswordRaw(
+      requestParameters,
+      initOverrides,
+    );
   }
 
   /**
@@ -332,10 +405,10 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       );
     }
 
-    if (requestParameters["body"] == null) {
+    if (requestParameters["updateChatRoomDto"] == null) {
       throw new runtime.RequiredError(
-        "body",
-        'Required parameter "body" was null or undefined when calling chatRoomsControllerUpdate().',
+        "updateChatRoomDto",
+        'Required parameter "updateChatRoomDto" was null or undefined when calling chatRoomsControllerUpdate().',
       );
     }
 
@@ -354,7 +427,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
         method: "PATCH",
         headers: headerParameters,
         query: queryParameters,
-        body: requestParameters["body"] as any,
+        body: UpdateChatRoomDtoToJSON(requestParameters["updateChatRoomDto"]),
       },
       initOverrides,
     );

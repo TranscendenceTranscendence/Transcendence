@@ -242,7 +242,7 @@ const Chat = () => {
       >
         {localParticipant.chatParticipantRole ===
           ChatParticipantChatParticipantRoleEnum.Owner && (
-          <EditChatRoomPasswordDialog />
+          <EditChatRoomPasswordDialog id={currentChatRoomId} />
         )}{" "}
         <h3>Chat Room {currentChatRoomId}</h3>
         <Button
