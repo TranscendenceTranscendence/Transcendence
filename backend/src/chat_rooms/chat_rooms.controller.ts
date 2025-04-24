@@ -236,7 +236,7 @@ export class ChatRoomsController {
     @Req() req: AuthenticatedRequest,
   ) {
     const user = req.user;
-    const chatRoom: ChatRoom = await this.chatRoomsService.findOne(+id);
+    const chatRoom: ChatRoom = await this.chatRoomsService.findOneShallow(+id);
     const participant = chatRoom.chatParticipants.find((participant) => {
       console.log(
         `Comparing participant.user_id: ${participant.user_id} with user.id: ${user.id}`,
