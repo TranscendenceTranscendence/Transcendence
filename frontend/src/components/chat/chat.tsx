@@ -116,8 +116,6 @@ const ChatMessages = ({
 const Chat = () => {
   const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
     useChat();
-  if (currentChatRoomId) console.log("test->", currentChatRoomId);
-  else console.log("currentChatRoomId is null");
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
   const {
@@ -138,7 +136,6 @@ const Chat = () => {
   } | null>(null);
   const localParticipant: ChatParticipant | undefined =
     me.user?.chatParticipants?.find((p: ChatParticipant) => {
-      console.log("Comparing:", p.chatRoomId, "with", currentChatRoomId);
       return p.chatRoomId === currentChatRoomId;
     });
   const handleOutsideClick = () => {
@@ -220,9 +217,6 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-  if (localParticipant) {
-    console.log("deze", localParticipant);
-  } else console.log("localParticipant is undefined");
   return (
     <Card
       ref={cardRef}
