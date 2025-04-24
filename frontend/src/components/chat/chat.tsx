@@ -2,17 +2,13 @@ import { useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { XIcon, SendIcon, KeyRound } from "lucide-react";
+import { XIcon, SendIcon } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect, useRef } from "react";
-import {
-  ChatMessage,
-  ChatParticipant,
-  ChatRoomChatRoomTypeEnum,
-} from "@/generated-api";
+import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { useNavigate } from "react-router";
 import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
 import {

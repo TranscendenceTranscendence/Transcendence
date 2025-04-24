@@ -10,9 +10,6 @@ import { chat_participant_roles } from '../chat_participants/chat_participant.en
 
 @Injectable()
 export class ChatRoomsService {
-  findParticipantByUserIdAndRoomId(id: number, arg1: number) {
-    throw new Error('Method not implemented.');
-  }
   constructor(
     @InjectRepository(ChatRoom)
     private readonly chatRoomsRepository: Repository<ChatRoom>,

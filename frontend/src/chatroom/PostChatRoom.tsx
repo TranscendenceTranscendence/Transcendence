@@ -2,12 +2,10 @@ import { useState } from "react";
 import { useApi } from "@/utils/api/index.ts";
 import {
   ChatParticipantChatParticipantRoleEnum,
-  ChatRoomChatRoomTypeEnum,
   ChatRoomsControllerCreateRequest,
   CreateChatRoomDtoChatRoomTypeEnum,
 } from "@/generated-api/index.ts";
 import PropTypes from "prop-types";
-import { Card } from "@/components/ui/card";
 
 export const PostChatRoom = ({ userId }) => {
   const [name, setName] = useState("");
