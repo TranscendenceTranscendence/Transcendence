@@ -238,9 +238,6 @@ export class ChatRoomsController {
     const user = req.user;
     const chatRoom: ChatRoom = await this.chatRoomsService.findOneShallow(+id);
     const participant = chatRoom.chatParticipants.find((participant) => {
-      console.log(
-        `Comparing participant.user_id: ${participant.user_id} with user.id: ${user.id}`,
-      );
       return participant.user_id === user.id;
     });
     if (!participant) {
