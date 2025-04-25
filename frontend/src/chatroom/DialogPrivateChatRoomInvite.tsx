@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useChat } from "@/utils/providers/ChatProvider";
-import { useChatRooms } from "./ApiRequest";
+import { useChatRoomsForPrivateInvite } from "./ApiRequest";
 import {
   ChatParticipantChatParticipantRoleEnum,
   ChatRoomsControllerCreateRequest,
@@ -17,7 +17,7 @@ import PropTypes from "prop-types";
 import { useApi } from "@/utils/api/index.ts";
 
 export const PrivateChatRoomInviteList = ({ userId, visitingUserId }) => {
-  const { chatRooms } = useChatRooms();
+  const { chatRooms } = useChatRoomsForPrivateInvite();
   const api = useApi();
 
   console.log(
@@ -44,41 +44,16 @@ export const PrivateChatRoomInviteList = ({ userId, visitingUserId }) => {
   return (
     <div>
       {Array.isArray(chatRooms?.chatRooms) &&
-        chatRooms.chatRooms
-          .filter((chatRoom) => {
-            const isPrivate = chatRoom.chatRoomType === "private";
-            console.log("Checking if chatRoom is private:", isPrivate);
-
-            const hasOwner = chatRoom.chatParticipants.some((participant) => {
-              const isOwner =
-                participant.chatParticipantRole ===
-                  ChatParticipantChatParticipantRoleEnum.Owner &&
-                participant.userId === userId;
-              console.log(
-                `Checking participant (userId: ${participant.userId}, role: ${participant.chatParticipantRole}) is owner in ${chatRoom.chatRoomType}:`,
-                isOwner,
-              );
-              console.log(participant.userId, userId.user);
-              return isOwner;
-            });
-
-            console.log(
-              `ChatRoom (id: ${chatRoom.id}, title: ${chatRoom.title}) passes filter:`,
-              isPrivate && hasOwner,
-            );
-
-            return isPrivate && hasOwner;
-          })
-          .map((chatRoom) => (
-            <div key={chatRoom.id} className="chat-room-item">
-              <div>{chatRoom.title}</div>
-              <Button
-                onClick={() => addVisitingParticipantToChatRoom(chatRoom.id)}
-              >
-                Invite
-              </Button>
-            </div>
-          ))}
+        chatRooms.chatRooms.map((chatRoom) => (
+          <div key={chatRoom.id} className="chat-room-item">
+            <div>{chatRoom.title}</div>
+            <Button
+              onClick={() => addVisitingParticipantToChatRoom(chatRoom.id)}
+            >
+              Invite
+            </Button>
+          </div>
+        ))}
     </div>
   );
 };

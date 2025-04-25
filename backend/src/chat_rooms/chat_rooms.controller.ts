@@ -123,16 +123,49 @@ export class ChatRoomsController {
     }
   }
 
-  @Get('includeParticipant')
-  @ApiOperation({ summary: 'Get all chat rooms including participants' })
+  @Get('findChatRoomList')
+  @ApiOperation({ summary: 'Get all chat rooms for chatRoomList' })
   @ApiResponse({
     status: 200,
     description: 'Chat rooms with participants fetched successfully.',
     type: ChatRoomsResponse,
   })
-  async findAllincludeParticipant(): Promise<ChatRoomsResponse> {
+  @UseGuards(JwtAccessAuthGuard)
+  async findAllChatRoomList(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<ChatRoomsResponse> {
+    console.log(req);
     try {
-      const data = await this.chatRoomsService.findAllincludeParticipant();
+      const data = await this.chatRoomsService.findAllChatRoomList(req.user.id);
+      return {
+        success: true,
+        chatRooms: data,
+        message: 'ChatRoom Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Get('findPrivateChatRoomList')
+  @ApiOperation({ summary: 'Get all chat rooms for chatRoomListPrivate' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat rooms with participants fetched successfully.',
+    type: ChatRoomsResponse,
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async findAllPrivateChatRoomList(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<ChatRoomsResponse> {
+    console.log(req);
+    try {
+      const data = await this.chatRoomsService.findAllPrivateChatRoomList(
+        req.user.id,
+      );
       return {
         success: true,
         chatRooms: data,
