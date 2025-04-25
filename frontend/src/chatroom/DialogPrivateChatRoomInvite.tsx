@@ -8,15 +8,39 @@ import {
 } from "@/components/ui/dialog";
 import { useChat } from "@/utils/providers/ChatProvider";
 import { useChatRooms } from "./ApiRequest";
-import { ChatParticipantChatParticipantRoleEnum, User } from "@/generated-api";
+import {
+  ChatParticipantChatParticipantRoleEnum,
+  ChatRoomsControllerCreateRequest,
+  User,
+} from "@/generated-api";
 import PropTypes from "prop-types";
+import { useApi } from "@/utils/api/index.ts";
 
 export const PrivateChatRoomInviteList = ({ userId, visitingUserId }) => {
   const { chatRooms } = useChatRooms();
+  const api = useApi();
 
-  console.log("ChatRooms in privateChatRoomInviteList --> ", chatRooms);
+  console.log(
+    "ChatRooms in privateChatRoomInviteList --> ",
+    chatRooms?.chatRooms,
+  );
   console.log("User in privateChatRoomInviteList --> ", userId);
   console.log("VisitingUser in privateChatRoomInviteList --> ", visitingUserId);
+
+  const addVisitingParticipantToChatRoom = async (chatRoomId: number) => {
+    try {
+      console.log("api call values-->", visitingUserId, chatRoomId);
+      await api.ChatParticipants.chatParticipantsControllerAddParticipantToChatroom(
+        {
+          chatRoomId,
+          userId: visitingUserId,
+        },
+      );
+    } catch (error) {
+      console.error("Error adding participant:", error);
+    }
+  };
+
   return (
     <div>
       {Array.isArray(chatRooms?.chatRooms) &&
@@ -29,11 +53,12 @@ export const PrivateChatRoomInviteList = ({ userId, visitingUserId }) => {
               const isOwner =
                 participant.chatParticipantRole ===
                   ChatParticipantChatParticipantRoleEnum.Owner &&
-                participant.userId === userId.user;
+                participant.userId === userId;
               console.log(
-                `Checking participant (userId: ${participant.userId}, role: ${participant.chatParticipantRole}) is owner:`,
+                `Checking participant (userId: ${participant.userId}, role: ${participant.chatParticipantRole}) is owner in ${chatRoom.chatRoomType}:`,
                 isOwner,
               );
+              console.log(participant.userId, userId.user);
               return isOwner;
             });
 
@@ -47,7 +72,11 @@ export const PrivateChatRoomInviteList = ({ userId, visitingUserId }) => {
           .map((chatRoom) => (
             <div key={chatRoom.id} className="chat-room-item">
               <div>{chatRoom.title}</div>
-              <Button onClick={}>Invite</Button>
+              <Button
+                onClick={() => addVisitingParticipantToChatRoom(chatRoom.id)}
+              >
+                Invite
+              </Button>
             </div>
           ))}
     </div>
@@ -59,10 +88,14 @@ PrivateChatRoomInviteList.propTypes = {
   visitingUserId: PropTypes.number.isRequired,
 };
 
-export const DialogPrivateChatRoomInvite = (
-  userId: number,
-  visitingUserId: number,
-) => {
+export const DialogPrivateChatRoomInvite = ({
+  userId,
+  visitingUserId,
+}: {
+  userId: number;
+  visitingUserId: number;
+}) => {
+  console.log("Visting in dialog --> ", visitingUserId);
   return (
     <Dialog>
       <DialogTrigger asChild>

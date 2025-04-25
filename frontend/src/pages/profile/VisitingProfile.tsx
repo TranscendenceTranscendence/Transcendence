@@ -106,8 +106,8 @@ export default function VisitingProfile() {
             <div className="flex flex-col items-end gap-2 justify-end">
               <div>
                 <DialogPrivateChatRoomInvite
-                  user={me.user.id}
-                  visitingUser={visitingUser.id}
+                  userId={me.user.id}
+                  visitingUserId={visitingUser.id}
                 />
                 <FriendRequest user={visitingUser} />
               </div>
