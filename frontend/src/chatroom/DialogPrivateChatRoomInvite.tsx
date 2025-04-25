@@ -6,13 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useChat } from "@/utils/providers/ChatProvider";
 import { useChatRoomsForPrivateInvite } from "./ApiRequest";
-import {
-  ChatParticipantChatParticipantRoleEnum,
-  ChatRoomsControllerCreateRequest,
-  User,
-} from "@/generated-api";
 import PropTypes from "prop-types";
 import { useApi } from "@/utils/api/index.ts";
 

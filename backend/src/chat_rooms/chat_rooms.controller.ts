@@ -134,7 +134,6 @@ export class ChatRoomsController {
   async findAllChatRoomList(
     @Req() req: AuthenticatedRequest,
   ): Promise<ChatRoomsResponse> {
-    console.log(req);
     try {
       const data = await this.chatRoomsService.findAllChatRoomList(req.user.id);
       return {
@@ -161,7 +160,6 @@ export class ChatRoomsController {
   async findAllPrivateChatRoomList(
     @Req() req: AuthenticatedRequest,
   ): Promise<ChatRoomsResponse> {
-    console.log(req);
     try {
       const data = await this.chatRoomsService.findAllPrivateChatRoomList(
         req.user.id,
