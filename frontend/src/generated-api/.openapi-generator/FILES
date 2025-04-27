@@ -8,6 +8,7 @@ apis/FileUploadApi.ts
 apis/FriendsApi.ts
 apis/GamesApi.ts
 apis/QueueApi.ts
+apis/StatisticsApi.ts
 apis/TwoFactorAuthenticationApi.ts
 apis/UsersApi.ts
 apis/index.ts
@@ -32,9 +33,6 @@ models/FriendsControllerGetFriendStatus200Response.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
 models/MessagesResponse.ts
-models/QueueJoinResponse.ts
-models/QueueStatusResponse.ts
-models/QueueUserInQueueResponse.ts
 models/SearchUserResponseDto.ts
 models/UpdateAddUserToBlockedListDto.ts
 models/UpdateChatParticipantDto.ts

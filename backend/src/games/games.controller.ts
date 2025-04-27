@@ -1,4 +1,3 @@
-// Games Controller
 import {
   Controller,
   Get,
@@ -16,7 +15,7 @@ import { JwtAccessAuthGuard } from '../auth/guards/jwt-access.guard';
 import { AuthenticatedRequest } from '../auth/guards/jwt-access.guard';
 import { Game } from './game.entity';
 
-@ApiTags('Games') // Groups the endpoints under "Games" in Swagger
+@ApiTags('Games')
 @Controller('games')
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}

@@ -23,6 +23,7 @@ export * from "./MessagesResponse";
 export * from "./QueueJoinResponse";
 export * from "./QueueStatusResponse";
 export * from "./QueueUserInQueueResponse";
+export * from "./PlayerStatisticsDto";
 export * from "./SearchUserResponseDto";
 export * from "./UpdateAddUserToBlockedListDto";
 export * from "./UpdateChatParticipantDto";

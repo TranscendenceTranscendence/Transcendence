@@ -23,6 +23,7 @@ export const useApi = () => {
     TwoFactorAuthentication: new generatedApi.TwoFactorAuthenticationApi(
       config,
     ),
+    Statistics: new generatedApi.StatisticsApi(config),
   };
   return api;
 };
