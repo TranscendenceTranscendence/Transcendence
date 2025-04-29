@@ -12,6 +12,7 @@ import { CreateGameDto } from 'games/dto/create-game.dto';
 import { JwtAccessAuthGuard } from 'auth/guards/jwt-access.guard';
 import { GameStatus } from 'games/game.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { promises } from 'dns';
 
 @Injectable()
 export class InviteService {
@@ -21,11 +22,10 @@ export class InviteService {
     private readonly gamesService: GamesService,
   ) {}
 
-  @UseGuards(JwtAccessAuthGuard)
   async createInvite(
     senderUserId: number,
     receiverUserId: number,
-  ): Promise<boolean> {
+  ): Promise<void> {
     if (
       !senderUserId ||
       isNaN(senderUserId) ||
@@ -66,7 +66,15 @@ export class InviteService {
 
     if (!invite)
       throw new InternalServerErrorException("Couldn't make an invite.");
+  }
 
-    return true;
+  async getPendingInvites(userId: number): Promise<Invite[]>
+  {
+    const invites = this.inviteRepository.find({
+        where: {
+            receiverUserId: userId
+        }
+    })
+    return invites;
   }
 }
