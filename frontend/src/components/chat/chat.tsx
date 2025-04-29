@@ -115,8 +115,7 @@ const ChatMessages = ({
 const Chat = () => {
   const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
     useChat();
-  if (currentChatRoomId) console.log("test->", currentChatRoomId);
-  else console.log("currentChatRoomId is null");
+
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
   const {

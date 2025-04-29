@@ -15,6 +15,7 @@ import { ChatModule } from './websockets/chat.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { StatisticsModule } from './statistics/statistics.module';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     ChatRoomsModule,
     FriendsModule,
     GamesModule,
+    QueueModule,
     AuthModule,
     FileUploadModule,
   ],

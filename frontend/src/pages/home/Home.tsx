@@ -48,7 +48,7 @@ export default function Page() {
   }, [me.user]);
 
   const handlePlayClick = () => {
-    navigate("/matchmaking");
+    navigate("/queue");
   };
 
   const userId = me.user?.id;

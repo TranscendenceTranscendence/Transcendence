@@ -14,12 +14,11 @@ import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
 import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
-import Matchmaking from "./pages/matchmaking/Matchmaking.tsx";
-import Lobby from "./pages/lobby/Lobby.tsx";
 import Game from "./pages/game/Game.tsx";
 import Result from "./pages/result/result.tsx";
 import { useApi } from "@/utils/api";
 import Statistics from "./pages/statistics/Statistics.tsx";
+import Queue from "./pages/queue/Queue.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -81,9 +80,8 @@ function App() {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/profile/:id" element={<VisitingProfile />} />
             <Route path="/statistics" element={<Statistics />} />
-            <Route path="/Matchmaking" element={<Matchmaking />} />
-            <Route path="/lobby/:roomIdentifier" element={<Lobby />} />
             <Route path="/game" element={<Game />} />
+            <Route path="/queue" element={<Queue />} />
             <Route path="/result" element={<Result />} />
             <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
             <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />

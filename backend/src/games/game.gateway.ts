@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GamesService } from './games.service';
-
+import { GameStatus } from './game.entity';
 interface Player {
   id: string;
   playerName: string;
@@ -22,9 +22,10 @@ interface GameState {
   players: Record<string, Player>;
   score: [number, number];
   countdownActive: boolean;
+  timeout?: NodeJS.Timeout;
 }
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
@@ -61,10 +62,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.error('Invalid roomId or playerNumber');
         return;
       }
-
       let game = this.games.get(roomId);
       if (!game) {
         game = this.createGame(roomId);
+      }
+
+      if (game.timeout) {
+        clearTimeout(game.timeout);
+        game.timeout = undefined;
       }
 
       if (userId && this.userIdToSocket.has(userId)) {
@@ -95,14 +100,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         y: 50,
         x,
       };
-
       try {
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
 
         this.server.to(client.id).emit('update', game);
         if (
           Object.keys(game.players).length == 2 &&
-          dbGame.status == 'countdown'
+          dbGame.status === GameStatus.PENDING
         )
           this.startCountdown(roomId);
       } catch (error) {
@@ -120,6 +124,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!game || game.countdownActive) return;
 
     game.countdownActive = true;
+    this.gamesService.updateGameStatus(roomId, GameStatus.COUNTDOWN);
 
     const countdownInterval = setInterval(() => {
       this.server.to(roomId).emit('countdown', count);
@@ -164,6 +169,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       players: {},
       score: [0, 0],
       countdownActive: false,
+      timeout: undefined,
     };
 
     this.games.set(roomId, game);
@@ -173,7 +179,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private startGameLoop(roomId: string) {
     const loop = setInterval(() => {
       this.updateGame(roomId, this.games.get(roomId));
-      this.server.to(roomId).emit('update', this.games.get(roomId));
+
+      const game = this.games.get(roomId);
+      if (game) {
+        const safeGameState = {
+          id: game.id,
+          ball: { ...game.ball },
+          players: Object.fromEntries(
+            Object.entries(game.players).map(([id, player]) => [
+              id,
+              { ...player },
+            ]),
+          ),
+          score: [...game.score],
+          countdownActive: game.countdownActive,
+        };
+
+        this.server.to(roomId).emit('update', safeGameState);
+      }
     }, 1000 / 60);
 
     this.gameLoops.set(roomId, loop);
@@ -302,20 +325,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.leave(roomId);
 
       if (Object.keys(game.players).length === 0) {
-        try {
-          this.gamesService.cancelGame(roomId);
-        } catch (error) {
-          console.error(
-            `Error updating game status in database: ${error.message}`,
-          );
+        if (game.timeout) {
+          clearTimeout(game.timeout);
         }
-        this.cleanupGame(roomId);
-        this.server.to(roomId).emit('removePlayer');
+
+        game.timeout = setTimeout(async () => {
+          try {
+            await this.gamesService.cancelGame(roomId);
+            this.cleanupGame(roomId);
+            this.server.to(roomId).emit('removePlayer');
+          } catch (error) {
+            console.error(`Error canceling game: ${error.message}`);
+          }
+        }, 10000);
       }
     }
   }
 
   private cleanupGame(roomId: string) {
+    const game = this.games.get(roomId);
+    if (game && game.timeout) {
+      clearTimeout(game.timeout);
+      game.timeout = undefined;
+    }
+
     clearInterval(this.gameLoops.get(roomId));
     this.gameLoops.delete(roomId);
     this.games.delete(roomId);
