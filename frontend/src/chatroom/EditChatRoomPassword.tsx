@@ -18,7 +18,7 @@ const EditChatRoomPassword = ({ id }: { id: number }) => {
   const editPassword = async () => {
     try {
       const updatedChatRoomData: ChatRoomsControllerEditPasswordRequest = {
-        id: id,
+        chatRoomId: id,
         updateChatRoomDto: {
           password: password,
         },

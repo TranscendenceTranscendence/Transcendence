@@ -35,7 +35,7 @@ export interface ChatRoomsControllerCreateRequest {
 }
 
 export interface ChatRoomsControllerEditPasswordRequest {
-  id: number;
+  chatRoomId: number;
   updateChatRoomDto: UpdateChatRoomDto;
 }
 
@@ -107,10 +107,10 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     requestParameters: ChatRoomsControllerEditPasswordRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<void>> {
-    if (requestParameters["id"] == null) {
+    if (requestParameters["chatRoomId"] == null) {
       throw new runtime.RequiredError(
-        "id",
-        'Required parameter "id" was null or undefined when calling chatRoomsControllerEditPassword().',
+        "chatRoomId",
+        'Required parameter "chatRoomId" was null or undefined when calling chatRoomsControllerEditPassword().',
       );
     }
 
@@ -137,9 +137,9 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     }
     const response = await this.request(
       {
-        path: `/chatroom/editPassword/{id}`.replace(
-          `{${"id"}}`,
-          encodeURIComponent(String(requestParameters["id"])),
+        path: `/chatroom/editPassword/{chatRoomId}`.replace(
+          `{${"chatRoomId"}}`,
+          encodeURIComponent(String(requestParameters["chatRoomId"])),
         ),
         method: "PATCH",
         headers: headerParameters,
