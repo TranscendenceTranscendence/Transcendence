@@ -10,7 +10,13 @@ import {
   Req,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
@@ -22,6 +28,8 @@ import {
   ChatRoomResponse,
   ChatRoomsResponse,
 } from './dto/chat_rooms-response.dto';
+import { ChatRoom } from './chat_room.entity';
+import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
@@ -195,6 +203,61 @@ export class ChatRoomsController {
   ) {
     try {
       await this.chatRoomsService.update(+id, updateChatRoomDto);
+      return {
+        success: true,
+        message: 'ChatRoom Updated Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Patch('editPassword/:chatRoomId')
+  @ApiOperation({ summary: 'Change password of chatRoom by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat room updated successfully.',
+  })
+  @ApiParam({ name: 'chatRoomId', type: Number })
+  @ApiResponse({
+    status: 404,
+    description: 'Chat room not found.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async editPassword(
+    @Param('chatRoomId') chatRoomId: number,
+    @Body() updateChatRoomDto: UpdateChatRoomDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+    console.log(chatRoomId);
+    const chatRoom: ChatRoom =
+      await this.chatRoomsService.findOneShallow(+chatRoomId);
+    const participant = chatRoom.chatParticipants.find((participant) => {
+      return participant.user_id === user.id;
+    });
+    if (!participant) {
+      return {
+        success: false,
+        message: 'Participant not found in the chat room.',
+      };
+    }
+    if (participant.chat_participant_role !== chat_participant_roles.Owner) {
+      return {
+        succes: false,
+        message: 'Participant is not the owner',
+      };
+    }
+    try {
+      await this.chatRoomsService.editPassword(+chatRoomId, updateChatRoomDto);
       return {
         success: true,
         message: 'ChatRoom Updated Successfully',

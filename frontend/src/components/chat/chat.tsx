@@ -17,6 +17,7 @@ import {
   MuteUser,
   BlockUser,
 } from "@/chat/ChatApiCalls";
+import { EditChatRoomPasswordDialog } from "@/chatroom/EditChatRoomPassword";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -115,7 +116,6 @@ const ChatMessages = ({
 const Chat = () => {
   const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
     useChat();
-
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
   const {
@@ -136,7 +136,6 @@ const Chat = () => {
   } | null>(null);
   const localParticipant: ChatParticipant | undefined =
     me.user?.chatParticipants?.find((p: ChatParticipant) => {
-      console.log("Comparing:", p.chatRoomId, "with", currentChatRoomId);
       return p.chatRoomId === currentChatRoomId;
     });
   const handleOutsideClick = () => {
@@ -218,9 +217,6 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-  if (localParticipant) {
-    console.log("deze", localParticipant);
-  } else console.log("localParticipant is undefined");
   return (
     <Card
       ref={cardRef}
@@ -234,6 +230,10 @@ const Chat = () => {
         className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
         onMouseDown={handleMouseDown}
       >
+        {localParticipant.chatParticipantRole ===
+          ChatParticipantChatParticipantRoleEnum.Owner && (
+          <EditChatRoomPasswordDialog id={currentChatRoomId} />
+        )}{" "}
         <h3>Chat Room {currentChatRoomId}</h3>
         <Button
           variant="ghost"
