@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AchievementsApi.ts
 apis/AppApi.ts
 apis/AuthApi.ts
@@ -8,6 +7,8 @@ apis/ChatRoomsApi.ts
 apis/FileUploadApi.ts
 apis/FriendsApi.ts
 apis/GamesApi.ts
+apis/QueueApi.ts
+apis/StatisticsApi.ts
 apis/TwoFactorAuthenticationApi.ts
 apis/UsersApi.ts
 apis/index.ts

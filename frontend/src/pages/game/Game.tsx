@@ -23,7 +23,8 @@ export default function Pong() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [gameFetched, setGameFetched] = useState<boolean>(false);
-  const [playerId, setPlayerId] = useState<number | null>(null);
+  const [socketId, setSocketId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
@@ -55,7 +56,7 @@ export default function Pong() {
             return;
           }
 
-          socketRef.current = io(config.backendUrl, {
+          socketRef.current = io(`${config.backendUrl}/game`, {
             auth: { token },
             transports: ["websocket"],
             reconnectionAttempts: 5,
@@ -66,7 +67,8 @@ export default function Pong() {
 
           socket.on("connect", () => {
             setSocketConnected(true);
-            setPlayerId(userData.id);
+            setSocketId(socket.id);
+            setUserId(userData.id);
           });
 
           socket.on("connect_error", (err) => {
@@ -174,7 +176,7 @@ export default function Pong() {
 
         if (!game || !game.roomIdentifier) {
           setError("No active game found");
-          setTimeout(() => navigate("/matchmaking"), 1300);
+          setTimeout(() => navigate("/queue"), 1300);
           return;
         }
 
@@ -196,10 +198,10 @@ export default function Pong() {
       return;
 
     socketRef.current.emit("joinGame", {
-      roomId,
-      playerId,
-      playerName,
-      playerNumber,
+      roomId: roomId,
+      userId: userId,
+      playerName: playerName,
+      playerNumber: playerNumber,
     });
 
     return () => {
@@ -208,7 +210,7 @@ export default function Pong() {
   }, [socketConnected, roomId, playerNumber]);
 
   const movePaddle = (event: React.MouseEvent) => {
-    if (playerId && socketRef.current && roomId && socketConnected) {
+    if (socketId && socketRef.current && roomId && socketConnected) {
       const tableElement = document.getElementById("table");
 
       if (tableElement) {
@@ -266,10 +268,10 @@ export default function Pong() {
                   onClick={() => {
                     if (socketRef.current && roomId) {
                       socketRef.current.emit("joinGame", {
-                        roomId,
-                        playerId,
-                        playerName,
-                        playerNumber,
+                        roomId: roomId,
+                        userId: userId,
+                        playerName: playerName,
+                        playerNumber: playerNumber,
                       });
                       location.reload();
                     }
