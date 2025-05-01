@@ -99,10 +99,10 @@ export class ChatRoomsService {
   }
 
   async editPassword(
-    id: number,
+    chatRoomId: number,
     UpdateChatRoomDto: UpdateChatRoomDto,
   ): Promise<ChatRoom> {
-    const existingChatRoom = await this.findOneShallow(+id);
+    const existingChatRoom = await this.findOneShallow(+chatRoomId);
 
     if (
       existingChatRoom.chat_room_type === chat_room_types.Protected &&

@@ -241,21 +241,21 @@ export class ChatRoomsController {
     console.log(chatRoomId);
     const chatRoom: ChatRoom =
       await this.chatRoomsService.findOneShallow(+chatRoomId);
-    // const participant = chatRoom.chatParticipants.find((participant) => {
-    //   return participant.user_id === user.id;
-    // });
-    // if (!participant) {
-    //   return {
-    //     success: false,
-    //     message: 'Participant not found in the chat room.',
-    //   };
-    // }
-    // if (participant.chat_participant_role !== chat_participant_roles.Owner) {
-    //   return {
-    //     succes: false,
-    //     message: 'Participant is not the owner',
-    //   };
-    // }
+    const participant = chatRoom.chatParticipants.find((participant) => {
+      return participant.user_id === user.id;
+    });
+    if (!participant) {
+      return {
+        success: false,
+        message: 'Participant not found in the chat room.',
+      };
+    }
+    if (participant.chat_participant_role !== chat_participant_roles.Owner) {
+      return {
+        succes: false,
+        message: 'Participant is not the owner',
+      };
+    }
     try {
       await this.chatRoomsService.editPassword(+chatRoomId, updateChatRoomDto);
       return {
