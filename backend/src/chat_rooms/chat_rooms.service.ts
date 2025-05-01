@@ -40,9 +40,39 @@ export class ChatRoomsService {
     return await this.chatRoomsRepository.find();
   }
 
-  async findAllincludeParticipant(): Promise<ChatRoom[]> {
+  async findAllChatRoomList(id: number): Promise<ChatRoom[]> {
     return await this.chatRoomsRepository.find({
       relations: ['chatParticipants', 'chatParticipants.user'],
+      where: [
+        {
+          chat_room_type: In(['public', 'protected']),
+        },
+        {
+          chat_room_type: chat_room_types.Private,
+          chatParticipants: {
+            user_id: id,
+          },
+        },
+        {
+          chat_room_type: chat_room_types.Dm,
+          chatParticipants: {
+            user_id: id,
+          },
+        },
+      ],
+    });
+  }
+
+  async findAllPrivateChatRoomList(id: number): Promise<ChatRoom[]> {
+    return await this.chatRoomsRepository.find({
+      relations: ['chatParticipants', 'chatParticipants.user'],
+      where: {
+        chat_room_type: chat_room_types.Private,
+        chatParticipants: {
+          user_id: id,
+          chat_participant_role: chat_participant_roles.Owner,
+        },
+      },
     });
   }
 

@@ -198,6 +198,80 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   }
 
   /**
+   * Get all chat rooms for chatRoomList
+   */
+  async chatRoomsControllerFindAllChatRoomListRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/chatroom/findChatRoomList`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Get all chat rooms for chatRoomList
+   */
+  async chatRoomsControllerFindAllChatRoomList(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<ChatRoomsResponse> {
+    const response =
+      await this.chatRoomsControllerFindAllChatRoomListRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * Get all chat rooms for chatRoomListPrivate
+   */
+  async chatRoomsControllerFindAllPrivateChatRoomListRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/chatroom/findPrivateChatRoomList`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Get all chat rooms for chatRoomListPrivate
+   */
+  async chatRoomsControllerFindAllPrivateChatRoomList(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<ChatRoomsResponse> {
+    const response =
+      await this.chatRoomsControllerFindAllPrivateChatRoomListRaw(
+        initOverrides,
+      );
+    return await response.value();
+  }
+
+  /**
    * Get all public chat rooms
    */
   async chatRoomsControllerFindAllWithoutPrivateRaw(
@@ -227,42 +301,6 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<void> {
     await this.chatRoomsControllerFindAllWithoutPrivateRaw(initOverrides);
-  }
-
-  /**
-   * Get all chat rooms including participants
-   */
-  async chatRoomsControllerFindAllincludeParticipantRaw(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/chatroom/includeParticipant`,
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      ChatRoomsResponseFromJSON(jsonValue),
-    );
-  }
-
-  /**
-   * Get all chat rooms including participants
-   */
-  async chatRoomsControllerFindAllincludeParticipant(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<ChatRoomsResponse> {
-    const response =
-      await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
-    return await response.value();
   }
 
   /**
