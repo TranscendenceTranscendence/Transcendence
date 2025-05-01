@@ -15,6 +15,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
 import { CreateChatRoomDto } from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
@@ -214,12 +215,13 @@ export class ChatRoomsController {
     }
   }
 
-  @Patch('editPassword/:id')
+  @Patch('editPassword/:chatRoomId')
   @ApiOperation({ summary: 'Change password of chatRoom by id' })
   @ApiResponse({
     status: 200,
     description: 'Chat room updated successfully.',
   })
+  @ApiParam({ name: 'chatRoomId', type: Number })
   @ApiResponse({
     status: 404,
     description: 'Chat room not found.',
@@ -231,29 +233,31 @@ export class ChatRoomsController {
   @UseGuards(JwtAccessAuthGuard)
   @ApiBearerAuth()
   async editPassword(
-    @Param('id') id: number,
+    @Param('chatRoomId') chatRoomId: number,
     @Body() updateChatRoomDto: UpdateChatRoomDto,
     @Req() req: AuthenticatedRequest,
   ) {
     const user = req.user;
-    const chatRoom: ChatRoom = await this.chatRoomsService.findOneShallow(+id);
-    const participant = chatRoom.chatParticipants.find((participant) => {
-      return participant.user_id === user.id;
-    });
-    if (!participant) {
-      return {
-        success: false,
-        message: 'Participant not found in the chat room.',
-      };
-    }
-    if (participant.chat_participant_role !== chat_participant_roles.Owner) {
-      return {
-        succes: false,
-        message: 'Participant is not the owner',
-      };
-    }
+    console.log(chatRoomId);
+    const chatRoom: ChatRoom =
+      await this.chatRoomsService.findOneShallow(+chatRoomId);
+    // const participant = chatRoom.chatParticipants.find((participant) => {
+    //   return participant.user_id === user.id;
+    // });
+    // if (!participant) {
+    //   return {
+    //     success: false,
+    //     message: 'Participant not found in the chat room.',
+    //   };
+    // }
+    // if (participant.chat_participant_role !== chat_participant_roles.Owner) {
+    //   return {
+    //     succes: false,
+    //     message: 'Participant is not the owner',
+    //   };
+    // }
     try {
-      await this.chatRoomsService.editPassword(+id, updateChatRoomDto);
+      await this.chatRoomsService.editPassword(+chatRoomId, updateChatRoomDto);
       return {
         success: true,
         message: 'ChatRoom Updated Successfully',

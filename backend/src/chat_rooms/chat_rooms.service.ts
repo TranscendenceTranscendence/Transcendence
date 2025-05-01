@@ -102,7 +102,7 @@ export class ChatRoomsService {
     id: number,
     UpdateChatRoomDto: UpdateChatRoomDto,
   ): Promise<ChatRoom> {
-    const existingChatRoom = await this.findOne(+id);
+    const existingChatRoom = await this.findOneShallow(+id);
 
     if (
       existingChatRoom.chat_room_type === chat_room_types.Protected &&
