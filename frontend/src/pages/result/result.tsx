@@ -53,21 +53,21 @@ export function Result() {
           }, 1000);
         } else {
           console.error("Invalid game result structure:", parsedResult);
-          setTimeout(() => navigate("/matchmaking"), 2000);
+          setTimeout(() => navigate("/queue"), 2000);
         }
       } catch (e) {
         console.error("Failed to parse game result:", e);
-        setTimeout(() => navigate("/matchmaking"), 2000);
+        setTimeout(() => navigate("/queue"), 2000);
       }
     } else {
       console.log("No game result found in session storage");
-      setTimeout(() => navigate("/matchmaking"), 2000);
+      setTimeout(() => navigate("/queue"), 2000);
     }
     setLoading(false);
   }, [navigate]);
 
   function handlePlayAgain() {
-    navigate("/matchmaking");
+    navigate("/queue");
   }
 
   function handleBackToHome() {

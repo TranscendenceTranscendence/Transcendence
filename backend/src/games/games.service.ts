@@ -60,7 +60,6 @@ export class GamesService {
   async joinGame(gameId: string, playerId: number): Promise<Game> {
     const queryRunner =
       this.gamesRepository.manager.connection.createQueryRunner();
-
     try {
       const isInGame = await this.isPlayerInGame(playerId);
       if (isInGame) {
@@ -348,6 +347,8 @@ export class GamesService {
       }
       if (game.score[0] == 11) game.winner_user_id = game.player1_user_id;
       else if (game.score[1] == 11) game.winner_user_id = game.player2_user_id;
+
+      // formula for ELO
 
       game.status = GameStatus.CLOSED;
       game.ended_at = new Date();
