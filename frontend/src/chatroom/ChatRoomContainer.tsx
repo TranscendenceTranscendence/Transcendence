@@ -69,8 +69,6 @@ export const ChatRoomContainer = () => {
     }
     return isValid;
   };
-
-  console.log("chatRoomContaner", userId);
   return (
     <div className="chatRoomBox">
       <Dialog open={askPassword} onOpenChange={setAskPassword}>

@@ -36,9 +36,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
       {chatRooms?.chatRooms
         ?.filter((chatRoom: ChatRoom) => {
           const isNotDm = chatRoom.chatRoomType !== ChatRoomChatRoomTypeEnum.Dm;
-          console.log(
-            `Comparing chatRoom.chat_room_type (${chatRoom.chatRoomType}) with ChatRoomChatRoomTypeEnum.Dm: ${isNotDm}`,
-          );
           return isNotDm;
         })
         .map((chatRoom) => (
