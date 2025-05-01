@@ -215,6 +215,20 @@ export class ChatRoomsController {
     }
   }
 
+  @Post('checkPassword')
+  @ApiOperation({ summary: 'Check if password is correct' })
+  @UseGuards(JwtAccessAuthGuard)
+  async checkPassword(
+    @Body() body: { chatRoomId: number; password: string },
+  ): Promise<Boolean> {
+    const { chatRoomId, password } = body;
+    console.log('in controller -->', password, chatRoomId);
+    if (!password) {
+      throw new Error('Password is undefined or missing in the request.');
+    }
+    return this.chatRoomsService.checkPassword(chatRoomId, password);
+  }
+
   @Patch('editPassword/:chatRoomId')
   @ApiOperation({ summary: 'Change password of chatRoom by id' })
   @ApiResponse({

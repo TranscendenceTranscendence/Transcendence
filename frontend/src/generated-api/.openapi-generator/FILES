@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AchievementsApi.ts
 apis/AppApi.ts
 apis/AuthApi.ts
@@ -34,6 +33,10 @@ models/FriendsControllerGetFriendStatus200Response.ts
 models/Game.ts
 models/GetFriendRequestsDto.ts
 models/MessagesResponse.ts
+models/PlayerStatisticsDto.ts
+models/QueueJoinResponse.ts
+models/QueueStatusResponse.ts
+models/QueueUserInQueueResponse.ts
 models/SearchUserResponseDto.ts
 models/UpdateAddUserToBlockedListDto.ts
 models/UpdateChatParticipantDto.ts

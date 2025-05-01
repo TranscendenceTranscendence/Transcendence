@@ -57,6 +57,40 @@ export interface ChatRoomsControllerUpdateRequest {
  */
 export class ChatRoomsApi extends runtime.BaseAPI {
   /**
+   * Check if password is correct
+   */
+  async chatRoomsControllerCheckPasswordRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<object>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/chatroom/checkPassword`,
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse<any>(response);
+  }
+
+  /**
+   * Check if password is correct
+   */
+  async chatRoomsControllerCheckPassword(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<object> {
+    const response =
+      await this.chatRoomsControllerCheckPasswordRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
    * Create a new chat room and add the creator as an owner
    */
   async chatRoomsControllerCreateRaw(
