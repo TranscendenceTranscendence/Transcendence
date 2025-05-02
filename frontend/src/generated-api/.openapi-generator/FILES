@@ -36,6 +36,7 @@ models/MessagesResponse.ts
 models/SearchUserResponseDto.ts
 models/UpdateAddUserToBlockedListDto.ts
 models/UpdateChatParticipantDto.ts
+models/UpdateChatRoomDto.ts
 models/UpdateUserResponse.ts
 models/User.ts
 models/index.ts
