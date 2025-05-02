@@ -97,6 +97,7 @@ export default function VisitingProfile() {
         return "bg-gray-500";
     }
   })();
+  console.log("chatRooms", chatRooms);
   return (
     <div className="flex flex-row justify-center items-center min-h-screen">
       <Card>
@@ -126,13 +127,48 @@ export default function VisitingProfile() {
                       const existingChatRoom = chatRooms.chatRooms.find(
                         (chatRoom) => {
                           console.log("chatroom -->", chatRoom);
+                          // console.log(
+                          //   "Valid start",
+                          //   chatRoom.chatParticipants[0],
+                          //   chatRoom.chatParticipants[1],
+                          // );
+                          if (
+                            !chatRoom.chatParticipants[0] ||
+                            !chatRoom.chatParticipants[1] ||
+                            chatRoom.chatRoomType !== "Dm"
+                          ) {
+                            console.error(
+                              "Invalid chat room participants or type",
+                            );
+                            return false;
+                          } else
+                            console.log(
+                              "Valid start",
+                              chatRoom.chatParticipants[0],
+                              chatRoom.chatParticipants[1],
+                            );
                           const isMatch =
                             chatRoom.chatRoomType === "Dm" &&
                             chatRoom.chatParticipants.some((p) => {
-                              console.log(
-                                `Comparing participant userId: ${p.userId} with visitingUser id: ${visitingUser.id}`,
+                              const condition1 =
+                                chatRoom.chatParticipants[0].userId ===
+                                  p.userId &&
+                                chatRoom.chatParticipants[1].userId ===
+                                  visitingUser.id;
+                              console.error(
+                                `Condition 1: chatRoom.chatParticipants[0].userId (${chatRoom.chatParticipants[0].userId}) === p.userId (${p.userId}) && chatRoom.chatParticipants[1].userId (${chatRoom.chatParticipants[1].userId}) === visitingUser.id (${visitingUser.id}) => ${condition1}`,
                               );
-                              return p.userId === visitingUser.id;
+
+                              const condition2 =
+                                chatRoom.chatParticipants[1].userId ===
+                                  p.userId &&
+                                chatRoom.chatParticipants[0].userId ===
+                                  visitingUser.id;
+                              console.error(
+                                `Condition 2: chatRoom.chatParticipants[1].userId (${chatRoom.chatParticipants[1].userId}) === p.userId (${p.userId}) && chatRoom.chatParticipants[0].userId (${chatRoom.chatParticipants[0].userId}) === visitingUser.id (${visitingUser.id}) => ${condition2}`,
+                              );
+
+                              return condition1 || condition2;
                             });
                           console.log(
                             `ChatRoomType is "Dm": ${
@@ -144,7 +180,7 @@ export default function VisitingProfile() {
                       );
 
                       if (existingChatRoom) {
-                        console.log("Already a dm session");
+                        console.log("Already a dm session!!!!!!!!!!!!!!");
                         joinChatRoom(existingChatRoom.id);
                         return;
                       } else {
