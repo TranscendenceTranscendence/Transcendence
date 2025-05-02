@@ -7,7 +7,7 @@ import { ChatRoom } from './chat_room.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 import { chat_room_types } from './chat_room.entity';
 import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
-const bcrypt = require('bcrypt');
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatRoomsService {
@@ -20,12 +20,11 @@ export class ChatRoomsService {
 
   async create(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoom> {
     const { title, password, chat_room_type, user_id } = createChatRoomDto;
-
     const saltRounds = 10;
     let hashedPassword: string;
-    if (password) {
+    if (password && chat_room_type === chat_room_types.Protected) {
       hashedPassword = await bcrypt.hash(password, saltRounds);
-    }
+    } else hashedPassword = '';
     const chatRoomData = await this.chatRoomsRepository.create({
       title,
       chat_room_type,
@@ -105,7 +104,7 @@ export class ChatRoomsService {
     return await this.chatRoomsRepository.save(chatRoomData);
   }
 
-  async checkPassword(chatRoomId: number, password: string): Promise<Boolean> {
+  async checkPassword(chatRoomId: number, password: string): Promise<boolean> {
     const chatRoom: ChatRoom = await this.findOneShallow(+chatRoomId);
 
     console.log('in service-->', password, chatRoom.password);

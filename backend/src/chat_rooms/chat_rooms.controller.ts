@@ -225,7 +225,7 @@ export class ChatRoomsController {
   @UseGuards(JwtAccessAuthGuard)
   async checkPassword(
     @Body() checkPasswordDto: CheckPasswordDto,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     const { chatRoomId, password } = checkPasswordDto;
     if (!chatRoomId || !password) {
       console.log('gaat fout hier');
