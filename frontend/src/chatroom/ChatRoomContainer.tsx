@@ -6,6 +6,7 @@ import { useUser } from "@/utils/providers/UserProvider.tsx";
 import { useChat } from "@/utils/providers/ChatProvider.tsx";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import { useApi } from "@/utils/api/index.ts";
+import { UpdateParticipant } from "@/chat/ChatApiCalls.ts";
 
 export const ChatRoomContainer = () => {
   const api = useApi();
@@ -26,13 +27,33 @@ export const ChatRoomContainer = () => {
     }
     await addParticipant(userId, chatRoomId);
   };
-  const handeSwitchChatRoom = (
+  const handeSwitchChatRoom = async (
     newChatRoom: ChatRoom,
     activeParticpant: boolean,
   ) => {
     localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
     if (!activeParticpant) handleAddParticipant(me?.user.id, newChatRoom.id);
-    joinChatRoom(newChatRoom.id);
+    else {
+      const participant = newChatRoom.chatParticipants.find(
+        (p) => p.userId === me?.user.id,
+      );
+      if (!participant) {
+        console.error("Participant not found");
+        return;
+      }
+      participant.leftAt = new Date(0);
+      try {
+        await UpdateParticipant(
+          participant.chatRoomId,
+          participant.userId,
+          true,
+        );
+        console.log("Update participant", participant);
+      } catch (error) {
+        console.error("Error updating participant:", error);
+      }
+      joinChatRoom(newChatRoom.id);
+    }
   };
 
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {

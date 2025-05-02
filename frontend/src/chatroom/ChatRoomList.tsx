@@ -31,6 +31,7 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
     },
     [onChatRoomChange],
   );
+  console.log("chatRooms", chatRooms);
   return (
     <div className="chat-room-list flex flex-col gap-3 max-h-96 overflow-y-auto p-2">
       {chatRooms?.chatRooms?.map((chatRoom) => (
@@ -52,7 +53,17 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
                     status={chatRoom.chatParticipants.some(
                       (p: ChatParticipant) => {
                         const isParticipant = p.userId === userId;
-                        return isParticipant;
+                        const left =
+                          new Date(p.leftAt).getTime() ===
+                            new Date(0).getTime() ||
+                          new Date(p.leftAt).getTime() === -3600000;
+                        console.log(
+                          "leftAt -->",
+                          p.leftAt.getTime(),
+                          new Date(0).getTime(),
+                        );
+                        console.log("results-->", isParticipant, left);
+                        return isParticipant && left;
                       },
                     )}
                   />

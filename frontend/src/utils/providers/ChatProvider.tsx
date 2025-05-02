@@ -9,6 +9,8 @@ import { useApi } from "@/utils/api";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { io, Socket } from "socket.io-client";
 import { useUser } from "@/utils/providers/UserProvider";
+import { chat_participant_roles } from "../PostRequest";
+import { UpdateParticipant } from "@/chat/ChatApiCalls";
 
 interface ChatContextProps {
   chatRooms: {
@@ -21,6 +23,7 @@ interface ChatContextProps {
   sendMessage: (content: string) => void;
   joinChatRoom: (chatRoomId: number) => void;
   leaveChatRoom: () => void;
+  deleteSession: (participant: ChatParticipant) => void;
 }
 
 const ChatContext = createContext<ChatContextProps | null>(null);
@@ -139,6 +142,29 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       } else console.error("Failed to send message:", error);
     }
   };
+
+  const deleteSession = (participant: ChatParticipant) => {
+    // console.log(participant.chatRoomId.toString());
+    if (participant.chatParticipantRole === chat_participant_roles.Owner) {
+      try {
+        api.ChatRooms.chatRoomsControllerRemove({
+          id: participant.chatRoomId.toString(),
+        });
+        // console.log("Chat room deleted", result);
+      } catch (error) {
+        // console.error("Failed to delete chat room:", error);
+      }
+    } else {
+      try {
+        participant.leftAt = new Date();
+        UpdateParticipant(participant.chatRoomId, participant.userId, false);
+        console.log("Participant leftAt is updated");
+      } catch (error) {
+        // console.error("Failed to update leftAt participant:", error);
+      }
+    }
+    leaveChatRoom();
+  };
   return (
     <ChatContext.Provider
       value={{
@@ -146,6 +172,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         sendMessage,
         joinChatRoom,
         leaveChatRoom,
+        deleteSession,
+
         currentChatRoomId: chatRoomId,
       }}
     >

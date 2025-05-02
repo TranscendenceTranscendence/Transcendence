@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect, useRef } from "react";
 import { ChatMessage, ChatParticipant } from "@/generated-api";
 import { useNavigate } from "react-router";
+import { LogOut } from "lucide-react";
 import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
 import {
   PromoteUser,
@@ -114,8 +115,13 @@ const ChatMessages = ({
 };
 
 const Chat = () => {
-  const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
-    useChat();
+  const {
+    chatRooms,
+    sendMessage,
+    currentChatRoomId,
+    leaveChatRoom,
+    deleteSession,
+  } = useChat();
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
   const {
@@ -230,10 +236,25 @@ const Chat = () => {
         className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
         onMouseDown={handleMouseDown}
       >
-        {localParticipant.chatParticipantRole ===
-          ChatParticipantChatParticipantRoleEnum.Owner && (
-          <EditChatRoomPasswordDialog id={currentChatRoomId} />
-        )}{" "}
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              deleteSession(
+                currentChatRoom.participants.find(
+                  (participant) => participant.user.id === me.user?.id,
+                ),
+              )
+            }
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
+          {localParticipant.chatParticipantRole ===
+            ChatParticipantChatParticipantRoleEnum.Owner && (
+            <EditChatRoomPasswordDialog id={currentChatRoomId} />
+          )}{" "}
+        </div>
         <h3>Chat Room {currentChatRoomId}</h3>
         <Button
           variant="ghost"

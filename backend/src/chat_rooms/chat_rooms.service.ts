@@ -190,6 +190,7 @@ export class ChatRoomsService {
 
   async remove(id: number): Promise<ChatRoom> {
     const existingChatRoom = await this.findOne(id);
-    return await this.chatRoomsRepository.remove(existingChatRoom);
+    await this.chatRoomsRepository.remove(existingChatRoom);
+    return;
   }
 }

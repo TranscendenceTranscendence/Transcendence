@@ -70,7 +70,7 @@ export const EditChatRoomPasswordDialog = ({ id }: { id: number }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <KeyRound />
+        <KeyRound className="w-5 h-5" />
       </DialogTrigger>
       <div className="content-container">
         <DialogContent className="dialog-content">
