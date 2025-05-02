@@ -5,8 +5,10 @@ import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
 import { useUser } from "@/utils/providers/UserProvider.tsx";
 import { useChat } from "@/utils/providers/ChatProvider.tsx";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
+import { useApi } from "@/utils/api/index.ts";
 
 export const ChatRoomContainer = () => {
+  const api = useApi();
   const [askPassword, setAskPassword] = useState<boolean>(false);
   const { chatRooms } = useChatRooms();
   const { joinChatRoom } = useChat();
@@ -50,15 +52,21 @@ export const ChatRoomContainer = () => {
     }
   };
   const validatePassword = async (password: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(password === selectedChatRoom?.password);
-      }, 1000);
+    const response = await api.ChatRooms.chatRoomsControllerCheckPassword({
+      checkPasswordDto: {
+        password: password,
+        chatRoomId: selectedChatRoom?.id,
+      },
     });
+    if (response) {
+      console.log("Password is correct");
+      return true;
+    }
+    console.log("Password is incorrect");
+    return false;
   };
 
   const handlePasswordSubmit = async (password: string) => {
-    console.log(password + " real password ---> " + selectedChatRoom?.password);
     const isValid = await validatePassword(password);
     setAskPassword(false);
     if (isValid) {

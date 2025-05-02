@@ -16,6 +16,7 @@ import * as runtime from "../runtime";
 import type {
   ChatRoomResponse,
   ChatRoomsResponse,
+  CheckPasswordDto,
   CreateChatRoomDto,
   UpdateChatRoomDto,
 } from "../models/index";
@@ -24,11 +25,17 @@ import {
   ChatRoomResponseToJSON,
   ChatRoomsResponseFromJSON,
   ChatRoomsResponseToJSON,
+  CheckPasswordDtoFromJSON,
+  CheckPasswordDtoToJSON,
   CreateChatRoomDtoFromJSON,
   CreateChatRoomDtoToJSON,
   UpdateChatRoomDtoFromJSON,
   UpdateChatRoomDtoToJSON,
 } from "../models/index";
+
+export interface ChatRoomsControllerCheckPasswordRequest {
+  checkPasswordDto: CheckPasswordDto;
+}
 
 export interface ChatRoomsControllerCreateRequest {
   createChatRoomDto: CreateChatRoomDto;
@@ -56,6 +63,54 @@ export interface ChatRoomsControllerUpdateRequest {
  *
  */
 export class ChatRoomsApi extends runtime.BaseAPI {
+  /**
+   * Check if password is correct
+   */
+  async chatRoomsControllerCheckPasswordRaw(
+    requestParameters: ChatRoomsControllerCheckPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<object>> {
+    if (requestParameters["checkPasswordDto"] == null) {
+      throw new runtime.RequiredError(
+        "checkPasswordDto",
+        'Required parameter "checkPasswordDto" was null or undefined when calling chatRoomsControllerCheckPassword().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters["Content-Type"] = "application/json";
+
+    const response = await this.request(
+      {
+        path: `/chatroom/checkPassword`,
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+        body: CheckPasswordDtoToJSON(requestParameters["checkPasswordDto"]),
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse<any>(response);
+  }
+
+  /**
+   * Check if password is correct
+   */
+  async chatRoomsControllerCheckPassword(
+    requestParameters: ChatRoomsControllerCheckPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<object> {
+    const response = await this.chatRoomsControllerCheckPasswordRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
+  }
+
   /**
    * Create a new chat room and add the creator as an owner
    */

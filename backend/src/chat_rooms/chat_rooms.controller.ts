@@ -17,7 +17,10 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from '@nestjs/swagger';
-import { CreateChatRoomDto } from './dto/create-chat_room.dto';
+import {
+  CheckPasswordDto,
+  CreateChatRoomDto,
+} from './dto/create-chat_room.dto';
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import {
@@ -244,6 +247,25 @@ export class ChatRoomsController {
         message: error.message,
       };
     }
+  }
+
+  //async create(@Body() createChatRoomDto: CreateChatRoomDto) {
+
+  @Post('checkPassword')
+  @ApiOperation({ summary: 'Check if password is correct' })
+  @UseGuards(JwtAccessAuthGuard)
+  async checkPassword(
+    @Body() checkPasswordDto: CheckPasswordDto,
+  ): Promise<boolean> {
+    const { chatRoomId, password } = checkPasswordDto;
+    if (!chatRoomId || !password) {
+      console.log('gaat fout hier');
+      throw new Error(
+        'chatRoomId or password is undefined or missing in the request.',
+      );
+    }
+    console.log('in controller -->', password, chatRoomId);
+    return await this.chatRoomsService.checkPassword(chatRoomId, password);
   }
 
   @Patch('editPassword/:chatRoomId')

@@ -45,3 +45,11 @@ export class CreateChatRoomDto {
   @IsOptional()
   role: chat_participant_roles;
 }
+
+export class CheckPasswordDto {
+  @ApiProperty({ description: 'input password' })
+  password: string;
+
+  @ApiProperty({ description: 'chat room to check' })
+  chatRoomId: number;
+}

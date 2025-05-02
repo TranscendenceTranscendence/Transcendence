@@ -72,3 +72,13 @@ export const useAddParticipant = () => {
 
   return { addParticipant };
 };
+
+// export const checkPassword = () => {
+//   const api = useApi();
+
+//   const checkPassword = async () => {
+//     try {
+//       await api.ChatRooms.
+//     }
+//   }
+// }
