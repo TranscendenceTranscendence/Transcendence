@@ -97,7 +97,7 @@ export default function VisitingProfile() {
         return "bg-gray-500";
     }
   })();
-  console.log("chatRooms", chatRooms);
+  console.log("chatRooms", visitingUser);
   return (
     <div className="flex flex-row justify-center items-center min-h-screen">
       <Card>
@@ -123,67 +123,73 @@ export default function VisitingProfile() {
                       console.error("Visiting user not found");
                       return;
                     }
-                    if (chatRooms.chatRooms.length > 0) {
-                      const existingChatRoom = chatRooms.chatRooms.find(
-                        (chatRoom) => {
-                          console.log("chatroom -->", chatRoom);
-                          // console.log(
-                          //   "Valid start",
-                          //   chatRoom.chatParticipants[0],
-                          //   chatRoom.chatParticipants[1],
-                          // );
-                          if (
-                            !chatRoom.chatParticipants[0] ||
-                            !chatRoom.chatParticipants[1] ||
-                            chatRoom.chatRoomType !== "Dm"
-                          ) {
-                            console.error(
-                              "Invalid chat room participants or type",
-                            );
-                            return false;
-                          } else
+                    if (Array.isArray(chatRooms.chatRooms)) {
+                      if (chatRooms.chatRooms.length > 0) {
+                        const existingChatRoom = chatRooms.chatRooms.find(
+                          (chatRoom) => {
+                            console.log("chatroom -->", chatRoom);
+                            if (
+                              !chatRoom.chatParticipants[0] ||
+                              !chatRoom.chatParticipants[1] ||
+                              chatRoom.chatRoomType !== "Dm"
+                            ) {
+                              console.error(
+                                "Invalid chat room participants or type",
+                              );
+                              return false;
+                            } else
+                              console.log(
+                                "Valid start",
+                                chatRoom.chatParticipants[0],
+                                chatRoom.chatParticipants[1],
+                              );
+                            const isMatch =
+                              chatRoom.chatRoomType === "Dm" &&
+                              chatRoom.chatParticipants.some((p) => {
+                                const condition1 =
+                                  chatRoom.chatParticipants[0].userId ===
+                                    p.userId &&
+                                  chatRoom.chatParticipants[1].userId ===
+                                    visitingUser.id;
+                                const condition2 =
+                                  chatRoom.chatParticipants[1].userId ===
+                                    p.userId &&
+                                  chatRoom.chatParticipants[0].userId ===
+                                    visitingUser.id;
+                                return condition1 || condition2;
+                              });
                             console.log(
-                              "Valid start",
-                              chatRoom.chatParticipants[0],
-                              chatRoom.chatParticipants[1],
+                              `ChatRoomType is "Dm": ${
+                                chatRoom.chatRoomType === "Dm"
+                              }, Match found: ${isMatch}`,
                             );
-                          const isMatch =
-                            chatRoom.chatRoomType === "Dm" &&
-                            chatRoom.chatParticipants.some((p) => {
-                              const condition1 =
-                                chatRoom.chatParticipants[0].userId ===
-                                  p.userId &&
-                                chatRoom.chatParticipants[1].userId ===
-                                  visitingUser.id;
-                              console.error(
-                                `Condition 1: chatRoom.chatParticipants[0].userId (${chatRoom.chatParticipants[0].userId}) === p.userId (${p.userId}) && chatRoom.chatParticipants[1].userId (${chatRoom.chatParticipants[1].userId}) === visitingUser.id (${visitingUser.id}) => ${condition1}`,
-                              );
+                            return isMatch;
+                          },
+                        );
 
-                              const condition2 =
-                                chatRoom.chatParticipants[1].userId ===
-                                  p.userId &&
-                                chatRoom.chatParticipants[0].userId ===
-                                  visitingUser.id;
-                              console.error(
-                                `Condition 2: chatRoom.chatParticipants[1].userId (${chatRoom.chatParticipants[1].userId}) === p.userId (${p.userId}) && chatRoom.chatParticipants[0].userId (${chatRoom.chatParticipants[0].userId}) === visitingUser.id (${visitingUser.id}) => ${condition2}`,
-                              );
-
-                              return condition1 || condition2;
-                            });
-                          console.log(
-                            `ChatRoomType is "Dm": ${
-                              chatRoom.chatRoomType === "Dm"
-                            }, Match found: ${isMatch}`,
+                        if (existingChatRoom) {
+                          console.log("Already a dm session!!!!!!!!!!!!!!");
+                          joinChatRoom(existingChatRoom.id);
+                          return;
+                        } else {
+                          const response = await postDmChatRoom(
+                            api,
+                            me.user.id,
+                            visitingUser.id,
                           );
-                          return isMatch;
-                        },
-                      );
-
-                      if (existingChatRoom) {
-                        console.log("Already a dm session!!!!!!!!!!!!!!");
-                        joinChatRoom(existingChatRoom.id);
-                        return;
+                          console.log(
+                            "Response from postDmChatRoom:",
+                            response,
+                          );
+                          if (response && response.chatRoom) {
+                            chatRooms.chatRooms.push(response.chatRoom);
+                            joinChatRoom(response.chatRoom.id);
+                          }
+                        }
                       } else {
+                        console.log(
+                          "chatRooms array is empty, but it might just be the start",
+                        );
                         const response = await postDmChatRoom(
                           api,
                           me.user.id,
@@ -195,9 +201,8 @@ export default function VisitingProfile() {
                           joinChatRoom(response.chatRoom.id);
                         }
                       }
-                      console.log("olla");
                     } else {
-                      console.error("chatRooms is empty or not an object");
+                      console.error("chatRooms is not a valid array");
                     }
                     console.log(chatRooms);
                   }}

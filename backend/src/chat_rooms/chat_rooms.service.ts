@@ -59,7 +59,9 @@ export class ChatRoomsService {
   }
 
   async findAll(): Promise<ChatRoom[]> {
-    return await this.chatRoomsRepository.find();
+    return await this.chatRoomsRepository.find({
+      relations: ['chatParticipants', 'chatParticipants.user'],
+    });
   }
 
   async findAllChatRoomList(id: number): Promise<ChatRoom[]> {

@@ -69,7 +69,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerCheckPasswordRaw(
     requestParameters: ChatRoomsControllerCheckPasswordRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<object>> {
+  ): Promise<runtime.ApiResponse<boolean>> {
     if (requestParameters["checkPasswordDto"] == null) {
       throw new runtime.RequiredError(
         "checkPasswordDto",
@@ -94,7 +94,11 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.JSONApiResponse<any>(response);
+    if (this.isJsonMime(response.headers.get("content-type"))) {
+      return new runtime.JSONApiResponse<boolean>(response);
+    } else {
+      return new runtime.TextApiResponse(response) as any;
+    }
   }
 
   /**
@@ -103,7 +107,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerCheckPassword(
     requestParameters: ChatRoomsControllerCheckPasswordRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<object> {
+  ): Promise<boolean> {
     const response = await this.chatRoomsControllerCheckPasswordRaw(
       requestParameters,
       initOverrides,
@@ -231,7 +235,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
    */
   async chatRoomsControllerFindAllRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<void>> {
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -246,7 +250,9 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    return new runtime.VoidApiResponse(response);
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
   }
 
   /**
@@ -254,8 +260,9 @@ export class ChatRoomsApi extends runtime.BaseAPI {
    */
   async chatRoomsControllerFindAll(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<void> {
-    await this.chatRoomsControllerFindAllRaw(initOverrides);
+  ): Promise<ChatRoomsResponse> {
+    const response = await this.chatRoomsControllerFindAllRaw(initOverrides);
+    return await response.value();
   }
 
   /**

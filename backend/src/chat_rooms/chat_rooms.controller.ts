@@ -77,13 +77,14 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 200,
     description: 'Chat rooms fetched successfully.',
+    type: ChatRoomsResponse,
   })
-  async findAll() {
+  async findAll(): Promise<ChatRoomsResponse> {
     try {
       const data = await this.chatRoomsService.findAll();
       return {
         success: true,
-        data,
+        chatRooms: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
