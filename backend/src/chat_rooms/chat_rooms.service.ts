@@ -7,6 +7,7 @@ import { ChatRoom } from './chat_room.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 import { chat_room_types } from './chat_room.entity';
 import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChatRoomsService {
@@ -19,10 +20,15 @@ export class ChatRoomsService {
 
   async create(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoom> {
     const { title, password, chat_room_type, user_id } = createChatRoomDto;
+    const saltRounds = 10;
+    let hashedPassword: string;
+    if (password && chat_room_type === chat_room_types.Protected) {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    } else hashedPassword = '';
     const chatRoomData = await this.chatRoomsRepository.create({
       title,
       chat_room_type,
-      password,
+      password: hashedPassword,
     });
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoomData);
 
@@ -128,6 +134,22 @@ export class ChatRoomsService {
     return await this.chatRoomsRepository.save(chatRoomData);
   }
 
+  async checkPassword(chatRoomId: number, password: string): Promise<boolean> {
+    const chatRoom: ChatRoom = await this.findOneShallow(+chatRoomId);
+
+    console.log('in service-->', password, chatRoom.password);
+    if (!password || !chatRoom.password) {
+      throw new HttpException('Password is required', 400);
+    }
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    const isMatch = await bcrypt.compare(password, chatRoom.password);
+    // console.log('compareison -->', hashedPassword, chatRoom.password);
+    console.log(isMatch);
+    if (isMatch) {
+      return true;
+    } else return false;
+  }
+
   async editPassword(
     chatRoomId: number,
     UpdateChatRoomDto: UpdateChatRoomDto,
@@ -148,6 +170,14 @@ export class ChatRoomsService {
     ) {
       console.log('Making chatRoom protected');
       UpdateChatRoomDto.chat_room_type = chat_room_types.Protected;
+    }
+    const saltRounds = 10;
+
+    if (UpdateChatRoomDto.password) {
+      UpdateChatRoomDto.password = await bcrypt.hash(
+        UpdateChatRoomDto.password,
+        saltRounds,
+      );
     }
 
     const chatRoomData = this.chatRoomsRepository.merge(

@@ -28,7 +28,7 @@ export interface StatisticsControllerGetPlayerStatisticsByIdRequest {
  */
 export class StatisticsApi extends runtime.BaseAPI {
   /**
-   * Get player statistics
+   * Get current player statistics
    */
   async statisticsControllerGetCurrentPlayerStatisticsRaw(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
@@ -53,7 +53,7 @@ export class StatisticsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Get player statistics
+   * Get current player statistics
    */
   async statisticsControllerGetCurrentPlayerStatistics(
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
@@ -66,7 +66,7 @@ export class StatisticsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Get player statistics
+   * Get player statistics by id
    */
   async statisticsControllerGetPlayerStatisticsByIdRaw(
     requestParameters: StatisticsControllerGetPlayerStatisticsByIdRequest,
@@ -102,7 +102,7 @@ export class StatisticsApi extends runtime.BaseAPI {
   }
 
   /**
-   * Get player statistics
+   * Get player statistics by id
    */
   async statisticsControllerGetPlayerStatisticsById(
     requestParameters: StatisticsControllerGetPlayerStatisticsByIdRequest,
