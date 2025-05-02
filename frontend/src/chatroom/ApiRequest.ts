@@ -9,7 +9,33 @@ export const useChatRooms = () => {
   const fetchChatRooms = async () => {
     try {
       const response: ChatRoomsResponse =
-        await api.ChatRooms.chatRoomsControllerFindAllincludeParticipant();
+        await api.ChatRooms.chatRoomsControllerFindAllChatRoomList();
+
+      if (response.success) {
+        setChatRooms(response);
+      } else {
+        console.error("Failed to fetch chat rooms:", response.message);
+      }
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatRooms();
+  }, []);
+
+  return { chatRooms, fetchChatRooms };
+};
+
+export const useChatRoomsForPrivateInvite = () => {
+  const api = useApi();
+  const [chatRooms, setChatRooms] = useState<ChatRoomsResponse | null>(null);
+
+  const fetchChatRooms = async () => {
+    try {
+      const response: ChatRoomsResponse =
+        await api.ChatRooms.chatRoomsControllerFindAllPrivateChatRoomList();
 
       if (response.success) {
         setChatRooms(response);
@@ -32,6 +58,7 @@ export const useAddParticipant = () => {
   const api = useApi();
 
   const addParticipant = async (userId: number, chatRoomId: number) => {
+    console.log(userId, chatRoomId);
     try {
       await api.ChatParticipants.chatParticipantsControllerAddParticipantToChatroom(
         {
@@ -46,3 +73,13 @@ export const useAddParticipant = () => {
 
   return { addParticipant };
 };
+
+// export const checkPassword = () => {
+//   const api = useApi();
+
+//   const checkPassword = async () => {
+//     try {
+//       await api.ChatRooms.
+//     }
+//   }
+// }

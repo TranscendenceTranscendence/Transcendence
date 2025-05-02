@@ -14,6 +14,7 @@ import {
   ChatRoomChatRoomTypeEnum,
 } from "@/generated-api";
 import { useNavigate } from "react-router";
+import { LogOut } from "lucide-react";
 import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
 import {
   PromoteUser,
@@ -21,6 +22,7 @@ import {
   MuteUser,
   BlockUser,
 } from "@/chat/ChatApiCalls";
+import { EditChatRoomPasswordDialog } from "@/chatroom/EditChatRoomPassword";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -117,8 +119,13 @@ const ChatMessages = ({
 };
 
 const Chat = () => {
-  const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
-    useChat();
+  const {
+    chatRooms,
+    sendMessage,
+    currentChatRoomId,
+    leaveChatRoom,
+    deleteSession,
+  } = useChat();
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
   const {
@@ -220,6 +227,7 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
+  console.log("me.user in chat component", me.user.chatParticipants);
   return (
     <Card
       ref={cardRef}
@@ -233,6 +241,25 @@ const Chat = () => {
         className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
         onMouseDown={handleMouseDown}
       >
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              deleteSession(
+                currentChatRoom.participants.find(
+                  (participant) => participant.user.id === me.user?.id,
+                ),
+              )
+            }
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
+          {localParticipant.chatParticipantRole ===
+            ChatParticipantChatParticipantRoleEnum.Owner && (
+            <EditChatRoomPasswordDialog id={currentChatRoomId} />
+          )}{" "}
+        </div>
         {currentChatRoom.chat_room_type === ChatRoomChatRoomTypeEnum.Dm && (
           <h3>
             DM with{" "}

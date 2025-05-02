@@ -49,3 +49,11 @@ export class CreateChatRoomDto {
   @IsOptional()
   invited_user_id: number;
 }
+
+export class CheckPasswordDto {
+  @ApiProperty({ description: 'input password' })
+  password: string;
+
+  @ApiProperty({ description: 'chat room to check' })
+  chatRoomId: number;
+}

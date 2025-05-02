@@ -54,13 +54,15 @@ export const PostChatRoom = ({ userId }) => {
           placeholder="Add title"
           required
         />
-
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Add password (optional)"
-        />
+        {type === CreateChatRoomDtoChatRoomTypeEnum.Protected && (
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Add password"
+            required
+          />
+        )}
 
         <div>
           <p>Select chat type:</p>

@@ -16,19 +16,34 @@ import * as runtime from "../runtime";
 import type {
   ChatRoomResponse,
   ChatRoomsResponse,
+  CheckPasswordDto,
   CreateChatRoomDto,
+  UpdateChatRoomDto,
 } from "../models/index";
 import {
   ChatRoomResponseFromJSON,
   ChatRoomResponseToJSON,
   ChatRoomsResponseFromJSON,
   ChatRoomsResponseToJSON,
+  CheckPasswordDtoFromJSON,
+  CheckPasswordDtoToJSON,
   CreateChatRoomDtoFromJSON,
   CreateChatRoomDtoToJSON,
+  UpdateChatRoomDtoFromJSON,
+  UpdateChatRoomDtoToJSON,
 } from "../models/index";
+
+export interface ChatRoomsControllerCheckPasswordRequest {
+  checkPasswordDto: CheckPasswordDto;
+}
 
 export interface ChatRoomsControllerCreateRequest {
   createChatRoomDto: CreateChatRoomDto;
+}
+
+export interface ChatRoomsControllerEditPasswordRequest {
+  chatRoomId: number;
+  updateChatRoomDto: UpdateChatRoomDto;
 }
 
 export interface ChatRoomsControllerFindOneRequest {
@@ -41,13 +56,61 @@ export interface ChatRoomsControllerRemoveRequest {
 
 export interface ChatRoomsControllerUpdateRequest {
   id: number;
-  body: object;
+  updateChatRoomDto: UpdateChatRoomDto;
 }
 
 /**
  *
  */
 export class ChatRoomsApi extends runtime.BaseAPI {
+  /**
+   * Check if password is correct
+   */
+  async chatRoomsControllerCheckPasswordRaw(
+    requestParameters: ChatRoomsControllerCheckPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<object>> {
+    if (requestParameters["checkPasswordDto"] == null) {
+      throw new runtime.RequiredError(
+        "checkPasswordDto",
+        'Required parameter "checkPasswordDto" was null or undefined when calling chatRoomsControllerCheckPassword().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters["Content-Type"] = "application/json";
+
+    const response = await this.request(
+      {
+        path: `/chatroom/checkPassword`,
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+        body: CheckPasswordDtoToJSON(requestParameters["checkPasswordDto"]),
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse<any>(response);
+  }
+
+  /**
+   * Check if password is correct
+   */
+  async chatRoomsControllerCheckPassword(
+    requestParameters: ChatRoomsControllerCheckPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<object> {
+    const response = await this.chatRoomsControllerCheckPasswordRaw(
+      requestParameters,
+      initOverrides,
+    );
+    return await response.value();
+  }
+
   /**
    * Create a new chat room and add the creator as an owner
    */
@@ -99,6 +162,71 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   }
 
   /**
+   * Change password of chatRoom by id
+   */
+  async chatRoomsControllerEditPasswordRaw(
+    requestParameters: ChatRoomsControllerEditPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters["chatRoomId"] == null) {
+      throw new runtime.RequiredError(
+        "chatRoomId",
+        'Required parameter "chatRoomId" was null or undefined when calling chatRoomsControllerEditPassword().',
+      );
+    }
+
+    if (requestParameters["updateChatRoomDto"] == null) {
+      throw new runtime.RequiredError(
+        "updateChatRoomDto",
+        'Required parameter "updateChatRoomDto" was null or undefined when calling chatRoomsControllerEditPassword().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters["Content-Type"] = "application/json";
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
+    const response = await this.request(
+      {
+        path: `/chatroom/editPassword/{chatRoomId}`.replace(
+          `{${"chatRoomId"}}`,
+          encodeURIComponent(String(requestParameters["chatRoomId"])),
+        ),
+        method: "PATCH",
+        headers: headerParameters,
+        query: queryParameters,
+        body: UpdateChatRoomDtoToJSON(requestParameters["updateChatRoomDto"]),
+      },
+      initOverrides,
+    );
+
+    return new runtime.VoidApiResponse(response);
+  }
+
+  /**
+   * Change password of chatRoom by id
+   */
+  async chatRoomsControllerEditPassword(
+    requestParameters: ChatRoomsControllerEditPasswordRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<void> {
+    await this.chatRoomsControllerEditPasswordRaw(
+      requestParameters,
+      initOverrides,
+    );
+  }
+
+  /**
    * Get a list of all chat rooms
    */
   async chatRoomsControllerFindAllRaw(
@@ -131,6 +259,80 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   }
 
   /**
+   * Get all chat rooms for chatRoomList
+   */
+  async chatRoomsControllerFindAllChatRoomListRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/chatroom/findChatRoomList`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Get all chat rooms for chatRoomList
+   */
+  async chatRoomsControllerFindAllChatRoomList(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<ChatRoomsResponse> {
+    const response =
+      await this.chatRoomsControllerFindAllChatRoomListRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * Get all chat rooms for chatRoomListPrivate
+   */
+  async chatRoomsControllerFindAllPrivateChatRoomListRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/chatroom/findPrivateChatRoomList`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      ChatRoomsResponseFromJSON(jsonValue),
+    );
+  }
+
+  /**
+   * Get all chat rooms for chatRoomListPrivate
+   */
+  async chatRoomsControllerFindAllPrivateChatRoomList(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<ChatRoomsResponse> {
+    const response =
+      await this.chatRoomsControllerFindAllPrivateChatRoomListRaw(
+        initOverrides,
+      );
+    return await response.value();
+  }
+
+  /**
    * Get all public chat rooms
    */
   async chatRoomsControllerFindAllWithoutPrivateRaw(
@@ -160,42 +362,6 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<void> {
     await this.chatRoomsControllerFindAllWithoutPrivateRaw(initOverrides);
-  }
-
-  /**
-   * Get all chat rooms including participants
-   */
-  async chatRoomsControllerFindAllincludeParticipantRaw(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<ChatRoomsResponse>> {
-    const queryParameters: any = {};
-
-    const headerParameters: runtime.HTTPHeaders = {};
-
-    const response = await this.request(
-      {
-        path: `/chatroom/includeParticipant`,
-        method: "GET",
-        headers: headerParameters,
-        query: queryParameters,
-      },
-      initOverrides,
-    );
-
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      ChatRoomsResponseFromJSON(jsonValue),
-    );
-  }
-
-  /**
-   * Get all chat rooms including participants
-   */
-  async chatRoomsControllerFindAllincludeParticipant(
-    initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<ChatRoomsResponse> {
-    const response =
-      await this.chatRoomsControllerFindAllincludeParticipantRaw(initOverrides);
-    return await response.value();
   }
 
   /**
@@ -338,10 +504,10 @@ export class ChatRoomsApi extends runtime.BaseAPI {
       );
     }
 
-    if (requestParameters["body"] == null) {
+    if (requestParameters["updateChatRoomDto"] == null) {
       throw new runtime.RequiredError(
-        "body",
-        'Required parameter "body" was null or undefined when calling chatRoomsControllerUpdate().',
+        "updateChatRoomDto",
+        'Required parameter "updateChatRoomDto" was null or undefined when calling chatRoomsControllerUpdate().',
       );
     }
 
@@ -360,7 +526,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
         method: "PATCH",
         headers: headerParameters,
         query: queryParameters,
-        body: requestParameters["body"] as any,
+        body: UpdateChatRoomDtoToJSON(requestParameters["updateChatRoomDto"]),
       },
       initOverrides,
     );

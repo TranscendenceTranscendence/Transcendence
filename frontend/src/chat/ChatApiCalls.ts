@@ -222,3 +222,26 @@ export const BlockUser = async (targetUser: number) => {
     console.error("Error blocking user:", error);
   }
 };
+
+export const UpdateParticipant = async (
+  chatRoomId: number,
+  id: number,
+  reset: boolean,
+) => {
+  const api = useApi();
+  const updateDto: UpdateChatParticipantDto = {
+    leftAt: reset ? new Date(0) : new Date(),
+  };
+  console.log("Update DTO:", updateDto, id, chatRoomId);
+  try {
+    const response: ChatParticipant =
+      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+        id,
+        chatRoomId,
+        updateChatParticipantDto: updateDto,
+      });
+    console.log("Update Successful:", response);
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+};

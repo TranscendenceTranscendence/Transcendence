@@ -9,6 +9,7 @@ import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/utils/providers/UserProvider";
+import { DialogPrivateChatRoomInvite } from "../../chatroom/DialogPrivateChatRoomInvite";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/utils/providers/ChatProvider";
 import { postDmChatRoom } from "../../chat/ChatApiCalls";
@@ -96,7 +97,6 @@ export default function VisitingProfile() {
         return "bg-gray-500";
     }
   })();
-
   return (
     <div className="flex flex-row justify-center items-center min-h-screen">
       <Card>
@@ -111,6 +111,10 @@ export default function VisitingProfile() {
           <div className="flex flex-col pr-[50px] pt-[50px]">
             <div className="flex flex-col items-end gap-2 justify-end">
               <div>
+                <DialogPrivateChatRoomInvite
+                  userId={me.user.id}
+                  visitingUserId={visitingUser.id}
+                />
                 <FriendRequest user={visitingUser} />
                 <Button
                   onClick={async () => {
@@ -124,9 +128,17 @@ export default function VisitingProfile() {
                           console.log("chatroom -->", chatRoom);
                           const isMatch =
                             chatRoom.chatRoomType === "Dm" &&
-                            chatRoom.chatParticipants.some(
-                              (p) => p.userId === visitingUser.id,
-                            );
+                            chatRoom.chatParticipants.some((p) => {
+                              console.log(
+                                `Comparing participant userId: ${p.userId} with visitingUser id: ${visitingUser.id}`,
+                              );
+                              return p.userId === visitingUser.id;
+                            });
+                          console.log(
+                            `ChatRoomType is "Dm": ${
+                              chatRoom.chatRoomType === "Dm"
+                            }, Match found: ${isMatch}`,
+                          );
                           return isMatch;
                         },
                       );
