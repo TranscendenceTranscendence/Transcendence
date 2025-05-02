@@ -9,6 +9,7 @@ export * from "./ChatParticipantsResponse";
 export * from "./ChatRoom";
 export * from "./ChatRoomResponse";
 export * from "./ChatRoomsResponse";
+export * from "./CheckPasswordDto";
 export * from "./CreateChatMessageDto";
 export * from "./CreateChatParticipantDto";
 export * from "./CreateChatRoomDto";

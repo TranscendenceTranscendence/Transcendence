@@ -22,6 +22,7 @@ models/ChatParticipantsResponse.ts
 models/ChatRoom.ts
 models/ChatRoomResponse.ts
 models/ChatRoomsResponse.ts
+models/CheckPasswordDto.ts
 models/CreateChatMessageDto.ts
 models/CreateChatParticipantDto.ts
 models/CreateChatRoomDto.ts

@@ -20,10 +20,16 @@ export class ChatRoomsService {
 
   async create(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoom> {
     const { title, password, chat_room_type, user_id } = createChatRoomDto;
+
+    const saltRounds = 10;
+    let hashedPassword: string;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    }
     const chatRoomData = await this.chatRoomsRepository.create({
       title,
       chat_room_type,
-      password,
+      password: hashedPassword,
     });
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoomData);
 
