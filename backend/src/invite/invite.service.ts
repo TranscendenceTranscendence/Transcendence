@@ -6,10 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { GamesService } from '../games/games.service';
 import { Invite, InviteStatus } from './invite.entity';
-import { Repository } from 'typeorm';
+import { Repository, LessThan } from 'typeorm';
 import { CreateGameDto } from '../games/dto/create-game.dto';
 import { GameStatus } from '../games/game.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class InviteService {
@@ -63,9 +64,12 @@ export class InviteService {
 
     if (!invite)
       throw new InternalServerErrorException("Couldn't make an invite.");
+    this.inviteRepository.save(invite);
   }
 
   async getPendingInvites(userId: number): Promise<Invite[]> {
+    await this.checkExpiredInvites();
+
     const invites = await this.inviteRepository.find({
       where: {
         receiverUserId: userId,
@@ -147,5 +151,51 @@ export class InviteService {
     await this.gamesService.update(game.id, game);
 
     return invite;
+  }
+
+  async checkExpiredInvites(): Promise<void> {
+    const now = new Date();
+
+    const expiredInvites = await this.inviteRepository.find({
+      where: {
+        status: InviteStatus.PENDING,
+        expiresAt: LessThan(now),
+      },
+    });
+
+    console.log("Expired invites:", expiredInvites);
+
+    for (const invite of expiredInvites) {
+      invite.status = InviteStatus.EXPIRED;
+      await this.inviteRepository.save(invite);
+
+      try {
+        const game = await this.gamesService.findByRoomIdentifier(
+          invite.gameRoomId,
+        );
+        if (game) {
+          game.status = GameStatus.CANCELLED;
+          await this.gamesService.update(game.id, game);
+        }
+      } catch (err) {
+        console.error(
+          `Error updating expired game for invite ${invite.id}:`,
+          err,
+        );
+      }
+    }
+
+    if (expiredInvites.length > 0) {
+      console.log(`Marked ${expiredInvites.length} invites as expired`);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async handleExpiredInvites() {
+    try {
+      await this.checkExpiredInvites();
+    } catch (error) {
+      console.error('Error handling expired invites:', error);
+    }
   }
 }

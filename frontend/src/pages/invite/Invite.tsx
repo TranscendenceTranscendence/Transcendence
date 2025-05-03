@@ -96,43 +96,34 @@ const Invite: React.FC = () => {
   }, []);
 
   const handleSendInvite = async () => {
-    if (!selectedUser) {
-      toast({
-        title: "Error",
-        description: "Please select a user to invite",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       setLoading(true);
+
+      // Hardcode the invitation to User 10
+      const targetUserId = 10;
 
       // Send invite via REST API
       await api.Invite.inviteControllerCreateInvite({
         createInviteDto: {
-          receiverUserId: selectedUser,
+          receiverUserId: targetUserId,
         },
       });
 
       toast({
         title: "Success",
-        description: "Game invitation sent successfully",
+        description: "Game invitation sent to User 10",
       });
 
       // Add to sent invites list
       const newInvite = {
         id: Date.now(), // Temporary ID
         senderUserId: currentUser?.id || 0,
-        receiverUserId: selectedUser,
+        receiverUserId: targetUserId,
         status: "pending" as const,
         createdAt: new Date(),
         expiresAt: undefined,
       };
       setSentInvites((prev) => [...prev, newInvite]);
-
-      // Clear selection
-      setSelectedUser(null);
 
       // Refresh sent invites
       if (currentUser?.id) {
@@ -143,7 +134,7 @@ const Invite: React.FC = () => {
       console.error("Error sending invite:", err);
       toast({
         title: "Error",
-        description: "Failed to send game invitation",
+        description: "Failed to send game invitation to User 10",
         variant: "destructive",
       });
     } finally {
@@ -233,28 +224,15 @@ const Invite: React.FC = () => {
 
       {/* Send Invite Section */}
       <div className="bg-gray-100 p-4 rounded-lg mb-6">
-        <h2 className="text-lg font-semibold mb-3">Send Invite</h2>
+        <h2 className="text-lg font-semibold mb-3">Send Invite to User 10</h2>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <select
-            className="p-2 border rounded-md flex-grow"
-            value={selectedUser || ""}
-            onChange={(e) => setSelectedUser(Number(e.target.value))}
-            disabled={loading || !currentUser}
-          >
-            <option value="">Select a player</option>
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.nickname || `User #${user.id}`}
-              </option>
-            ))}
-          </select>
-
+        <div className="flex justify-center">
           <Button
             onClick={handleSendInvite}
-            disabled={!selectedUser || loading || !currentUser}
+            disabled={loading || !currentUser}
+            className="w-full md:w-auto"
           >
-            {loading ? "Sending..." : "Send Invite"}
+            {loading ? "Sending..." : "Invite User 10 to Game"}
           </Button>
         </div>
       </div>

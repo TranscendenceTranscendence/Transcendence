@@ -55,7 +55,12 @@ export function CreateInviteDtoFromJSONTyped(
 }
 
 export function CreateInviteDtoToJSON(json: any): CreateInviteDto {
-  return CreateInviteDtoToJSONTyped(json, false);
+  console.log("in create dto");
+
+  const result = CreateInviteDtoToJSONTyped(json, false);
+
+  console.log("Result:", result);
+  return result;
 }
 
 export function CreateInviteDtoToJSONTyped(

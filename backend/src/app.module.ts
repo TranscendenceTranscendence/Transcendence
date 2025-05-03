@@ -17,6 +17,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { StatisticsModule } from './statistics/statistics.module';
 import { QueueModule } from './queue/queue.module';
 import { InviteModule } from './invite/invite.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { InviteModule } from './invite/invite.module';
       // logging: true,
       // logger: 'advanced-console', // Makes the logs easier to read
     }),
+    ScheduleModule.forRoot(),
     StatisticsModule,
     ChatModule,
     UsersModule,
