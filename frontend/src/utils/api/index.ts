@@ -24,6 +24,7 @@ export const useApi = () => {
       config,
     ),
     Statistics: new generatedApi.StatisticsApi(config),
+    Invite: new generatedApi.InviteApi(config),
   };
   return api;
 };

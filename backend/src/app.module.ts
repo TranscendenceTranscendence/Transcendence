@@ -16,7 +16,7 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { StatisticsModule } from './statistics/statistics.module';
 import { QueueModule } from './queue/queue.module';
-import { InviteModule } from 'invite/invite.module';
+import { InviteModule } from './invite/invite.module';
 
 @Module({
   imports: [

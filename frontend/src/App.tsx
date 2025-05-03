@@ -19,6 +19,7 @@ import Result from "./pages/result/result.tsx";
 import { useApi } from "@/utils/api";
 import Statistics from "./pages/statistics/Statistics.tsx";
 import Queue from "./pages/queue/Queue.tsx";
+import Invite from "./pages/invite/Invite.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -83,6 +84,7 @@ function App() {
             <Route path="/game" element={<Game />} />
             <Route path="/queue" element={<Queue />} />
             <Route path="/result" element={<Result />} />
+            <Route path="/invite" element={<Invite />} />
             <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
             <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
             <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />

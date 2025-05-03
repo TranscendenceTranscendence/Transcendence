@@ -48,7 +48,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('joinGame')
   async handleJoinGame(client: Socket, data: any) {
     try {
-      const roomId = typeof data === 'object' ? data.roomId : data;
+      const roomId = typeof data === 'object' ? data.roomId : undefined;
       const userId = typeof data === 'object' ? data.userId : null;
       const playerName = typeof data === 'object' ? data.playerName : null;
       const playerNumber = typeof data === 'object' ? data.playerNumber : -1;

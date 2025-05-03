@@ -2,17 +2,14 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GamesService } from 'games/games.service';
+import { GamesService } from '../games/games.service';
 import { Invite, InviteStatus } from './invite.entity';
 import { Repository } from 'typeorm';
-import { CreateGameDto } from 'games/dto/create-game.dto';
-import { JwtAccessAuthGuard } from 'auth/guards/jwt-access.guard';
-import { GameStatus } from 'games/game.entity';
+import { CreateGameDto } from '../games/dto/create-game.dto';
+import { GameStatus } from '../games/game.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { promises } from 'dns';
 
 @Injectable()
 export class InviteService {
@@ -68,13 +65,87 @@ export class InviteService {
       throw new InternalServerErrorException("Couldn't make an invite.");
   }
 
-  async getPendingInvites(userId: number): Promise<Invite[]>
-  {
-    const invites = this.inviteRepository.find({
-        where: {
-            receiverUserId: userId
-        }
-    })
+  async getPendingInvites(userId: number): Promise<Invite[]> {
+    const invites = await this.inviteRepository.find({
+      where: {
+        receiverUserId: userId,
+        status: InviteStatus.PENDING,
+      },
+    });
     return invites;
+  }
+
+  async getSentInvites(userId: number): Promise<Invite[]> {
+    const invites = await this.inviteRepository.find({
+      where: {
+        senderUserId: userId,
+        status: InviteStatus.PENDING,
+      },
+    });
+    return invites;
+  }
+
+  async acceptInvite(inviteId: number, userId: number): Promise<Invite> {
+    if (
+      inviteId === undefined ||
+      isNaN(inviteId) ||
+      userId === undefined ||
+      isNaN(userId)
+    )
+      throw new BadRequestException(
+        'Invite ID or User ID is an invalid number',
+      );
+
+    const invite = await this.inviteRepository.findOne({
+      where: {
+        id: inviteId,
+        status: InviteStatus.PENDING,
+      },
+    });
+    if (!invite || invite === undefined)
+      throw new InternalServerErrorException("Couldn't find any invite");
+
+    const game = await this.gamesService.findByRoomIdentifier(
+      invite.gameRoomId,
+    );
+    game.player2_user_id = invite.receiverUserId;
+
+    invite.status = InviteStatus.ACCEPTED;
+
+    await this.inviteRepository.save(invite);
+    await this.gamesService.update(game.id, game);
+
+    return invite;
+  }
+
+  async declineInvite(inviteId: number, userId: number): Promise<Invite> {
+    if (
+      inviteId === undefined ||
+      isNaN(inviteId) ||
+      userId === undefined ||
+      isNaN(userId)
+    )
+      throw new BadRequestException(
+        'Invite ID or User ID is an invalid number',
+      );
+    const invite = await this.inviteRepository.findOne({
+      where: {
+        id: inviteId,
+        status: InviteStatus.PENDING,
+      },
+    });
+    if (!invite || invite === undefined)
+      throw new InternalServerErrorException("Couldn't find any invite");
+    const game = await this.gamesService.findByRoomIdentifier(
+      invite.gameRoomId,
+    );
+    game.status = GameStatus.CANCELLED;
+
+    invite.status = InviteStatus.DECLINED;
+
+    await this.inviteRepository.save(invite);
+    await this.gamesService.update(game.id, game);
+
+    return invite;
   }
 }
