@@ -11,12 +11,15 @@ import { io, Socket } from "socket.io-client";
 import { useUser } from "@/utils/providers/UserProvider";
 import { chat_participant_roles } from "../PostRequest";
 import { UpdateParticipant } from "@/chat/ChatApiCalls";
+import { ChatRoomChatRoomTypeEnum } from "@/generated-api/models/ChatRoom";
 
 interface ChatContextProps {
   chatRooms: {
+    find(arg0: (chatRoom: any) => boolean): unknown;
     [key: number]: {
       messages: ChatMessage[];
       participants: ChatParticipant[];
+      chat_room_type: ChatRoomChatRoomTypeEnum;
     };
   };
   currentChatRoomId: number | null;
@@ -31,9 +34,9 @@ const ChatContext = createContext<ChatContextProps | null>(null);
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const api = useApi();
   const { user } = useUser();
-  const [chatRooms, setChatRooms] = useState<ChatContextProps["chatRooms"]>({});
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const [chatRooms, setChatRooms] = useState<ChatContextProps["chatRooms"]>({});
 
   useEffect(() => {
     if (!user || !chatRoomId) return;
@@ -87,7 +90,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const joinChatRoom = async (newChatRoomId: number) => {
     if (chatRoomId === newChatRoomId) return;
 
-    const { chatRooms } = await api.ChatRooms.chatRoomsControllerFindOne({
+    // Fetch chat room data via HTTP
+    const { chatRoom } = await api.ChatRooms.chatRoomsControllerFindOne({
       id: newChatRoomId,
     });
     const { data: messages } =
@@ -95,13 +99,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         chatRoomId: newChatRoomId,
         blockedUsers: user?.blockedUsers,
       });
-    const { chatParticipants } = chatRooms[0];
+    const { chatParticipants } = chatRoom;
 
     setChatRooms((prev) => ({
       ...prev,
       [newChatRoomId]: {
         messages: messages,
         participants: chatParticipants,
+        chat_room_type: chatRoom.chatRoomType,
       },
     }));
 

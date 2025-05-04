@@ -44,6 +44,10 @@ export class CreateChatRoomDto {
   @IsEnum(chat_participant_roles)
   @IsOptional()
   role: chat_participant_roles;
+
+  @ApiProperty({ description: 'The invited user id for the dm creation' })
+  @IsOptional()
+  invited_user_id: number;
 }
 
 export class CheckPasswordDto {

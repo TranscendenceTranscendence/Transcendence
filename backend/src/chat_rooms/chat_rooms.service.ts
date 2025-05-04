@@ -31,19 +31,37 @@ export class ChatRoomsService {
       password: hashedPassword,
     });
     const savedChatRoom = await this.chatRoomsRepository.save(chatRoomData);
-
+    let creatorRole = chat_participant_roles.Owner;
+    if (chat_room_type === chat_room_types.Dm)
+      creatorRole = chat_participant_roles.Guest;
     const participant = this.chatParticipantsRepository.create({
       user_id: user_id,
       chat_room_id: savedChatRoom.id,
-      chat_participant_role: chat_participant_roles.Owner,
+      chat_participant_role: creatorRole,
     });
 
+    if (savedChatRoom.chat_room_type === chat_room_types.Dm) {
+      const invitedParticipant = this.chatParticipantsRepository.create({
+        user_id: createChatRoomDto.invited_user_id,
+        chat_room_id: savedChatRoom.id,
+        chat_participant_role: chat_participant_roles.Guest,
+      });
+      await this.chatParticipantsRepository.save(invitedParticipant);
+    }
+
     await this.chatParticipantsRepository.save(participant);
-    return savedChatRoom;
+    const value = await this.chatRoomsRepository.findOne({
+      where: { id: savedChatRoom.id },
+      relations: ['chatParticipants', 'chatParticipants.user'],
+    });
+    console.log(value);
+    return value;
   }
 
   async findAll(): Promise<ChatRoom[]> {
-    return await this.chatRoomsRepository.find();
+    return await this.chatRoomsRepository.find({
+      relations: ['chatParticipants', 'chatParticipants.user'],
+    });
   }
 
   async findAllChatRoomList(id: number): Promise<ChatRoom[]> {

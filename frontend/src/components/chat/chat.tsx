@@ -8,7 +8,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect, useRef } from "react";
-import { ChatMessage, ChatParticipant } from "@/generated-api";
+import {
+  ChatMessage,
+  ChatParticipant,
+  ChatRoomChatRoomTypeEnum,
+} from "@/generated-api";
 import { useNavigate } from "react-router";
 import { LogOut } from "lucide-react";
 import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
@@ -223,6 +227,7 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
+  console.log("me.user in chat component", me.user.chatParticipants);
   return (
     <Card
       ref={cardRef}
@@ -255,7 +260,19 @@ const Chat = () => {
             <EditChatRoomPasswordDialog id={currentChatRoomId} />
           )}{" "}
         </div>
-        <h3>Chat Room {currentChatRoomId}</h3>
+        {currentChatRoom.chat_room_type === ChatRoomChatRoomTypeEnum.Dm && (
+          <h3>
+            DM with{" "}
+            {
+              currentChatRoom.participants.find(
+                (participant) => participant.user.id !== me.user?.id,
+              )?.user.nickname
+            }
+          </h3>
+        )}
+        {currentChatRoom.chat_room_type !== ChatRoomChatRoomTypeEnum.Dm && (
+          <h3>Chat Room {currentChatRoomId}</h3>
+        )}
         <Button
           variant="ghost"
           onClick={leaveChatRoom}

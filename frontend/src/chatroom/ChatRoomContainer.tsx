@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ChatRoomList from "./ChatRoomList.tsx";
 import { ChatRoom } from "@/generated-api/index.ts";
-import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
+import { useChatRoomsList, useAddParticipant } from "./ApiRequest.ts";
 import { useUser } from "@/utils/providers/UserProvider.tsx";
 import { useChat } from "@/utils/providers/ChatProvider.tsx";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
@@ -11,7 +11,7 @@ import { UpdateParticipant } from "@/chat/ChatApiCalls.ts";
 export const ChatRoomContainer = () => {
   const api = useApi();
   const [askPassword, setAskPassword] = useState<boolean>(false);
-  const { chatRooms } = useChatRooms();
+  const { chatRooms } = useChatRoomsList();
   const { joinChatRoom } = useChat();
   const [selectedChatRoom, setSelectedChatRoom] = useState<ChatRoom | null>(
     null,
@@ -97,7 +97,6 @@ export const ChatRoomContainer = () => {
     }
     return isValid;
   };
-
   return (
     <div className="chatRoomBox">
       <Dialog open={askPassword} onOpenChange={setAskPassword}>

@@ -9,6 +9,32 @@ export const useChatRooms = () => {
   const fetchChatRooms = async () => {
     try {
       const response: ChatRoomsResponse =
+        await api.ChatRooms.chatRoomsControllerFindAll();
+
+      if (response.success) {
+        setChatRooms(response);
+      } else {
+        console.error("Failed to fetch chat rooms:", response.message);
+      }
+    } catch (error) {
+      console.error("Error fetching chat rooms:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChatRooms();
+  }, []);
+
+  return { chatRooms, fetchChatRooms };
+};
+
+export const useChatRoomsList = () => {
+  const api = useApi();
+  const [chatRooms, setChatRooms] = useState<ChatRoomsResponse | null>(null);
+
+  const fetchChatRooms = async () => {
+    try {
+      const response: ChatRoomsResponse =
         await api.ChatRooms.chatRoomsControllerFindAllChatRoomList();
 
       if (response.success) {

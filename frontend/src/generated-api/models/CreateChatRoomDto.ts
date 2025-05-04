@@ -55,6 +55,12 @@ export interface CreateChatRoomDto {
    * @memberof CreateChatRoomDto
    */
   role: CreateChatRoomDtoRoleEnum;
+  /**
+   * The invited user id for the dm creation
+   * @type {number}
+   * @memberof CreateChatRoomDto
+   */
+  invitedUserId: number;
 }
 
 /**
@@ -94,6 +100,8 @@ export function instanceOfCreateChatRoomDto(
     return false;
   if (!("userId" in value) || value["userId"] === undefined) return false;
   if (!("role" in value) || value["role"] === undefined) return false;
+  if (!("invitedUserId" in value) || value["invitedUserId"] === undefined)
+    return false;
   return true;
 }
 
@@ -115,6 +123,7 @@ export function CreateChatRoomDtoFromJSONTyped(
     chatRoomType: json["chat_room_type"],
     userId: json["user_id"],
     role: json["role"],
+    invitedUserId: json["invited_user_id"],
   };
 }
 
@@ -137,5 +146,6 @@ export function CreateChatRoomDtoToJSONTyped(
     chat_room_type: value["chatRoomType"],
     user_id: value["userId"],
     role: value["role"],
+    invited_user_id: value["invitedUserId"],
   };
 }

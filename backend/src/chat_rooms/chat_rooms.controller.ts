@@ -21,6 +21,7 @@ import {
   CheckPasswordDto,
   CreateChatRoomDto,
 } from './dto/create-chat_room.dto';
+import { ChatRoom } from './chat_room.entity'; // Adjust the path if necessary
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import {
@@ -31,14 +32,12 @@ import {
   ChatRoomResponse,
   ChatRoomsResponse,
 } from './dto/chat_rooms-response.dto';
-import { ChatRoom } from './chat_room.entity';
 import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
-
   @Post()
   @ApiOperation({
     summary: 'Create a new chat room and add the creator as an owner',
@@ -46,18 +45,24 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 201,
     description: 'Chat room created successfully.',
+    type: ChatRoomResponse,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid input data.',
   })
-  async create(@Body() createChatRoomDto: CreateChatRoomDto) {
+  async create(
+    @Body() createChatRoomDto: CreateChatRoomDto,
+  ): Promise<ChatRoomResponse> {
     try {
-      const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
+      const chatRoom: ChatRoom =
+        await this.chatRoomsService.create(createChatRoomDto);
+      console.log('Saved ChatRoom:', chatRoom);
+      console.log(chatRoom);
       return {
         success: true,
+        chatRoom: chatRoom,
         message: 'ChatRoom Created Successfully',
-        chatRoom,
       };
     } catch (error) {
       return {
@@ -72,13 +77,14 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 200,
     description: 'Chat rooms fetched successfully.',
+    type: ChatRoomsResponse,
   })
-  async findAll() {
+  async findAll(): Promise<ChatRoomsResponse> {
     try {
       const data = await this.chatRoomsService.findAll();
       return {
         success: true,
-        data,
+        chatRooms: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
@@ -206,7 +212,7 @@ export class ChatRoomsController {
       const data = await this.chatRoomsService.findOne(id);
       return {
         success: true,
-        chatRooms: [data],
+        chatRoom: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
@@ -248,8 +254,6 @@ export class ChatRoomsController {
       };
     }
   }
-
-  //async create(@Body() createChatRoomDto: CreateChatRoomDto) {
 
   @Post('checkPassword')
   @ApiOperation({ summary: 'Check if password is correct' })

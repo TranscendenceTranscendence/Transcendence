@@ -10,6 +10,10 @@ import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/utils/providers/UserProvider";
 import { DialogPrivateChatRoomInvite } from "../../chatroom/DialogPrivateChatRoomInvite";
+import { Button } from "@/components/ui/button";
+import { useChat } from "@/utils/providers/ChatProvider";
+import { postDmChatRoom } from "../../chat/ChatApiCalls";
+import { useChatRooms } from "@/chatroom/ApiRequest";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +22,10 @@ export default function VisitingProfile() {
   const [visitingUser, setVisitingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
+  const { joinChatRoom } = useChat();
   const [achievements, setAchievements] = useState<Achievement[]>([]);
+
+  const { chatRooms } = useChatRooms();
 
   useEffect(() => {
     const userIdNumber = Number(id);
@@ -90,7 +97,7 @@ export default function VisitingProfile() {
         return "bg-gray-500";
     }
   })();
-
+  console.log("chatRooms", visitingUser);
   return (
     <div className="flex flex-row justify-center items-center min-h-screen">
       <Card>
@@ -110,6 +117,98 @@ export default function VisitingProfile() {
                   visitingUserId={visitingUser.id}
                 />
                 <FriendRequest user={visitingUser} />
+                <Button
+                  onClick={async () => {
+                    if (!visitingUser) {
+                      console.error("Visiting user not found");
+                      return;
+                    }
+                    if (Array.isArray(chatRooms.chatRooms)) {
+                      if (chatRooms.chatRooms.length > 0) {
+                        const existingChatRoom = chatRooms.chatRooms.find(
+                          (chatRoom) => {
+                            console.log("chatroom -->", chatRoom);
+                            if (
+                              !chatRoom.chatParticipants[0] ||
+                              !chatRoom.chatParticipants[1] ||
+                              chatRoom.chatRoomType !== "Dm"
+                            ) {
+                              console.error(
+                                "Invalid chat room participants or type",
+                              );
+                              return false;
+                            } else
+                              console.log(
+                                "Valid start",
+                                chatRoom.chatParticipants[0],
+                                chatRoom.chatParticipants[1],
+                              );
+                            const isMatch =
+                              chatRoom.chatRoomType === "Dm" &&
+                              chatRoom.chatParticipants.some((p) => {
+                                const condition1 =
+                                  chatRoom.chatParticipants[0].userId ===
+                                    p.userId &&
+                                  chatRoom.chatParticipants[1].userId ===
+                                    visitingUser.id;
+                                const condition2 =
+                                  chatRoom.chatParticipants[1].userId ===
+                                    p.userId &&
+                                  chatRoom.chatParticipants[0].userId ===
+                                    visitingUser.id;
+                                return condition1 || condition2;
+                              });
+                            console.log(
+                              `ChatRoomType is "Dm": ${
+                                chatRoom.chatRoomType === "Dm"
+                              }, Match found: ${isMatch}`,
+                            );
+                            return isMatch;
+                          },
+                        );
+
+                        if (existingChatRoom) {
+                          console.log("Already a dm session!!!!!!!!!!!!!!");
+                          joinChatRoom(existingChatRoom.id);
+                          return;
+                        } else {
+                          const response = await postDmChatRoom(
+                            api,
+                            me.user.id,
+                            visitingUser.id,
+                          );
+                          console.log(
+                            "Response from postDmChatRoom:",
+                            response,
+                          );
+                          if (response && response.chatRoom) {
+                            chatRooms.chatRooms.push(response.chatRoom);
+                            joinChatRoom(response.chatRoom.id);
+                          }
+                        }
+                      } else {
+                        console.log(
+                          "chatRooms array is empty, but it might just be the start",
+                        );
+                        const response = await postDmChatRoom(
+                          api,
+                          me.user.id,
+                          visitingUser.id,
+                        );
+                        console.log("Response from postDmChatRoom:", response);
+                        if (response && response.chatRoom) {
+                          chatRooms.chatRooms.push(response.chatRoom);
+                          joinChatRoom(response.chatRoom.id);
+                        }
+                      }
+                    } else {
+                      console.error("chatRooms is not a valid array");
+                    }
+                    console.log(chatRooms);
+                  }}
+                >
+                  DM {visitingUser.nickname}
+                </Button>
               </div>
               <div className="flex items-end gap-2">
                 <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
