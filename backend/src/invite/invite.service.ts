@@ -35,6 +35,10 @@ export class InviteService {
       );
     }
 
+    if (senderUserId === receiverUserId) {
+      throw new BadRequestException("You can't invite yourself to a game.");
+    }
+
     const game = new CreateGameDto();
 
     game.player1_user_id = senderUserId;
@@ -163,7 +167,7 @@ export class InviteService {
       },
     });
 
-    console.log("Expired invites:", expiredInvites);
+    console.log('Expired invites:', expiredInvites);
 
     for (const invite of expiredInvites) {
       invite.status = InviteStatus.EXPIRED;

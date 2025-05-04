@@ -111,7 +111,6 @@ export class InviteApi extends runtime.BaseAPI {
     requestParameters: InviteControllerCreateInviteRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<InviteResponseDto>> {
-    console.log(requestParameters);
     if (requestParameters["createInviteDto"] == null) {
       throw new runtime.RequiredError(
         "createInviteDto",
@@ -133,7 +132,6 @@ export class InviteApi extends runtime.BaseAPI {
         headerParameters["Authorization"] = `Bearer ${tokenString}`;
       }
     }
-    console.log("After bearer");
     const response = await this.request(
       {
         path: `/invite/send`,
@@ -145,7 +143,6 @@ export class InviteApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    console.log(response);
     return new runtime.JSONApiResponse(response, (jsonValue) =>
       InviteResponseDtoFromJSON(jsonValue),
     );
@@ -158,13 +155,10 @@ export class InviteApi extends runtime.BaseAPI {
     requestParameters: InviteControllerCreateInviteRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<InviteResponseDto> {
-    console.log("Here");
     const response = await this.inviteControllerCreateInviteRaw(
       requestParameters,
       initOverrides,
     );
-    console.log("response");
-
     return await response.value();
   }
 
