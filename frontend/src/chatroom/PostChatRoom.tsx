@@ -6,6 +6,8 @@ import {
   CreateChatRoomDtoChatRoomTypeEnum,
 } from "@/generated-api/index.ts";
 import PropTypes from "prop-types";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export const PostChatRoom = ({ userId }) => {
   const [name, setName] = useState("");
@@ -44,25 +46,30 @@ export const PostChatRoom = ({ userId }) => {
   };
 
   return (
-    <div>
-      <p>Add Chatroom</p>
+    <Card className="w-full p-4">
+      <h2 className="text-center text-2xl font-bold">Create Chat Room</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Add title"
-          required
-        />
-        {type === CreateChatRoomDtoChatRoomTypeEnum.Protected && (
+        <div
+          className=""
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
           <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Add password"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Add title"
             required
           />
-        )}
+          {type === CreateChatRoomDtoChatRoomTypeEnum.Protected && (
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Add password"
+              required
+            />
+          )}
+        </div>
 
         <div>
           <p>Select chat type:</p>
@@ -103,7 +110,12 @@ export const PostChatRoom = ({ userId }) => {
           </div>
         </div>
 
-        <button type="submit">Send chatroom</button>
+        {/* <button type="submit">Send chatroom</button> */}
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Button type="submit" className="">
+            Create
+          </Button>
+        </div>
       </form>
 
       {response && (
@@ -112,7 +124,7 @@ export const PostChatRoom = ({ userId }) => {
           <pre>{JSON.stringify(response, null, 2)}</pre>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

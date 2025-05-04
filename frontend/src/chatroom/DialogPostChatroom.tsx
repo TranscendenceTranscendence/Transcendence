@@ -17,15 +17,13 @@ export const DialogPostChatRoom = ({ userId }) => {
       <DialogTrigger asChild>
         <Button>+</Button>
       </DialogTrigger>
-      <div className="content-container">
-        <DialogContent className="dialog-content">
-          <DialogTitle>Create a New Chatroom</DialogTitle>
-          <DialogDescription>
-            Please enter a name for your new chatroom.
-          </DialogDescription>
-          <PostChatRoom userId={userId} />
-        </DialogContent>
-      </div>
+
+      <DialogContent
+        className="dialog-content"
+        style={{ background: "none", boxShadow: "none", padding: 0 }}
+      >
+        <PostChatRoom userId={userId} />
+      </DialogContent>
     </Dialog>
   );
 };
