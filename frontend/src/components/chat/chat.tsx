@@ -350,47 +350,50 @@ const Chat = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p>Actions for User {selectedMessage.userId}:</p>
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() => handleAction("Kick", selectedMessage.userId)}
                 >
                   Kick
-                </button>
+                </Button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() =>
                     handleAction("Promote", selectedMessage.userId)
                   }
                 >
                   Promote
-                </button>
+                </Button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() => handleAction("Mute", selectedMessage.userId)}
                 >
                   Mute
-                </button>
+                </Button>
               )}
-            <button
+            <Button
+              className="bg-black"
               onClick={() => handleAction("Block", selectedMessage.userId)}
             >
               Block
-            </button>
+            </Button>
           </Card>
         )}
       </CardFooter>
