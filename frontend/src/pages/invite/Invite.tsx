@@ -44,7 +44,26 @@ const Invite: React.FC = () => {
       }
     };
 
+    const fetchAllOnlineUsers = async () => {
+      try {
+        setLoading(true);
+        const onlineUsers =
+          await api.Invite.inviteControllerFindAllOnlineUsers();
+        console.log("Online users:", onlineUsers);
+        setUsers(onlineUsers);
+      } catch (err) {
+        console.error("Error fetching online users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllOnlineUsers();
     fetchCurrentUser();
+
+    // Set up polling to refresh online users list
+    const interval = setInterval(fetchAllOnlineUsers, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -89,18 +108,9 @@ const Invite: React.FC = () => {
     }
   }, [currentUser]);
 
-  // Set up polling for new invites instead of using sockets
-  useEffect(() => {
-    // We already have polling set up in the fetchPendingInvites function
-    // So we don't need additional polling here
-  }, []);
-
-  const handleSendInvite = async () => {
+  const handleSendInvite = async (targetUserId: number) => {
     try {
       setLoading(true);
-
-      // Hardcode the invitation to User 10
-      const targetUserId = 10;
 
       // Send invite via REST API
       await api.Invite.inviteControllerCreateInvite({
@@ -109,21 +119,13 @@ const Invite: React.FC = () => {
         },
       });
 
+      const targetUser = users.find((user) => user.id === targetUserId);
+      const targetName = targetUser?.nickname || `User #${targetUserId}`;
+
       toast({
         title: "Success",
-        description: "Game invitation sent to User 10",
+        description: `Game invitation sent to ${targetName}`,
       });
-
-      // Add to sent invites list
-      const newInvite = {
-        id: Date.now(), // Temporary ID
-        senderUserId: currentUser?.id || 0,
-        receiverUserId: targetUserId,
-        status: "pending" as const,
-        createdAt: new Date(),
-        expiresAt: undefined,
-      };
-      setSentInvites((prev) => [...prev, newInvite]);
 
       // Refresh sent invites
       if (currentUser?.id) {
@@ -134,7 +136,7 @@ const Invite: React.FC = () => {
       console.error("Error sending invite:", err);
       toast({
         title: "Error",
-        description: "Failed to send game invitation to User 10",
+        description: "Failed to send game invitation",
         variant: "destructive",
       });
     } finally {
@@ -205,7 +207,15 @@ const Invite: React.FC = () => {
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleString();
+    return new Date(date).toLocaleString();
+  };
+
+  // Check if a user has already been invited
+  const isAlreadyInvited = (userId: number) => {
+    return sentInvites.some(
+      (invite) =>
+        invite.receiverUserId === userId && invite.status === "pending",
+    );
   };
 
   return (
@@ -222,19 +232,35 @@ const Invite: React.FC = () => {
         </div>
       )}
 
-      {/* Send Invite Section */}
+      {/* Online Users Section */}
       <div className="bg-gray-100 p-4 rounded-lg mb-6">
-        <h2 className="text-lg font-semibold mb-3">Send Invite to User 10</h2>
+        <h2 className="text-lg font-semibold mb-3">Online Users</h2>
 
-        <div className="flex justify-center">
-          <Button
-            onClick={handleSendInvite}
-            disabled={loading || !currentUser}
-            className="w-full md:w-auto"
-          >
-            {loading ? "Sending..." : "Invite User 10 to Game"}
-          </Button>
-        </div>
+        {users.length === 0 ? (
+          <p className="text-gray-500">No online users found</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {users.map((user) => (
+              <div
+                key={user.id}
+                className="border p-3 rounded-md bg-white flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">
+                    {user.nickname || `User #${user.id}`}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => handleSendInvite(user.id)}
+                  disabled={loading || isAlreadyInvited(user.id)}
+                >
+                  {isAlreadyInvited(user.id) ? "Invited" : "Invite"}
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Pending Invites Section */}

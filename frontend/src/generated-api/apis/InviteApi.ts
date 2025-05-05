@@ -18,6 +18,7 @@ import type {
   CreateInviteDto,
   Invite,
   InviteResponseDto,
+  User,
 } from "../models/index";
 import {
   AcceptInviteResponseFromJSON,
@@ -28,6 +29,8 @@ import {
   InviteToJSON,
   InviteResponseDtoFromJSON,
   InviteResponseDtoToJSON,
+  UserFromJSON,
+  UserToJSON,
 } from "../models/index";
 
 export interface InviteControllerAcceptInviteRequest {
@@ -217,6 +220,50 @@ export class InviteApi extends runtime.BaseAPI {
       requestParameters,
       initOverrides,
     );
+    return await response.value();
+  }
+
+  /**
+   * Get all online users
+   */
+  async inviteControllerFindAllOnlineUsersRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<Array<User>>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token("bearer", []);
+
+      if (tokenString) {
+        headerParameters["Authorization"] = `Bearer ${tokenString}`;
+      }
+    }
+    const response = await this.request(
+      {
+        path: `/invite/online`,
+        method: "GET",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.JSONApiResponse(response, (jsonValue) =>
+      jsonValue.map(UserFromJSON),
+    );
+  }
+
+  /**
+   * Get all online users
+   */
+  async inviteControllerFindAllOnlineUsers(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<Array<User>> {
+    const response =
+      await this.inviteControllerFindAllOnlineUsersRaw(initOverrides);
     return await response.value();
   }
 

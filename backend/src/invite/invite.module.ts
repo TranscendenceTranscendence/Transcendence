@@ -8,10 +8,11 @@ import { GamesModule } from '../games/games.module';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User } from '../users/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Invite]),
+    TypeOrmModule.forFeature([Invite, User]),
     GamesModule,
     UsersModule,
     JwtModule.registerAsync({

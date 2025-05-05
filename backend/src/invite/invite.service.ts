@@ -6,17 +6,20 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { GamesService } from '../games/games.service';
 import { Invite, InviteStatus } from './invite.entity';
-import { Repository, LessThan } from 'typeorm';
+import { Repository, LessThan, In } from 'typeorm';
 import { CreateGameDto } from '../games/dto/create-game.dto';
 import { GameStatus } from '../games/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { User, UserStatus } from '../users/user.entity';
 
 @Injectable()
 export class InviteService {
   constructor(
     @InjectRepository(Invite)
     private readonly inviteRepository: Repository<Invite>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
     private readonly gamesService: GamesService,
   ) {}
 
@@ -38,6 +41,10 @@ export class InviteService {
     if (senderUserId === receiverUserId) {
       throw new BadRequestException("You can't invite yourself to a game.");
     }
+    if (await this.gamesService.isPlayerInGame(senderUserId))
+      throw new BadRequestException(
+        "You can't invite someone if you're already in an active game",
+      );
 
     const game = new CreateGameDto();
 
@@ -191,6 +198,46 @@ export class InviteService {
 
     if (expiredInvites.length > 0) {
       console.log(`Marked ${expiredInvites.length} invites as expired`);
+    }
+  }
+
+  async findAllOnlineUsers(
+    userId: number | string | undefined | null,
+  ): Promise<User[]> {
+    // Convert to number and validate
+    const userIdNum = Number(userId);
+
+    // Validate userId is a real number
+    if (isNaN(userIdNum)) {
+      console.error(
+        'Invalid userId in findAllOnlineUsers:',
+        userId,
+        'Type:',
+        typeof userId,
+      );
+      return []; // Return empty array instead of making invalid DB query
+    }
+
+    try {
+      console.log(`Finding online users, excluding user ID: ${userIdNum}`);
+
+      // First, fetch all users with online status
+      const onlineUsers = await this.usersRepository.find({
+        where: {
+          user_status: In([
+            UserStatus.Online,
+            UserStatus.Playing,
+            UserStatus.Waiting,
+          ]),
+        },
+      });
+
+      // Then filter out the current user (safer than using Not operator)
+      return onlineUsers.filter((user) => user.id !== userIdNum);
+    } catch (error) {
+      console.error('Error finding online users:', error);
+      // Return empty array instead of throwing error
+      return [];
     }
   }
 

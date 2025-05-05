@@ -9,6 +9,9 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
+  UnauthorizedException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,6 +26,8 @@ import {
   JwtAccessAuthGuard,
   AuthenticatedRequest,
 } from '../auth/guards/jwt-access.guard';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/user.entity';
 
 class CreateInviteDto {
   @ApiProperty({ description: 'ID of the user to invite', type: Number })
@@ -61,7 +66,10 @@ class InviteResponseDto {
 @ApiTags('Invite')
 @Controller('invite')
 export class InviteController {
-  constructor(private readonly inviteService: InviteService) {}
+  constructor(
+    private readonly inviteService: InviteService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('send')
   @UseGuards(JwtAccessAuthGuard)
@@ -201,6 +209,47 @@ export class InviteController {
         error.message || 'Failed to decline invitation',
         error.status || HttpStatus.BAD_REQUEST,
       );
+    }
+  }
+
+  @Get('online')
+  @ApiOperation({ summary: 'Get all online users' })
+  @ApiResponse({
+    status: 200,
+    description: 'Online users fetched successfully.',
+    type: [User],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized access.' })
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async findAllOnlineUsers(@Req() req: AuthenticatedRequest): Promise<User[]> {
+    console.log(
+      'findAllOnlineUsers controller called with req.user:',
+      req.user,
+    );
+
+    if (!req.user) {
+      throw new UnauthorizedException('No authenticated user found');
+    }
+
+    try {
+      const userId =
+        typeof req.user.id === 'string'
+          ? parseInt(req.user.id, 10)
+          : Number(req.user.id);
+
+      if (isNaN(userId)) {
+        return [];
+      }
+
+      console.log('Using user ID:', userId, 'Type:', typeof userId);
+      return await this.inviteService.findAllOnlineUsers(userId);
+    } catch (error) {
+      console.error('Error in findAllOnlineUsers:', error);
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to fetch online users');
     }
   }
 }
