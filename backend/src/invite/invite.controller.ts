@@ -223,29 +223,16 @@ export class InviteController {
   @UseGuards(JwtAccessAuthGuard)
   @ApiBearerAuth()
   async findAllOnlineUsers(@Req() req: AuthenticatedRequest): Promise<User[]> {
-    console.log(
-      'findAllOnlineUsers controller called with req.user:',
-      req.user,
-    );
-
     if (!req.user) {
       throw new UnauthorizedException('No authenticated user found');
     }
 
     try {
-      const userId =
-        typeof req.user.id === 'string'
-          ? parseInt(req.user.id, 10)
-          : Number(req.user.id);
-
-      if (isNaN(userId)) {
+      if (isNaN(req.user.id)) {
         return [];
       }
-
-      console.log('Using user ID:', userId, 'Type:', typeof userId);
-      return await this.inviteService.findAllOnlineUsers(userId);
+      return await this.inviteService.findAllOnlineUsers(req.user.id);
     } catch (error) {
-      console.error('Error in findAllOnlineUsers:', error);
       if (error instanceof BadRequestException) {
         throw error;
       }

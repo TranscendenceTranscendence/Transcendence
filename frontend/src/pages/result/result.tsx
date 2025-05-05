@@ -20,9 +20,7 @@ export function Result() {
     if (gameResultString) {
       try {
         const parsedResult = JSON.parse(gameResultString);
-        console.log("Parsed game result:", parsedResult); // Debug log
 
-        // More robust check for score data
         const finalScoreData = parsedResult.finalScore || parsedResult.score;
         const playersArray = parsedResult.players || parsedResult.player;
 
@@ -38,7 +36,6 @@ export function Result() {
           playersArray.length === 2 &&
           typeof parsedResult.winner !== "undefined"
         ) {
-          // Standardize the result format
           setGameResult({
             winner: parsedResult.winner,
             score: finalScoreData,
@@ -47,7 +44,6 @@ export function Result() {
             timestamp: parsedResult.timestamp || new Date().toISOString(),
           });
 
-          // Clear session storage after successful use
           setTimeout(() => {
             sessionStorage.removeItem("gameResult");
           }, 1000);
@@ -60,7 +56,6 @@ export function Result() {
         setTimeout(() => navigate("/queue"), 2000);
       }
     } else {
-      console.log("No game result found in session storage");
       setTimeout(() => navigate("/queue"), 2000);
     }
     setLoading(false);

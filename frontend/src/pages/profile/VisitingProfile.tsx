@@ -9,6 +9,7 @@ import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/utils/providers/UserProvider";
+import InviteToGame from "./components/InviteToGame";
 
 export default function VisitingProfile() {
   const { id } = useParams<{ id: string }>();
@@ -105,6 +106,7 @@ export default function VisitingProfile() {
             <div className="flex flex-col items-end gap-2 justify-end">
               <div>
                 <FriendRequest user={visitingUser} />
+                <InviteToGame user={visitingUser} />
               </div>
               <div className="flex items-end gap-2">
                 <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>

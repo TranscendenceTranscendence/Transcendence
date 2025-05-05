@@ -154,13 +154,22 @@ export default function Pong() {
         id: game.player1UserId,
       });
 
-      const player2Data = await api.Users.usersControllerFindOne({
-        id: game.player2UserId,
-      });
+      let player2Name = "Opponent";
+
+      if (game.player2UserId) {
+        try {
+          const player2Data = await api.Users.usersControllerFindOne({
+            id: game.player2UserId,
+          });
+          player2Name = player2Data.nickname || `Player ${game.player2UserId}`;
+        } catch (error) {
+          console.error("Error fetching player 2 data:", error);
+        }
+      }
 
       setPlayerNames({
         current: player1Data.nickname || `Player ${game.player1UserId}`,
-        opponent: player2Data.nickname || `Player ${game.player2UserId}`,
+        opponent: player2Name,
       });
     } catch (error) {
       console.error("Error fetching player names:", error);

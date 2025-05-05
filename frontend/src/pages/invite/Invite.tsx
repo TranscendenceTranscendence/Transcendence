@@ -23,7 +23,6 @@ interface Invite {
 const Invite: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [pendingInvites, setPendingInvites] = useState<Invite[]>([]);
   const [sentInvites, setSentInvites] = useState<Invite[]>([]);
   const api = useApi();
@@ -49,7 +48,6 @@ const Invite: React.FC = () => {
         setLoading(true);
         const onlineUsers =
           await api.Invite.inviteControllerFindAllOnlineUsers();
-        console.log("Online users:", onlineUsers);
         setUsers(onlineUsers);
       } catch (err) {
         console.error("Error fetching online users:", err);

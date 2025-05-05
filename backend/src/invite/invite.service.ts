@@ -123,8 +123,14 @@ export class InviteService {
     const game = await this.gamesService.findByRoomIdentifier(
       invite.gameRoomId,
     );
-    game.player2_user_id = invite.receiverUserId;
 
+    if (game.status === GameStatus.CANCELLED) {
+      invite.status = InviteStatus.EXPIRED;
+      await this.inviteRepository.save(invite);
+      throw new InternalServerErrorException('Game has already been canceled');
+    }
+
+    game.player2_user_id = invite.receiverUserId;
     invite.status = InviteStatus.ACCEPTED;
 
     await this.inviteRepository.save(invite);
@@ -174,8 +180,6 @@ export class InviteService {
       },
     });
 
-    console.log('Expired invites:', expiredInvites);
-
     for (const invite of expiredInvites) {
       invite.status = InviteStatus.EXPIRED;
       await this.inviteRepository.save(invite);
@@ -195,33 +199,20 @@ export class InviteService {
         );
       }
     }
-
-    if (expiredInvites.length > 0) {
-      console.log(`Marked ${expiredInvites.length} invites as expired`);
-    }
   }
 
-  async findAllOnlineUsers(
-    userId: number | string | undefined | null,
-  ): Promise<User[]> {
-    // Convert to number and validate
-    const userIdNum = Number(userId);
-
-    // Validate userId is a real number
-    if (isNaN(userIdNum)) {
+  async findAllOnlineUsers(userId: number): Promise<User[]> {
+    if (isNaN(userId)) {
       console.error(
         'Invalid userId in findAllOnlineUsers:',
         userId,
         'Type:',
         typeof userId,
       );
-      return []; // Return empty array instead of making invalid DB query
+      return [];
     }
 
     try {
-      console.log(`Finding online users, excluding user ID: ${userIdNum}`);
-
-      // First, fetch all users with online status
       const onlineUsers = await this.usersRepository.find({
         where: {
           user_status: In([
@@ -232,12 +223,23 @@ export class InviteService {
         },
       });
 
-      // Then filter out the current user (safer than using Not operator)
-      return onlineUsers.filter((user) => user.id !== userIdNum);
+      return onlineUsers.filter((user) => user.id !== userId);
     } catch (error) {
       console.error('Error finding online users:', error);
-      // Return empty array instead of throwing error
       return [];
+    }
+  }
+
+  async doesGameStillExist(roomId: string): Promise<boolean> {
+    try {
+      const game = await this.gamesService.findByRoomIdentifier(roomId);
+      if (game.status === GameStatus.CANCELLED)
+        throw new InternalServerErrorException(
+          'Game has already been canceled',
+        );
+      return true;
+    } catch (error) {
+      console.error('Error checking if game has been canceled: ', error);
     }
   }
 

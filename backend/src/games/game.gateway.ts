@@ -100,8 +100,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         y: 50,
         x,
       };
+
       try {
         const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
+
+        this.server.to(roomId).emit('playerJoined', {
+          playerNumber: playerNumber,
+          userId: userId,
+          playerName: playerName,
+        });
 
         this.server.to(client.id).emit('update', game);
         if (

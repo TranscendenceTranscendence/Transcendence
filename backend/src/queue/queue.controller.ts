@@ -70,9 +70,7 @@ export class QueueController {
     const time = await this.queueService.getTimeInQueue(req.user.id);
 
     if (await this.queueService.moreThan2()) {
-      console.log('Found pair in queue');
       const game = await this.queueService.removePair();
-      console.log('Game created: ', game);
       return {
         Game: game,
         SecondsInQueue: time,
@@ -80,7 +78,6 @@ export class QueueController {
         message: 'Pair found in queue',
       };
     }
-    console.log('No pair found in queue');
     return {
       Game: [],
       SecondsInQueue: time,
