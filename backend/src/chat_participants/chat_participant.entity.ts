@@ -17,10 +17,13 @@ export class ChatParticipant {
   })
   chat_participant_role: chat_participant_roles;
 
+  @Column({ default: new Date(0) })
+  leftAt: Date;
+
   @Column({ default: false })
   is_banned: boolean;
 
-  @Column({ default: null })
+  @Column({ default: new Date(0) })
   banned_until: Date;
 
   @Column({ default: false })
@@ -42,7 +45,9 @@ export class ChatParticipant {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.chatParticipants)
+  @ManyToOne(() => ChatRoom, (chatRoom) => chatRoom.chatParticipants, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'chat_room_id' })
   chatRoom: ChatRoom;
 }

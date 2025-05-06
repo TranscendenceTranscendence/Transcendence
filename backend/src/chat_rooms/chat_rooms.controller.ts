@@ -10,8 +10,18 @@ import {
   Req,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateChatRoomDto } from './dto/create-chat_room.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
+import {
+  CheckPasswordDto,
+  CreateChatRoomDto,
+} from './dto/create-chat_room.dto';
+import { ChatRoom } from './chat_room.entity'; // Adjust the path if necessary
 import { UpdateChatRoomDto } from './dto/update-chat_room.dto';
 import { ChatRoomsService } from './chat_rooms.service';
 import {
@@ -22,12 +32,12 @@ import {
   ChatRoomResponse,
   ChatRoomsResponse,
 } from './dto/chat_rooms-response.dto';
+import { chat_participant_roles } from '../chat_participants/chat_participant.entity';
 
 @ApiTags('ChatRooms')
 @Controller('chatroom')
 export class ChatRoomsController {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
-
   @Post()
   @ApiOperation({
     summary: 'Create a new chat room and add the creator as an owner',
@@ -35,18 +45,24 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 201,
     description: 'Chat room created successfully.',
+    type: ChatRoomResponse,
   })
   @ApiResponse({
     status: 400,
     description: 'Invalid input data.',
   })
-  async create(@Body() createChatRoomDto: CreateChatRoomDto) {
+  async create(
+    @Body() createChatRoomDto: CreateChatRoomDto,
+  ): Promise<ChatRoomResponse> {
     try {
-      const chatRoom = await this.chatRoomsService.create(createChatRoomDto);
+      const chatRoom: ChatRoom =
+        await this.chatRoomsService.create(createChatRoomDto);
+      console.log('Saved ChatRoom:', chatRoom);
+      console.log(chatRoom);
       return {
         success: true,
+        chatRoom: chatRoom,
         message: 'ChatRoom Created Successfully',
-        chatRoom,
       };
     } catch (error) {
       return {
@@ -61,13 +77,14 @@ export class ChatRoomsController {
   @ApiResponse({
     status: 200,
     description: 'Chat rooms fetched successfully.',
+    type: ChatRoomsResponse,
   })
-  async findAll() {
+  async findAll(): Promise<ChatRoomsResponse> {
     try {
       const data = await this.chatRoomsService.findAll();
       return {
         success: true,
-        data,
+        chatRooms: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
@@ -123,16 +140,47 @@ export class ChatRoomsController {
     }
   }
 
-  @Get('includeParticipant')
-  @ApiOperation({ summary: 'Get all chat rooms including participants' })
+  @Get('findChatRoomList')
+  @ApiOperation({ summary: 'Get all chat rooms for chatRoomList' })
   @ApiResponse({
     status: 200,
     description: 'Chat rooms with participants fetched successfully.',
     type: ChatRoomsResponse,
   })
-  async findAllincludeParticipant(): Promise<ChatRoomsResponse> {
+  @UseGuards(JwtAccessAuthGuard)
+  async findAllChatRoomList(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<ChatRoomsResponse> {
     try {
-      const data = await this.chatRoomsService.findAllincludeParticipant();
+      const data = await this.chatRoomsService.findAllChatRoomList(req.user.id);
+      return {
+        success: true,
+        chatRooms: data,
+        message: 'ChatRoom Fetched Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Get('findPrivateChatRoomList')
+  @ApiOperation({ summary: 'Get all chat rooms for chatRoomListPrivate' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat rooms with participants fetched successfully.',
+    type: ChatRoomsResponse,
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async findAllPrivateChatRoomList(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<ChatRoomsResponse> {
+    try {
+      const data = await this.chatRoomsService.findAllPrivateChatRoomList(
+        req.user.id,
+      );
       return {
         success: true,
         chatRooms: data,
@@ -164,7 +212,7 @@ export class ChatRoomsController {
       const data = await this.chatRoomsService.findOne(id);
       return {
         success: true,
-        chatRooms: [data],
+        chatRoom: data,
         message: 'ChatRoom Fetched Successfully',
       };
     } catch (error) {
@@ -195,6 +243,78 @@ export class ChatRoomsController {
   ) {
     try {
       await this.chatRoomsService.update(+id, updateChatRoomDto);
+      return {
+        success: true,
+        message: 'ChatRoom Updated Successfully',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @Post('checkPassword')
+  @ApiOperation({ summary: 'Check if password is correct' })
+  @UseGuards(JwtAccessAuthGuard)
+  async checkPassword(
+    @Body() checkPasswordDto: CheckPasswordDto,
+  ): Promise<boolean> {
+    const { chatRoomId, password } = checkPasswordDto;
+    if (!chatRoomId || !password) {
+      console.log('gaat fout hier');
+      throw new Error(
+        'chatRoomId or password is undefined or missing in the request.',
+      );
+    }
+    console.log('in controller -->', password, chatRoomId);
+    return await this.chatRoomsService.checkPassword(chatRoomId, password);
+  }
+
+  @Patch('editPassword/:chatRoomId')
+  @ApiOperation({ summary: 'Change password of chatRoom by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat room updated successfully.',
+  })
+  @ApiParam({ name: 'chatRoomId', type: Number })
+  @ApiResponse({
+    status: 404,
+    description: 'Chat room not found.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  @ApiBearerAuth()
+  async editPassword(
+    @Param('chatRoomId') chatRoomId: number,
+    @Body() updateChatRoomDto: UpdateChatRoomDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+    console.log(chatRoomId);
+    const chatRoom: ChatRoom =
+      await this.chatRoomsService.findOneShallow(+chatRoomId);
+    const participant = chatRoom.chatParticipants.find((participant) => {
+      return participant.user_id === user.id;
+    });
+    if (!participant) {
+      return {
+        success: false,
+        message: 'Participant not found in the chat room.',
+      };
+    }
+    if (participant.chat_participant_role !== chat_participant_roles.Owner) {
+      return {
+        succes: false,
+        message: 'Participant is not the owner',
+      };
+    }
+    try {
+      await this.chatRoomsService.editPassword(+chatRoomId, updateChatRoomDto);
       return {
         success: true,
         message: 'ChatRoom Updated Successfully',

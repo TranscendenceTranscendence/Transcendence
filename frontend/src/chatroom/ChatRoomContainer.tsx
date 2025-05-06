@@ -1,21 +1,23 @@
 import { useState } from "react";
 import ChatRoomList from "./ChatRoomList.tsx";
 import { ChatRoom } from "@/generated-api/index.ts";
-import { useChatRooms, useAddParticipant } from "./ApiRequest.ts";
+import { useChatRoomsList, useAddParticipant } from "./ApiRequest.ts";
 import { useUser } from "@/utils/providers/UserProvider.tsx";
 import { useChat } from "@/utils/providers/ChatProvider.tsx";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
+import { useApi } from "@/utils/api/index.ts";
+import { UpdateParticipant } from "@/chat/ChatApiCalls.ts";
 
 export const ChatRoomContainer = () => {
+  const api = useApi();
   const [askPassword, setAskPassword] = useState<boolean>(false);
-  const { chatRooms } = useChatRooms();
+  const { chatRooms } = useChatRoomsList();
   const { joinChatRoom } = useChat();
   const [selectedChatRoom, setSelectedChatRoom] = useState<ChatRoom | null>(
     null,
   );
   const [passwordInput, setPasswordInput] = useState("");
   const me = useUser();
-
   const { addParticipant } = useAddParticipant();
 
   const handleAddParticipant = async (userId: number, chatRoomId: number) => {
@@ -25,13 +27,33 @@ export const ChatRoomContainer = () => {
     }
     await addParticipant(userId, chatRoomId);
   };
-  const handeSwitchChatRoom = (
+  const handeSwitchChatRoom = async (
     newChatRoom: ChatRoom,
     activeParticpant: boolean,
   ) => {
     localStorage.setItem("chatRoomId", JSON.stringify(newChatRoom.id));
     if (!activeParticpant) handleAddParticipant(me?.user.id, newChatRoom.id);
-    joinChatRoom(newChatRoom.id);
+    else {
+      const participant = newChatRoom.chatParticipants.find(
+        (p) => p.userId === me?.user.id,
+      );
+      if (!participant) {
+        console.error("Participant not found");
+        return;
+      }
+      participant.leftAt = new Date(0);
+      try {
+        await UpdateParticipant(
+          participant.chatRoomId,
+          participant.userId,
+          true,
+        );
+        console.log("Update participant", participant);
+      } catch (error) {
+        console.error("Error updating participant:", error);
+      }
+      joinChatRoom(newChatRoom.id);
+    }
   };
 
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
@@ -51,15 +73,21 @@ export const ChatRoomContainer = () => {
     }
   };
   const validatePassword = async (password: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(password === selectedChatRoom?.password);
-      }, 1000);
+    const response = await api.ChatRooms.chatRoomsControllerCheckPassword({
+      checkPasswordDto: {
+        password: password,
+        chatRoomId: selectedChatRoom?.id,
+      },
     });
+    if (response) {
+      console.log("Password is correct");
+      return true;
+    }
+    console.log("Password is incorrect");
+    return false;
   };
 
   const handlePasswordSubmit = async (password: string) => {
-    console.log(password + " real password ---> " + selectedChatRoom?.password);
     const isValid = await validatePassword(password);
     setAskPassword(false);
     if (isValid) {
@@ -69,7 +97,6 @@ export const ChatRoomContainer = () => {
     }
     return isValid;
   };
-
   return (
     <div className="chatRoomBox">
       <Dialog open={askPassword} onOpenChange={setAskPassword}>

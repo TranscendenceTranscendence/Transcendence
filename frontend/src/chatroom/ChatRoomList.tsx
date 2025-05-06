@@ -31,47 +31,62 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
     },
     [onChatRoomChange],
   );
+  console.log("chatRooms", chatRooms);
   return (
     <div className="chat-room-list flex flex-col gap-3 max-h-96 overflow-y-auto p-2">
-      {chatRooms?.chatRooms?.map((chatRoom) => (
-        <div key={chatRoom.id}>
-          <Button
-            key={chatRoom.id}
-            onClick={() => handleChatRoomChange(chatRoom)}
-            variant="ghost"
-            className="p-0"
-            asChild
-          >
-            <Card className="chat-room-item hover:shadow-lg transition cursor-pointer w-full">
-              <CardContent className="flex justify-between items-center p-4">
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <h3 className="text-lg font-semibold truncate">
-                    {chatRoom.title}
-                  </h3>
-                  <OnlineDot
-                    status={chatRoom.chatParticipants.some(
-                      (p: ChatParticipant) => {
-                        const isParticipant = p.userId === userId;
-                        return isParticipant;
-                      },
-                    )}
-                  />
-                </div>
-                {chatRoom.chat_room_type ===
-                  ChatRoomChatRoomTypeEnum.Protected &&
-                  askPassword && (
-                    <PasswordPrompt
-                      chatRoom={chatRoom}
-                      setAskPassword={setAskPassword}
+      {chatRooms?.chatRooms
+        ?.filter((chatRoom: ChatRoom) => {
+          const isNotDm = chatRoom.chatRoomType !== ChatRoomChatRoomTypeEnum.Dm;
+          return isNotDm;
+        })
+        .map((chatRoom) => (
+          <div key={chatRoom.id}>
+            <Button
+              key={chatRoom.id}
+              onClick={() => handleChatRoomChange(chatRoom)}
+              variant="ghost"
+              className="p-0"
+              asChild
+            >
+              <Card className="chat-room-item hover:shadow-lg transition cursor-pointer w-full">
+                <CardContent className="flex justify-between items-center p-4">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <h3 className="text-lg font-semibold truncate">
+                      {chatRoom.title}
+                    </h3>
+                    <OnlineDot
+                      status={chatRoom.chatParticipants.some(
+                        (p: ChatParticipant) => {
+                          const isParticipant = p.userId === userId;
+                          const left =
+                            new Date(p.leftAt).getTime() ===
+                              new Date(0).getTime() ||
+                            new Date(p.leftAt).getTime() === -3600000;
+                          console.log(
+                            "leftAt -->",
+                            p.leftAt.getTime(),
+                            new Date(0).getTime(),
+                          );
+                          console.log("results-->", isParticipant, left);
+                          return isParticipant && left;
+                        },
+                      )}
                     />
-                  )}
-              </CardContent>
-            </Card>
-          </Button>
-        </div>
-      ))}
+                  </div>
+                  {chatRoom.chat_room_type ===
+                    ChatRoomChatRoomTypeEnum.Protected &&
+                    askPassword && (
+                      <PasswordPrompt
+                        chatRoom={chatRoom}
+                        setAskPassword={setAskPassword}
+                      />
+                    )}
+                </CardContent>
+              </Card>
+            </Button>
+          </div>
+        ))}
     </div>
   );
 };
-
 export default React.memo(ChatRoomList);

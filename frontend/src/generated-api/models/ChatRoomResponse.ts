@@ -35,10 +35,10 @@ export interface ChatRoomResponse {
   success: boolean;
   /**
    *
-   * @type {Array<ChatRoom>}
+   * @type {ChatRoom}
    * @memberof ChatRoomResponse
    */
-  chatRooms?: Array<ChatRoom>;
+  chatRoom?: ChatRoom;
   /**
    *
    * @type {string}
@@ -70,10 +70,8 @@ export function ChatRoomResponseFromJSONTyped(
   }
   return {
     success: json["success"],
-    chatRooms:
-      json["chatRooms"] == null
-        ? undefined
-        : (json["chatRooms"] as Array<any>).map(ChatRoomFromJSON),
+    chatRoom:
+      json["chatRoom"] == null ? undefined : ChatRoomFromJSON(json["chatRoom"]),
     message: json["message"] == null ? undefined : json["message"],
   };
 }
@@ -92,10 +90,7 @@ export function ChatRoomResponseToJSONTyped(
 
   return {
     success: value["success"],
-    chatRooms:
-      value["chatRooms"] == null
-        ? undefined
-        : (value["chatRooms"] as Array<any>).map(ChatRoomToJSON),
+    chatRoom: ChatRoomToJSON(value["chatRoom"]),
     message: value["message"],
   };
 }

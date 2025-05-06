@@ -1,10 +1,12 @@
 import {
   ChatRoomsResponse,
+  ChatRoomResponse,
   MessagesResponse,
   ChatParticipantsResponse,
 } from "@/generated-api/index.ts";
 import { useApi } from "@/utils/api/index.ts";
 import { useEffect, useState } from "react";
+import { ChatRoomsControllerCreateRequest } from "@/generated-api/index.ts";
 import {
   UpdateChatParticipantDto,
   UpdateChatParticipantDtoChatParticipantRoleEnum,
@@ -123,6 +125,39 @@ export const useAddMessage = async (
   }
 };
 
+export const postDmChatRoom = async (
+  api: ReturnType<typeof useApi>,
+  userId: number,
+  targetUser: number,
+) => {
+  try {
+    const chatRoomData: ChatRoomsControllerCreateRequest = {
+      createChatRoomDto: {
+        title: "Dm",
+        password: "",
+        creationDate: new Date(),
+        chatRoomType: "Dm",
+        userId: userId,
+        role: "guest",
+        invitedUserId: targetUser,
+      },
+    };
+
+    const response: ChatRoomResponse =
+      await api.ChatRooms.chatRoomsControllerCreate(chatRoomData);
+    console.log("deze-->", response.chatRoom);
+    if (response.success) {
+      return response;
+    } else {
+      console.error("Failed to create chat room:", response.message);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error creating chat room:", error);
+    return null;
+  }
+};
+
 export const KickUser = async (chatRoomId: number, id: number) => {
   const api = useApi();
   try {
@@ -185,5 +220,28 @@ export const BlockUser = async (targetUser: number) => {
     console.log("User successfully blocked:", response);
   } catch (error) {
     console.error("Error blocking user:", error);
+  }
+};
+
+export const UpdateParticipant = async (
+  chatRoomId: number,
+  id: number,
+  reset: boolean,
+) => {
+  const api = useApi();
+  const updateDto: UpdateChatParticipantDto = {
+    leftAt: reset ? new Date(0) : new Date(),
+  };
+  console.log("Update DTO:", updateDto, id, chatRoomId);
+  try {
+    const response: ChatParticipant =
+      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+        id,
+        chatRoomId,
+        updateChatParticipantDto: updateDto,
+      });
+    console.log("Update Successful:", response);
+  } catch (error) {
+    console.error("Error updating user:", error);
   }
 };

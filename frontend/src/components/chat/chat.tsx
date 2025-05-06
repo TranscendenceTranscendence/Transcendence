@@ -8,8 +8,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect, useRef } from "react";
-import { ChatMessage, ChatParticipant } from "@/generated-api";
+import {
+  ChatMessage,
+  ChatParticipant,
+  ChatRoomChatRoomTypeEnum,
+} from "@/generated-api";
 import { useNavigate } from "react-router";
+import { LogOut } from "lucide-react";
 import { ChatParticipantChatParticipantRoleEnum } from "@/generated-api";
 import {
   PromoteUser,
@@ -17,6 +22,7 @@ import {
   MuteUser,
   BlockUser,
 } from "@/chat/ChatApiCalls";
+import { EditChatRoomPasswordDialog } from "@/chatroom/EditChatRoomPassword";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -43,6 +49,7 @@ const ChatMessages = ({
   chatComponentRef: React.RefObject<HTMLDivElement>;
 }) => {
   const navigate = useNavigate();
+  const scrollingRef = useRef<HTMLDivElement>(null);
   const handleMessageClick = (
     e: React.MouseEvent,
     user_id: number,
@@ -64,58 +71,70 @@ const ChatMessages = ({
       });
     }
   };
+
+  useEffect(() => {
+    if (scrollingRef.current) {
+      scrollingRef.current.scrollTop = scrollingRef.current.scrollHeight;
+    }
+  }, [messages]);
   console.log("in the message is de user", participants);
   return (
     <>
-      {messages.map((msg, index) => {
-        const user = participants.find((p) => p.user.id === msg.userId)?.user;
-        if (!user) return null;
+      <div ref={scrollingRef} style={{ overflowY: "auto" }}>
+        {messages.map((msg, index) => {
+          const user = participants.find((p) => p.user.id === msg.userId)?.user;
+          if (!user) return null;
 
-        const isCurrentUser: boolean = user.id === currentUserId;
-        return (
-          <div
-            key={index}
-            className={`flex flex-col gap-1 ${
-              isCurrentUser ? "items-end" : "items-start"
-            }`}
-          >
-            {isCurrentUser == false && (
-              <Button
-                variant="ghost"
-                className="text-xs text-gray-500"
-                aria-label="User name"
-                size="xs"
-                onClick={() => {
-                  navigate(`/profile/${user.id}`);
-                }}
-              >
-                {user.nickname}
-              </Button>
-            )}
+          const isCurrentUser: boolean = user.id === currentUserId;
+          return (
             <div
-              className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${
-                isCurrentUser
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted"
+              key={index}
+              className={`flex flex-col gap-1 ${
+                isCurrentUser ? "items-end" : "items-start"
               }`}
-              onClick={(e) =>
-                !isCurrentUser &&
-                handleMessageClick(e, msg.userId, chatComponentRef)
-              }
             >
-              {msg.content}
+              {isCurrentUser == false && (
+                <Button
+                  variant="ghost"
+                  className="text-xs text-gray-500"
+                  aria-label="User name"
+                  size="xs"
+                  onClick={() => {
+                    navigate(`/profile/${user.id}`);
+                  }}
+                >
+                  {user.nickname}
+                </Button>
+              )}
+              <div
+                className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${
+                  isCurrentUser
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
+                }`}
+                onClick={(e) =>
+                  !isCurrentUser &&
+                  handleMessageClick(e, msg.userId, chatComponentRef)
+                }
+              >
+                {msg.content}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </>
   );
 };
 
 const Chat = () => {
-  const { chatRooms, sendMessage, currentChatRoomId, leaveChatRoom } =
-    useChat();
-
+  const {
+    chatRooms,
+    sendMessage,
+    currentChatRoomId,
+    leaveChatRoom,
+    deleteSession,
+  } = useChat();
   const me = useUser();
   const cardRef = useRef<HTMLDivElement>(null);
   const {
@@ -136,7 +155,6 @@ const Chat = () => {
   } | null>(null);
   const localParticipant: ChatParticipant | undefined =
     me.user?.chatParticipants?.find((p: ChatParticipant) => {
-      console.log("Comparing:", p.chatRoomId, "with", currentChatRoomId);
       return p.chatRoomId === currentChatRoomId;
     });
   const handleOutsideClick = () => {
@@ -218,9 +236,7 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-  if (localParticipant) {
-    console.log("deze", localParticipant);
-  } else console.log("localParticipant is undefined");
+  console.log("me.user in chat component", me.user.chatParticipants);
   return (
     <Card
       ref={cardRef}
@@ -234,7 +250,38 @@ const Chat = () => {
         className="flex flex-row items-center justify-between space-y-0 border-b-2 cursor-move"
         onMouseDown={handleMouseDown}
       >
-        <h3>Chat Room {currentChatRoomId}</h3>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              deleteSession(
+                currentChatRoom.participants.find(
+                  (participant) => participant.user.id === me.user?.id,
+                ),
+              )
+            }
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
+          {localParticipant.chatParticipantRole ===
+            ChatParticipantChatParticipantRoleEnum.Owner && (
+            <EditChatRoomPasswordDialog id={currentChatRoomId} />
+          )}{" "}
+        </div>
+        {currentChatRoom.chat_room_type === ChatRoomChatRoomTypeEnum.Dm && (
+          <h3>
+            DM with{" "}
+            {
+              currentChatRoom.participants.find(
+                (participant) => participant.user.id !== me.user?.id,
+              )?.user.nickname
+            }
+          </h3>
+        )}
+        {currentChatRoom.chat_room_type !== ChatRoomChatRoomTypeEnum.Dm && (
+          <h3>Chat Room {currentChatRoomId}</h3>
+        )}
         <Button
           variant="ghost"
           onClick={leaveChatRoom}
@@ -303,47 +350,50 @@ const Chat = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p>Actions for User {selectedMessage.userId}:</p>
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() => handleAction("Kick", selectedMessage.userId)}
                 >
                   Kick
-                </button>
+                </Button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() =>
                     handleAction("Promote", selectedMessage.userId)
                   }
                 >
                   Promote
-                </button>
+                </Button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() => handleAction("Mute", selectedMessage.userId)}
                 >
                   Mute
-                </button>
+                </Button>
               )}
-            <button
+            <Button
+              className="bg-black"
               onClick={() => handleAction("Block", selectedMessage.userId)}
             >
               Block
-            </button>
+            </Button>
           </Card>
         )}
       </CardFooter>

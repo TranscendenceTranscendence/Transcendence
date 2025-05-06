@@ -24,6 +24,7 @@ models/ChatParticipantsResponse.ts
 models/ChatRoom.ts
 models/ChatRoomResponse.ts
 models/ChatRoomsResponse.ts
+models/CheckPasswordDto.ts
 models/CreateChatMessageDto.ts
 models/CreateChatParticipantDto.ts
 models/CreateChatRoomDto.ts
@@ -45,6 +46,7 @@ models/QueueUserInQueueResponse.ts
 models/SearchUserResponseDto.ts
 models/UpdateAddUserToBlockedListDto.ts
 models/UpdateChatParticipantDto.ts
+models/UpdateChatRoomDto.ts
 models/UpdateUserResponse.ts
 models/User.ts
 models/index.ts
