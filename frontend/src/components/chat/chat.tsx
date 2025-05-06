@@ -49,6 +49,7 @@ const ChatMessages = ({
   chatComponentRef: React.RefObject<HTMLDivElement>;
 }) => {
   const navigate = useNavigate();
+  const scrollingRef = useRef<HTMLDivElement>(null);
   const handleMessageClick = (
     e: React.MouseEvent,
     user_id: number,
@@ -70,50 +71,58 @@ const ChatMessages = ({
       });
     }
   };
+
+  useEffect(() => {
+    if (scrollingRef.current) {
+      scrollingRef.current.scrollTop = scrollingRef.current.scrollHeight;
+    }
+  }, [messages]);
   console.log("in the message is de user", participants);
   return (
     <>
-      {messages.map((msg, index) => {
-        const user = participants.find((p) => p.user.id === msg.userId)?.user;
-        if (!user) return null;
+      <div ref={scrollingRef} style={{ overflowY: "auto" }}>
+        {messages.map((msg, index) => {
+          const user = participants.find((p) => p.user.id === msg.userId)?.user;
+          if (!user) return null;
 
-        const isCurrentUser: boolean = user.id === currentUserId;
-        return (
-          <div
-            key={index}
-            className={`flex flex-col gap-1 ${
-              isCurrentUser ? "items-end" : "items-start"
-            }`}
-          >
-            {isCurrentUser == false && (
-              <Button
-                variant="ghost"
-                className="text-xs text-gray-500"
-                aria-label="User name"
-                size="xs"
-                onClick={() => {
-                  navigate(`/profile/${user.id}`);
-                }}
-              >
-                {user.nickname}
-              </Button>
-            )}
+          const isCurrentUser: boolean = user.id === currentUserId;
+          return (
             <div
-              className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${
-                isCurrentUser
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted"
+              key={index}
+              className={`flex flex-col gap-1 ${
+                isCurrentUser ? "items-end" : "items-start"
               }`}
-              onClick={(e) =>
-                !isCurrentUser &&
-                handleMessageClick(e, msg.userId, chatComponentRef)
-              }
             >
-              {msg.content}
+              {isCurrentUser == false && (
+                <Button
+                  variant="ghost"
+                  className="text-xs text-gray-500"
+                  aria-label="User name"
+                  size="xs"
+                  onClick={() => {
+                    navigate(`/profile/${user.id}`);
+                  }}
+                >
+                  {user.nickname}
+                </Button>
+              )}
+              <div
+                className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${
+                  isCurrentUser
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
+                }`}
+                onClick={(e) =>
+                  !isCurrentUser &&
+                  handleMessageClick(e, msg.userId, chatComponentRef)
+                }
+              >
+                {msg.content}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </>
   );
 };
@@ -341,47 +350,50 @@ const Chat = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <p>Actions for User {selectedMessage.userId}:</p>
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() => handleAction("Kick", selectedMessage.userId)}
                 >
                   Kick
-                </button>
+                </Button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() =>
                     handleAction("Promote", selectedMessage.userId)
                   }
                 >
                   Promote
-                </button>
+                </Button>
               )}
             {localParticipant &&
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
                   ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <button
+                <Button
+                  className="bg-black"
                   onClick={() => handleAction("Mute", selectedMessage.userId)}
                 >
                   Mute
-                </button>
+                </Button>
               )}
-            <button
+            <Button
+              className="bg-black"
               onClick={() => handleAction("Block", selectedMessage.userId)}
             >
               Block
-            </button>
+            </Button>
           </Card>
         )}
       </CardFooter>

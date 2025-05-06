@@ -137,6 +137,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           chatRoomId: chatRoomId,
         },
       });
+      // Scroll to the bottom of the chat when a new message is sent
 
       // Send the new message to the WebSocket
       socketRef.current.emit("message", newMessage);
