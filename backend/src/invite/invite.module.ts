@@ -3,7 +3,6 @@ import { InviteService } from './invite.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Invite } from './invite.entity';
 import { InviteController } from './invite.controller';
-import { InviteGateway } from './invite.gateway';
 import { GamesModule } from '../games/games.module';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -25,7 +24,7 @@ import { User } from '../users/user.entity';
     }),
   ],
   controllers: [InviteController],
-  providers: [InviteService, InviteGateway],
+  providers: [InviteService],
   exports: [InviteService],
 })
 export class InviteModule {}
