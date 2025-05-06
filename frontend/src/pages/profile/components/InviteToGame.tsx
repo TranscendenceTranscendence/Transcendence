@@ -14,7 +14,7 @@ const InviteToGame: React.FC<InviteToGameProps> = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSentInvite, setHasSentInvite] = useState(false);
   const navigate = useNavigate();
-  // Check if the current user has already sent an invite to this user
+
   useEffect(() => {
     const checkExistingInvite = async () => {
       if (!user || !user.id) return;
@@ -101,7 +101,7 @@ const InviteToGame: React.FC<InviteToGameProps> = ({ user }) => {
 
   return (
     <Button onClick={handleInvite} size="sm" className={buttonClasses}>
-      Play Game
+      Invite to Game
     </Button>
   );
 };
