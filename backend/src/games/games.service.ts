@@ -1,14 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Not, DataSource } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class GamesService {
   constructor(
     @InjectRepository(Game)
     private readonly gamesRepository: Repository<Game>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -337,27 +345,62 @@ export class GamesService {
     }
   }
 
-  async closeGame(gameId: string): Promise<Game> {
+  async expectedScore(
+    playerRating: number,
+    opponentRating: number,
+  ): Promise<number> {
+    const exponent = (opponentRating - playerRating) / 400;
+    return 1 / (1 + Math.pow(10, exponent));
+  }
+
+  async calculateElo(game: Game, winner: number) {
+    const K = 32;
     try {
-      const game = await this.gamesRepository.findOne({
-        where: { room_identifier: gameId },
-      });
-      if (!game) {
-        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      if (!game.player1_user_id || !game.player2_user_id) {
+        throw new Error('Missing player IDs in game record');
       }
-      if (game.score[0] == 11) game.winner_user_id = game.player1_user_id;
-      else if (game.score[1] == 11) game.winner_user_id = game.player2_user_id;
 
-      // formula for ELO
+      if (!game.winner_user_id) {
+        throw new Error('Game has no winner, cannot calculate ELO');
+      }
 
-      game.status = GameStatus.CLOSED;
-      game.ended_at = new Date();
-      return await this.gamesRepository.save(game);
+      const user1 = await this.userRepository.findOne({
+        where: {
+          id: game.player1_user_id,
+        },
+      });
+
+      const user2 = await this.userRepository.findOne({
+        where: {
+          id: game.player2_user_id,
+        },
+      });
+
+      if (!user1 || !user2) {
+        throw new Error('One or both players not found');
+      }
+
+      const expected1 = await this.expectedScore(user1.elo, user2.elo);
+      const expected2 = await this.expectedScore(user2.elo, user1.elo);
+
+      const win1 = Number(winner === user1.id);
+      const win2 = Number(winner === user2.id);
+
+      const newElo1 = Math.round(user1.elo + K * (win1 - expected1));
+      const newElo2 = Math.round(user2.elo + K * (win2 - expected2));
+
+      user1.elo = newElo1;
+      user2.elo = newElo2;
+
+      await this.dataSource.transaction(async (manager) => {
+        await manager.save(user1);
+        await manager.save(user2);
+      });
+      return { user1Elo: newElo1, user2Elo: newElo2 };
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      throw new HttpException(
-        `Failed to end game`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      console.error('Error calculating ELO:', error.message);
+      throw new InternalServerErrorException(
+        'Something went wrong trying to calculate ELO',
       );
     }
   }
@@ -382,41 +425,6 @@ export class GamesService {
     }
   }
 
-  async finishGame(
-    gameId: string,
-    finalScore: [number, number],
-  ): Promise<Game> {
-    try {
-      return await this.dataSource.transaction(async (manager) => {
-        const gameRepo = manager.getRepository(Game);
-
-        const game = await gameRepo.findOne({
-          where: { room_identifier: gameId },
-        });
-
-        if (!game) {
-          throw new Error(`Game with ID ${gameId} not found`);
-        }
-
-        game.score = finalScore;
-
-        if (finalScore[0] >= 11) {
-          game.winner_user_id = game.player1_user_id;
-        } else if (finalScore[1] >= 11) {
-          game.winner_user_id = game.player2_user_id;
-        }
-
-        game.status = GameStatus.CLOSED;
-        game.ended_at = new Date();
-
-        return await gameRepo.save(game);
-      });
-    } catch (error) {
-      console.error(`Failed to finish game ${gameId}:`, error);
-      throw new Error(`Failed to finish game: ${error.message}`);
-    }
-  }
-
   async finishGameWithFinalScore(
     gameId: string,
     finalScore: [number, number],
@@ -430,28 +438,30 @@ export class GamesService {
 
       const game = await queryRunner.manager.findOne(Game, {
         where: { room_identifier: gameId },
-        lock: { mode: 'pessimistic_write' }, // Lock the row to prevent race conditions
+        lock: { mode: 'pessimistic_write' },
       });
 
       if (!game) {
         throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
       }
 
-      // Update score first
+      if (game.status === GameStatus.CLOSED) {
+        throw new HttpException('Game is already closed', HttpStatus.BAD_REQUEST);
+      }
+  
       game.score = finalScore;
 
-      // Determine the winner based on the FINAL score
       if (finalScore[0] >= 11) {
         game.winner_user_id = game.player1_user_id;
       } else if (finalScore[1] >= 11) {
         game.winner_user_id = game.player2_user_id;
       }
 
-      // Set game as closed
+      await this.calculateElo(game, game.winner_user_id);
+
       game.status = GameStatus.CLOSED;
       game.ended_at = new Date();
 
-      // Save everything in a single transaction
       const updatedGame = await queryRunner.manager.save(Game, game);
       await queryRunner.commitTransaction();
 

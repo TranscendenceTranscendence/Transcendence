@@ -44,7 +44,7 @@ export const DevBarLayout: React.FC = () => {
           is_second_auth_done: false,
           two_factor_auth_secret: "",
           email: `user${i}@example.com`,
-          ladder_level: Math.floor(Math.random() * 10),
+          elo: Math.floor(Math.random() * 2000 + 250),
           user_status: "offline",
           id: i,
         };

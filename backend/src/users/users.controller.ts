@@ -55,7 +55,7 @@ class MeResponseSuccess extends PartialType(User) {
     type: 'number',
     description: 'The ladder level of the user.',
   })
-  ladder_level: number;
+  elo: number;
 }
 
 @ApiTags('Users')
