@@ -6,6 +6,8 @@ import { ChatMessage } from './chat_message.entity';
 import { findChatMessageDto } from './dto/find.dto';
 import { ChatRoom } from '../chat_rooms/chat_room.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
+import { AchievementsService } from '../achievements/achievements.service';
+import { AchievementType } from '../achievements/achievement.entity';
 
 @Injectable()
 export class ChatMessagesService {
@@ -16,6 +18,7 @@ export class ChatMessagesService {
     private readonly chatRoomRepository: Repository<ChatRoom>,
     @InjectRepository(ChatParticipant)
     private readonly chatParticipantRepository: Repository<ChatParticipant>,
+    private readonly achievementsService: AchievementsService, // Inject AchievementsService
   ) {}
   private readonly logger = new Logger(ChatMessagesService.name);
 
@@ -35,10 +38,23 @@ export class ChatMessagesService {
       throw new HttpException('ChatRoom Not Found', 404);
     }
 
-    return this.chatMessagesRepository.save({
+    const message = await this.chatMessagesRepository.save({
       ...createChatMessageDto,
       user_id: id,
     });
+
+    // Check if the user qualifies for the "FIRST_MESSAGE" achievement
+    const userMessages = await this.chatMessagesRepository.count({
+      where: { user_id: id },
+    });
+    if (userMessages === 1) {
+      await this.achievementsService.addAchievementToUser(
+        id,
+        AchievementType.FIRST_MESSAGE,
+      );
+    }
+
+    return message;
   }
 
   async find(
@@ -104,32 +120,6 @@ export class ChatMessagesService {
       },
     });
   }
-
-  // async findAllAndSortByTime(): Promise<ChatMessage[]> {
-  //   // Fetch messages from the repository
-  //   const messages = await this.chatMessagesRepository.find();
-  //   this.logger.log('Fetched messages Sent_time:', messages);
-
-  //   // Filter and sort messages by sent_time in descending order
-  //   const sortedMessages = messages
-  //       .filter(message => {
-  //           const date = new Date(message.sent_time);
-  //           if (isNaN(date.getTime())) {
-  //               // Log the invalid date and filter it out
-  //               console.error("Invalid sent_time detected:", message.sent_time);
-  //               return false; // Exclude this message
-  //           }
-  //           return true; // Include valid messages
-  //       })
-  //       .sort((a, b) => {
-  //           const dateA = new Date(a.sent_time);
-  //           const dateB = new Date(b.sent_time);
-  //           // Return difference for descending order
-  //           return dateB.getTime() - dateA.getTime();
-  //       });
-
-  //   return sortedMessages;
-  // }
 
   async findAllAndSortByTime(): Promise<ChatMessage[]> {
     // Fetch messages from the repository
