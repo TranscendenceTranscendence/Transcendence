@@ -345,10 +345,7 @@ export class GamesService {
     }
   }
 
-  expectedScore(
-    playerRating: number,
-    opponentRating: number,
-  ): number {
+  expectedScore(playerRating: number, opponentRating: number): number {
     const exponent = (opponentRating - playerRating) / 400;
     return 1 / (1 + Math.pow(10, exponent));
   }
