@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
 import { DialogPostChatRoom } from "@/chatroom/DialogPostChatroom";
 import SearchUsersBox from "./components/SearchUsersBox";
+import { FriendRequestsBox } from "./components/FriendRequestsBox";
 
 export default function Page() {
   const navigate = useNavigate();
@@ -65,8 +66,9 @@ export default function Page() {
           <div className="col-span-full">
             <SearchUsersBox />
           </div>
-          <div className=" col-span-1">
+          <div className="flex flex-col col-span-1 gap-3">
             <FriendsBox friends={friends} />
+            <FriendRequestsBox />
           </div>
           <div className="col-span-1 flex flex-col gap-4">
             <Button

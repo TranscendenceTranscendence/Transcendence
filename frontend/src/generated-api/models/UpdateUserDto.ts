@@ -37,18 +37,6 @@ export interface UpdateUserDto {
    * @memberof UpdateUserDto
    */
   twoFactorEnabled: boolean;
-  /**
-   * The second authentication status of the user.
-   * @type {boolean}
-   * @memberof UpdateUserDto
-   */
-  isSecondAuthDone?: boolean;
-  /**
-   * The two factor authentication secret of the user.
-   * @type {string}
-   * @memberof UpdateUserDto
-   */
-  twoFactorAuthSecret?: string;
 }
 
 /**
@@ -77,14 +65,6 @@ export function UpdateUserDtoFromJSONTyped(
     nickname: json["nickname"],
     avatar: json["avatar"],
     twoFactorEnabled: json["two_factor_enabled"],
-    isSecondAuthDone:
-      json["is_second_auth_done"] == null
-        ? undefined
-        : json["is_second_auth_done"],
-    twoFactorAuthSecret:
-      json["two_factor_auth_secret"] == null
-        ? undefined
-        : json["two_factor_auth_secret"],
   };
 }
 
@@ -104,7 +84,5 @@ export function UpdateUserDtoToJSONTyped(
     nickname: value["nickname"],
     avatar: value["avatar"],
     two_factor_enabled: value["twoFactorEnabled"],
-    is_second_auth_done: value["isSecondAuthDone"],
-    two_factor_auth_secret: value["twoFactorAuthSecret"],
   };
 }

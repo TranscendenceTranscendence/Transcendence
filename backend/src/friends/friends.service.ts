@@ -73,6 +73,39 @@ export class FriendsService {
     }
   }
 
+  async acceptFriendRequest({
+    senderId,
+    receiverId,
+  }: {
+    senderId: number;
+    receiverId: number;
+  }) {
+    try {
+      const friendRequest = await this.friendsRepository.findOne({
+        where: [{ sender_id: senderId, receiver_id: receiverId }],
+      });
+
+      if (!friendRequest) {
+        throw new HttpException(
+          'Friend request not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      friendRequest.status = FriendStatus.ACCEPTED;
+      await this.friendsRepository.save(friendRequest);
+    } catch (error) {
+      console.error('Error in acceptFriendRequest:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to accept friend request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getFriends(userId: number, page = 1, limit = 10) {
     page = Math.max(1, page);
     limit = Math.max(1, limit);
@@ -104,7 +137,7 @@ export class FriendsService {
 
     try {
       const friendRequests = await this.friendsRepository.find({
-        where: { receiver_id: receiverId },
+        where: { receiver_id: receiverId, status: FriendStatus.PENDING },
         relations: ['sender'],
         take: limit,
         skip: (page - 1) * limit,

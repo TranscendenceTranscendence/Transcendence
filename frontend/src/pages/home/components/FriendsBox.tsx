@@ -20,6 +20,11 @@ export const FriendsBox = ({ friends }: FriendBoxProps) => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4">
+            {friends.length === 0 && (
+              <div className="flex items-center justify-center h-32">
+                <p className="text-gray-500">No friends :(</p>
+              </div>
+            )}
             {friends.map(({ receiver, sender }) => {
               const friend = receiver.id == me.user?.id ? sender : receiver;
               return (
@@ -33,9 +38,7 @@ export const FriendsBox = ({ friends }: FriendBoxProps) => {
                   <AvatarDisplay user={friend} className="w-14" />
                   <div>
                     <p className="font-bold text-xl">{friend.nickname}</p>
-                    <p className="text-lg text-gray-600">
-                      Level {friend.ladderLevel}
-                    </p>
+                    <p className="text-lg text-gray-600">Elo: {friend.elo}</p>
                   </div>
                 </div>
               );

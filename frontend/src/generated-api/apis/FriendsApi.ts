@@ -24,6 +24,10 @@ import {
   GetFriendRequestsDtoToJSON,
 } from "../models/index";
 
+export interface FriendsControllerAcceptFriendRequestRequest {
+  id: number;
+}
+
 export interface FriendsControllerGetFriendStatusRequest {
   id: number;
 }
@@ -36,6 +40,53 @@ export interface FriendsControllerSendFriendRequestRequest {
  *
  */
 export class FriendsApi extends runtime.BaseAPI {
+  /**
+   * Accept a friend request by Id
+   */
+  async friendsControllerAcceptFriendRequestRaw(
+    requestParameters: FriendsControllerAcceptFriendRequestRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<runtime.ApiResponse<void>> {
+    if (requestParameters["id"] == null) {
+      throw new runtime.RequiredError(
+        "id",
+        'Required parameter "id" was null or undefined when calling friendsControllerAcceptFriendRequest().',
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    const response = await this.request(
+      {
+        path: `/friends/requests/accept/{id}`.replace(
+          `{${"id"}}`,
+          encodeURIComponent(String(requestParameters["id"])),
+        ),
+        method: "POST",
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides,
+    );
+
+    return new runtime.VoidApiResponse(response);
+  }
+
+  /**
+   * Accept a friend request by Id
+   */
+  async friendsControllerAcceptFriendRequest(
+    requestParameters: FriendsControllerAcceptFriendRequestRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction,
+  ): Promise<void> {
+    await this.friendsControllerAcceptFriendRequestRaw(
+      requestParameters,
+      initOverrides,
+    );
+  }
+
   /**
    * Get all open requests for current user
    */

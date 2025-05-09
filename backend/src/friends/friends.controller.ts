@@ -67,9 +67,32 @@ export class FriendsController {
       receiverId,
     });
 
+    return friendRequests;
+  }
+
+  @Post('/requests/accept/:id')
+  @ApiOperation({ summary: 'Accept a friend request by Id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Friend request accepted successfully.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  @UseGuards(JwtAccessAuthGuard)
+  async acceptFriendRequest(
+    @Param('id', ParseIntPipe) senderId: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const receiverId = req.user?.id; // Type safety assumed for `req.user`
+    if (!receiverId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.friendsService.acceptFriendRequest({ senderId, receiverId });
     return {
       success: true,
-      data: friendRequests,
+      message: 'Friend request accepted successfully.',
     };
   }
 
