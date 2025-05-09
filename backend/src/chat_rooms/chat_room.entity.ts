@@ -4,11 +4,9 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   BeforeInsert,
-  BeforeUpdate,
 } from 'typeorm';
 import { ChatMessage } from '../chat_messages/chat_message.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
-import { Expose } from 'class-transformer';
 import { hash } from 'crypto';
 
 export enum chat_room_types {
