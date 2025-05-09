@@ -43,7 +43,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
       user.user_status = UserStatus.Offline;
       user.is_second_auth_done = false;
       user.email = profile.emails[0].value;
-      user.ladder_level = 0;
+      user.elo = 1000;
       user.nickname = '';
 
       user = await this.usersService.create(user);

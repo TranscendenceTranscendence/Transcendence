@@ -60,7 +60,7 @@ export class User {
     default: 0,
   })
   @IsOptional()
-  ladder_level: number;
+  elo: number;
 
   @ApiProperty({ type: 'string', description: 'The status of the user.' })
   @Column({

@@ -45,7 +45,7 @@ export class CreateUserDto extends PartialType(User) {
   @ApiProperty({ description: 'Ladder level' })
   @IsOptional()
   @IsNumber()
-  ladder_level: number;
+  elo: number;
 
   @ApiProperty({ description: 'User status' })
   @IsOptional()

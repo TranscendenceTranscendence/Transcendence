@@ -1,11 +1,5 @@
 import PropTypes from "prop-types";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@radix-ui/react-dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@radix-ui/react-dialog";
 import "../css/DialogChatRoom.css";
 import { Button } from "@/components/ui/button";
 import { PostChatRoom } from "./PostChatRoom";

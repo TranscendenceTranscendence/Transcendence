@@ -102,7 +102,7 @@ export interface User {
    * @type {number}
    * @memberof User
    */
-  ladderLevel: number;
+  elo: number;
   /**
    * The status of the user.
    * @type {string}
@@ -200,8 +200,7 @@ export function instanceOfUser(value: object): value is User {
   )
     return false;
   if (!("email" in value) || value["email"] === undefined) return false;
-  if (!("ladderLevel" in value) || value["ladderLevel"] === undefined)
-    return false;
+  if (!("elo" in value) || value["elo"] === undefined) return false;
   if (!("userStatus" in value) || value["userStatus"] === undefined)
     return false;
   if (!("lastActive" in value) || value["lastActive"] === undefined)
@@ -228,7 +227,7 @@ export function UserFromJSONTyped(
     isSecondAuthDone: json["is_second_auth_done"],
     twoFactorAuthSecret: json["two_factor_auth_secret"],
     email: json["email"],
-    ladderLevel: json["ladder_level"],
+    elo: json["elo"],
     userStatus: json["user_status"],
     lastActive: json["lastActive"],
     blockedUsers:
@@ -288,7 +287,7 @@ export function UserToJSONTyped(
     is_second_auth_done: value["isSecondAuthDone"],
     two_factor_auth_secret: value["twoFactorAuthSecret"],
     email: value["email"],
-    ladder_level: value["ladderLevel"],
+    elo: value["elo"],
     user_status: value["userStatus"],
     lastActive: value["lastActive"],
     blockedUsers: value["blockedUsers"],
