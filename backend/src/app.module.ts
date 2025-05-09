@@ -16,6 +16,8 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { StatisticsModule } from './statistics/statistics.module';
 import { QueueModule } from './queue/queue.module';
+import { InviteModule } from './invite/invite.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { QueueModule } from './queue/queue.module';
       // logging: true,
       // logger: 'advanced-console', // Makes the logs easier to read
     }),
+    ScheduleModule.forRoot(),
     StatisticsModule,
     ChatModule,
     UsersModule,
@@ -52,6 +55,7 @@ import { QueueModule } from './queue/queue.module';
     QueueModule,
     AuthModule,
     FileUploadModule,
+    InviteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

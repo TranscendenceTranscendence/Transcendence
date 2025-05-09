@@ -32,6 +32,30 @@ export class GamesService {
     }
   }
 
+  async update(gameId: number, updatedGame: Game): Promise<Game> {
+    try {
+      const game = await this.gamesRepository.findOne({
+        where: {
+          id: gameId,
+        },
+      });
+
+      if (!game) {
+        throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+      }
+
+      Object.assign(game, updatedGame);
+
+      return await this.gamesRepository.save(game);
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException(
+        'Failed to update game',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async startGame(roomId: string): Promise<Game> {
     try {
       const gameData = await this.gamesRepository.findOne({

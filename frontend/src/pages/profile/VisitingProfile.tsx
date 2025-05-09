@@ -9,6 +9,7 @@ import { Achievement } from "@/generated-api";
 import { AchievementBox } from "../home/components/AchievementsBox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUser } from "@/utils/providers/UserProvider";
+import InviteToGame from "./components/InviteToGame";
 import { DialogPrivateChatRoomInvite } from "../../chatroom/DialogPrivateChatRoomInvite";
 import { Button } from "@/components/ui/button";
 import { useChat } from "@/utils/providers/ChatProvider";
@@ -117,6 +118,7 @@ export default function VisitingProfile() {
                   visitingUserId={visitingUser.id}
                 />
                 <FriendRequest user={visitingUser} />
+                <InviteToGame user={visitingUser} />
                 <Button
                   onClick={async () => {
                     if (!visitingUser) {

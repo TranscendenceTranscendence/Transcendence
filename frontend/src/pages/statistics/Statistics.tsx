@@ -13,10 +13,8 @@ export default function Statistics() {
     async function fetchStatistics() {
       try {
         setLoading(true);
-        console.log("Fetching statistics...");
         const response =
           await api.Statistics.statisticsControllerGetCurrentPlayerStatistics();
-        console.log("Statistics fetched successfully:", response);
         setStats(response);
         setLoading(false);
       } catch (err) {

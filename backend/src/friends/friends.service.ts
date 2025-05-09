@@ -31,7 +31,6 @@ export class FriendsService {
     try {
       const { senderId, receiverId } = request;
 
-      // Check if receiver exists
       const receiver = await this.usersRepository.findOne({
         where: { id: receiverId },
       });
@@ -40,7 +39,6 @@ export class FriendsService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      // Check existing request
       const existingRequest = await this.friendsRepository.findOne({
         where: [
           { sender_id: senderId, receiver_id: receiverId },
@@ -76,11 +74,9 @@ export class FriendsService {
   }
 
   async getFriends(userId: number, page = 1, limit = 10) {
-    // Ensure page and limit are positive integers
     page = Math.max(1, page);
     limit = Math.max(1, limit);
 
-    // Fetch friends with pagination
     const [friends, totalFriends] = await this.friendsRepository.findAndCount({
       where: [
         { sender_id: userId, status: FriendStatus.ACCEPTED },
@@ -103,12 +99,10 @@ export class FriendsService {
   async getFriendRequests(request: GetFriendRequestsDto, page = 1, limit = 10) {
     const { receiverId } = request;
 
-    // Ensure page and limit are positive integers
     page = Math.max(1, page);
     limit = Math.max(1, limit);
 
     try {
-      // Fetch friend requests with pagination
       const friendRequests = await this.friendsRepository.find({
         where: { receiver_id: receiverId },
         relations: ['sender'],

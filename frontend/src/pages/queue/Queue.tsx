@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "@/utils/api";
 import "./Queue.css";
@@ -10,6 +10,8 @@ const Queue = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const api = useApi();
+  const intervalRef = useRef<number | null>(null);
+  const isNavigatingRef = useRef(false);
 
   const formatTime = (milliseconds: number) => {
     const seconds = Math.floor(milliseconds / 1000);
@@ -19,68 +21,63 @@ const Queue = () => {
   };
 
   useEffect(() => {
-    const checkInitialState = async () => {
+    const checkQueueAndGameStatus = async () => {
+      if (isNavigatingRef.current) return;
+
       try {
         const currentGameResponse =
           await api.Games.gamesControllerFindCurrentGame();
         if (currentGameResponse.id !== undefined) {
+          isNavigatingRef.current = true;
           navigate(`/game`);
           return;
         }
 
-        const queueResponse = await api.Queue.queueControllerIsInQueue();
-        if (queueResponse && queueResponse.isInQueue) {
-          setInQueue(true);
-          const queueStatusResponse =
-            await api.Queue.queueControllerGetQueueStatus();
-          if (queueStatusResponse) {
-            setSearchTime(queueStatusResponse.secondsInQueue || 0);
+        if (inQueue) {
+          const queueStatus = await api.Queue.queueControllerGetQueueStatus();
+          if (queueStatus) {
+            if (queueStatus.message === "Pair found in queue") {
+              isNavigatingRef.current = true;
+              navigate(`/game`);
+              return;
+            } else {
+              setSearchTime(queueStatus.secondsInQueue || 0);
+            }
+          }
+
+          const inQueueCheck = await api.Queue.queueControllerIsInQueue();
+          if (!inQueueCheck || !inQueueCheck.isInQueue) {
+            setInQueue(false);
           }
         } else {
-          setInQueue(false);
+          const queueResponse = await api.Queue.queueControllerIsInQueue();
+          if (queueResponse && queueResponse.isInQueue) {
+            setInQueue(true);
+            const queueStatusResponse =
+              await api.Queue.queueControllerGetQueueStatus();
+            if (queueStatusResponse) {
+              setSearchTime(queueStatusResponse.secondsInQueue || 0);
+            }
+          }
         }
       } catch (error) {
-        console.error("Error checking initial state:", error);
-        setError("Error checking queue status");
+        console.error("Error checking queue status:", error);
+        if (!error) {
+          setError("Error checking queue status");
+        }
       }
     };
 
-    checkInitialState();
+    checkQueueAndGameStatus();
 
-    const interval = setInterval(() => {
-      const checkStatus = async () => {
-        try {
-          const gameResponse = await api.Games.gamesControllerFindCurrentGame();
-          if (gameResponse.id !== undefined) {
-            navigate(`/game`);
-            return;
-          }
+    intervalRef.current = window.setInterval(checkQueueAndGameStatus, 1000);
 
-          if (inQueue) {
-            const queueStatus = await api.Queue.queueControllerGetQueueStatus();
-            if (queueStatus) {
-              if (queueStatus.message === "Pair found in queue") {
-                navigate(`/game`);
-              } else {
-                setSearchTime(queueStatus.secondsInQueue || 0);
-              }
-            }
-
-            const inQueueCheck = await api.Queue.queueControllerIsInQueue();
-            if (!inQueueCheck || !inQueueCheck.isInQueue) {
-              setInQueue(false);
-            }
-          }
-        } catch (error) {
-          console.error("Error in status check:", error);
-        }
-      };
-
-      checkStatus();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [api, navigate]);
+    return () => {
+      if (intervalRef.current) {
+        window.clearInterval(intervalRef.current);
+      }
+    };
+  }, [inQueue]);
 
   const handleJoinQueue = async () => {
     try {
@@ -88,6 +85,7 @@ const Queue = () => {
       if (response && response.success) {
         setInQueue(true);
         setMessage("Joined queue successfully");
+        setError("");
       } else {
         setError("Failed to join queue");
       }
@@ -104,6 +102,7 @@ const Queue = () => {
         setInQueue(false);
         setSearchTime(0);
         setMessage("Left queue successfully");
+        setError("");
       } else {
         setError("Failed to leave queue");
       }
