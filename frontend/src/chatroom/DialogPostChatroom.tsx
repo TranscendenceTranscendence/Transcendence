@@ -3,11 +3,14 @@ import { Dialog, DialogTrigger, DialogContent } from "@radix-ui/react-dialog";
 import "../css/DialogChatRoom.css";
 import { Button } from "@/components/ui/button";
 import { PostChatRoom } from "./PostChatRoom";
+import { useState } from "react";
 
 export const DialogPostChatRoom = ({ userId }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   if (typeof userId !== "number") return null;
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button>+</Button>
       </DialogTrigger>
@@ -16,7 +19,7 @@ export const DialogPostChatRoom = ({ userId }) => {
         className="dialog-content"
         style={{ background: "none", boxShadow: "none", padding: 0 }}
       >
-        <PostChatRoom userId={userId} />
+        <PostChatRoom userId={userId} setIsOpen={setIsOpen} />
       </DialogContent>
     </Dialog>
   );
