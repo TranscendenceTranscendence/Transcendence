@@ -16,6 +16,7 @@ import * as runtime from "../runtime";
 import type {
   SearchUserResponseDto,
   UpdateAddUserToBlockedListDto,
+  UpdateUserDto,
   UpdateUserResponse,
   User,
 } from "../models/index";
@@ -24,6 +25,8 @@ import {
   SearchUserResponseDtoToJSON,
   UpdateAddUserToBlockedListDtoFromJSON,
   UpdateAddUserToBlockedListDtoToJSON,
+  UpdateUserDtoFromJSON,
+  UpdateUserDtoToJSON,
   UpdateUserResponseFromJSON,
   UpdateUserResponseToJSON,
   UserFromJSON,
@@ -43,7 +46,7 @@ export interface UsersControllerSearchRequest {
 }
 
 export interface UsersControllerUpdateRequest {
-  body: object;
+  updateUserDto: UpdateUserDto;
 }
 
 export interface UsersControllerUpdateAddUserToBlockedListRequest {
@@ -264,10 +267,10 @@ export class UsersApi extends runtime.BaseAPI {
     requestParameters: UsersControllerUpdateRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
   ): Promise<runtime.ApiResponse<UpdateUserResponse>> {
-    if (requestParameters["body"] == null) {
+    if (requestParameters["updateUserDto"] == null) {
       throw new runtime.RequiredError(
-        "body",
-        'Required parameter "body" was null or undefined when calling usersControllerUpdate().',
+        "updateUserDto",
+        'Required parameter "updateUserDto" was null or undefined when calling usersControllerUpdate().',
       );
     }
 
@@ -291,7 +294,7 @@ export class UsersApi extends runtime.BaseAPI {
         method: "PATCH",
         headers: headerParameters,
         query: queryParameters,
-        body: requestParameters["body"] as any,
+        body: UpdateUserDtoToJSON(requestParameters["updateUserDto"]),
       },
       initOverrides,
     );
