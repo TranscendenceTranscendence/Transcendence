@@ -446,9 +446,12 @@ export class GamesService {
       }
 
       if (game.status === GameStatus.CLOSED) {
-        throw new HttpException('Game is already closed', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Game is already closed',
+          HttpStatus.BAD_REQUEST,
+        );
       }
-  
+
       game.score = finalScore;
 
       if (finalScore[0] >= 11) {
