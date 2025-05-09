@@ -1,4 +1,4 @@
-import { useChat } from "@/utils/providers/ChatProvider";
+import { ChatEvent, useChat } from "@/utils/providers/ChatProvider";
 import { useUser } from "@/utils/providers/UserProvider";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -31,12 +31,14 @@ const messageSchema = z.object({
 // Extracted component for rendering messages
 const ChatMessages = ({
   messages,
+  events,
   participants,
   currentUserId,
   setSelectedMessage,
   chatComponentRef,
 }: {
   messages: ChatMessage[];
+  events: ChatEvent[];
   participants: ChatParticipant[];
   currentUserId: number;
   setSelectedMessage: React.Dispatch<
@@ -62,8 +64,6 @@ const ChatMessages = ({
       const relativeX = e.clientX - rect.left;
       const relativeY = e.clientY - rect.top;
 
-      console.log("handleMessageClick", relativeX, relativeY);
-
       setSelectedMessage({
         userId: user_id,
         x: relativeX,
@@ -77,14 +77,33 @@ const ChatMessages = ({
       scrollingRef.current.scrollTop = scrollingRef.current.scrollHeight;
     }
   }, [messages]);
-  console.log("in the message is de user", participants);
+
+  const parsedMessages = [...(messages ?? []), ...(events ?? [])].sort(
+    (a, b) => {
+      return new Date(a.sentTime).getTime() - new Date(b.sentTime).getTime();
+    },
+  );
   return (
     <>
       <div ref={scrollingRef} style={{ overflowY: "auto" }}>
-        {messages.map((msg, index) => {
-          const user = participants.find((p) => p.user.id === msg.userId)?.user;
-          if (!user) return null;
+        {parsedMessages.map((msg, index) => {
+          const user =
+            "userId" in msg // Check if msg is a ChatMessage
+              ? participants.find((p) => p.user.id === msg.userId)?.user
+              : null;
 
+          if (!user) {
+            // assuming msg is an event
+            const event = msg as ChatEvent;
+            return (
+              <div
+                key={index}
+                className="flex flex-col gap-1 text-sm text-gray-500 text-center"
+              >
+                {event.message}
+              </div>
+            );
+          }
           const isCurrentUser: boolean = user.id === currentUserId;
           return (
             <div
@@ -225,7 +244,6 @@ const Chat = () => {
     else if (action == "Mute") MuteUser(currentChatRoomId, id);
     else if (action == "Block") BlockUser(id);
 
-    console.log(`${action} user with ID: ${id}`);
     setSelectedMessage(null);
   };
 
@@ -236,7 +254,7 @@ const Chat = () => {
   if (!currentChatRoomId || !currentChatRoom) {
     return null; // Display nothing when no chat is available
   }
-  console.log("me.user in chat component", me.user.chatParticipants);
+
   return (
     <Card
       ref={cardRef}
@@ -269,7 +287,7 @@ const Chat = () => {
             <EditChatRoomPasswordDialog id={currentChatRoomId} />
           )}{" "}
         </div>
-        {currentChatRoom.chat_room_type === ChatRoomChatRoomTypeEnum.Dm && (
+        {currentChatRoom.chatRoomType === ChatRoomChatRoomTypeEnum.Dm && (
           <h3>
             DM with{" "}
             {
@@ -279,7 +297,7 @@ const Chat = () => {
             }
           </h3>
         )}
-        {currentChatRoom.chat_room_type !== ChatRoomChatRoomTypeEnum.Dm && (
+        {currentChatRoom.chatRoomType !== ChatRoomChatRoomTypeEnum.Dm && (
           <h3>Chat Room {currentChatRoomId}</h3>
         )}
         <Button
@@ -295,6 +313,7 @@ const Chat = () => {
       <CardContent className="flex flex-col gap-2 pt-4 max-h-[400px] overflow-y-auto">
         <ChatMessages
           messages={currentChatRoom.messages ?? []}
+          events={currentChatRoom.events ?? []}
           participants={currentChatRoom.participants}
           currentUserId={me.user?.id}
           setSelectedMessage={setSelectedMessage}

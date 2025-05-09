@@ -131,6 +131,15 @@ export class ChatRoomsService {
     return chatRoomData;
   }
 
+  async findOneByWsRoomId(wsRoomId: string): Promise<ChatRoom> {
+    const chatRoomData = await this.chatRoomsRepository.findOne({
+      where: { wsRoomId },
+      relations: ['chatParticipants', 'chatParticipants.user'],
+    });
+    if (!chatRoomData) throw new HttpException('ChatRoom Not Found', 404);
+    return chatRoomData;
+  }
+
   async findOneShallow(id: number): Promise<ChatRoom> {
     const chatRoomData = await this.chatRoomsRepository.findOne({
       where: { id },

@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
 import { ChatMessage } from '../chat_messages/chat_message.entity';
 import { ChatParticipant } from '../chat_participants/chat_participant.entity';
 import { Expose } from 'class-transformer';
@@ -44,8 +51,11 @@ export class ChatRoom {
   )
   chatParticipants?: ChatParticipant[];
 
-  @Expose()
-  get wsRoomId(): string {
-    return hash('sha256', `${this.id}${this.created_at}`);
+  @Column()
+  wsRoomId: string;
+
+  @BeforeInsert()
+  async generateWsRoomId() {
+    this.wsRoomId = hash('sha256', `${this.id}${this.created_at}`);
   }
 }
