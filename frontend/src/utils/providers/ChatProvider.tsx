@@ -15,7 +15,6 @@ import { ChatRoomChatRoomTypeEnum } from "@/generated-api/models/ChatRoom";
 
 interface ChatContextProps {
   chatRooms: {
-    find(arg0: (chatRoom: any) => boolean): unknown;
     [key: number]: {
       messages: ChatMessage[];
       participants: ChatParticipant[];
@@ -56,11 +55,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Handle incoming messages
     socketConnection.on("message", (data: ChatMessage) => {
-      console.log("Received message:", data);
       setChatRooms((prev) => {
         const chatRoom = prev[data.chatRoomId] || {
           messages: [],
           participants: [],
+          chat_room_type: ChatRoomChatRoomTypeEnum.Public,
         };
         return {
           ...prev,
@@ -137,7 +136,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           chatRoomId: chatRoomId,
         },
       });
-      // Scroll to the bottom of the chat when a new message is sent
 
       // Send the new message to the WebSocket
       socketRef.current.emit("message", newMessage);
@@ -154,7 +152,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (participant.chatParticipantRole === chat_participant_roles.Owner) {
       try {
         api.ChatRooms.chatRoomsControllerRemove({
-          id: participant.chatRoomId.toString(),
+          id: participant.chatRoomId,
         });
         // console.log("Chat room deleted", result);
       } catch (error) {

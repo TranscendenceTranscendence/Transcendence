@@ -10,20 +10,12 @@ import { useChatRoomsForPrivateInvite } from "./ApiRequest";
 import PropTypes from "prop-types";
 import { useApi } from "@/utils/api/index.ts";
 
-export const PrivateChatRoomInviteList = ({ userId, visitingUserId }) => {
+export const PrivateChatRoomInviteList = ({ visitingUserId }) => {
   const { chatRooms } = useChatRoomsForPrivateInvite();
   const api = useApi();
 
-  console.log(
-    "ChatRooms in privateChatRoomInviteList --> ",
-    chatRooms?.chatRooms,
-  );
-  console.log("User in privateChatRoomInviteList --> ", userId);
-  console.log("VisitingUser in privateChatRoomInviteList --> ", visitingUserId);
-
   const addVisitingParticipantToChatRoom = async (chatRoomId: number) => {
     try {
-      console.log("api call values-->", visitingUserId, chatRoomId);
       await api.ChatParticipants.chatParticipantsControllerAddParticipantToChatroom(
         {
           chatRoomId,
