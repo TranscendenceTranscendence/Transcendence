@@ -345,10 +345,10 @@ export class GamesService {
     }
   }
 
-  async expectedScore(
+  expectedScore(
     playerRating: number,
     opponentRating: number,
-  ): Promise<number> {
+  ): number {
     const exponent = (opponentRating - playerRating) / 400;
     return 1 / (1 + Math.pow(10, exponent));
   }
