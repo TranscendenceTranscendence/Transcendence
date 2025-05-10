@@ -23,6 +23,8 @@ import {
   BlockUser,
 } from "@/chat/ChatApiCalls";
 import { EditChatRoomPasswordDialog } from "@/chatroom/EditChatRoomPassword";
+import InviteToGame from "../../pages/profile/components/InviteToGame";
+import Invite from "@/pages/invite/Invite";
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
@@ -413,6 +415,16 @@ const Chat = () => {
             >
               Block
             </Button>
+            <InviteToGame
+              user={{
+                id: selectedMessage.userId,
+                nickname: currentChatRoom.participants.find(
+                  (p) => p.user.id === selectedMessage.userId,
+                )?.user.nickname,
+              }}
+            >
+              {" "}
+            </InviteToGame>
           </Card>
         )}
       </CardFooter>
