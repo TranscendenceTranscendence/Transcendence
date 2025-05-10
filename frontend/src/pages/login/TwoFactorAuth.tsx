@@ -19,6 +19,8 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from "../../components/ui/input-otp";
+import { useApi } from "@/utils/api";
+import { useUser } from "@/utils/providers/UserProvider";
 
 const FormSchema = z.object({
   pin: z
@@ -33,6 +35,8 @@ const TwoFactorAuthForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const api = useApi();
+  const me = useUser();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: { pin: "" },
@@ -53,8 +57,15 @@ const TwoFactorAuthForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         const responseData = response.data;
+
         if (responseData.msg === "Authenticated successfully") {
           localStorage.setItem("access_token", responseData.accessToken);
+          api.Users.usersControllerUpdate({
+            updateUserDto: {
+              ...me.user,
+              isSecondAuthDone: true,
+            },
+          });
           setSuccess("2FA authentication successful!");
           setError("");
           navigate("/");
