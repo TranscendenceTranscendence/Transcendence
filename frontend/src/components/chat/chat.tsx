@@ -283,10 +283,11 @@ const Chat = () => {
           >
             <LogOut className="w-5 h-5" />
           </Button>
-          {localParticipant.chatParticipantRole ===
-            ChatParticipantChatParticipantRoleEnum.Owner && (
-            <EditChatRoomPasswordDialog id={currentChatRoomId} />
-          )}{" "}
+          {localParticipant &&
+            localParticipant.chatParticipantRole ===
+              ChatParticipantChatParticipantRoleEnum.Owner && (
+              <EditChatRoomPasswordDialog id={currentChatRoomId} />
+            )}{" "}
         </div>
         {currentChatRoom.chatRoomType === ChatRoomChatRoomTypeEnum.Dm && (
           <h3>
@@ -322,13 +323,13 @@ const Chat = () => {
         />
       </CardContent>
       <CardFooter className="space-x-2 py-3">
-        {localParticipant.isMuted ? (
+        {localParticipant && localParticipant.isMuted ? (
           <div>
             <p className="text-gray-500 text-sm">
               You are currently muted you can send messages again at
             </p>
             <p>
-              {localParticipant.bannedUntil
+              {localParticipant && localParticipant.bannedUntil
                 ? new Date(localParticipant.bannedUntil).toLocaleString()
                 : "Not banned"}
             </p>
