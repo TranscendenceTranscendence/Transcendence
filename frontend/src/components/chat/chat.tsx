@@ -374,39 +374,33 @@ const Chat = () => {
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
-                  ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <Button
-                  className="bg-black"
-                  onClick={() => handleAction("Kick", selectedMessage.userId)}
-                >
-                  Kick
-                </Button>
-              )}
-            {localParticipant &&
-              (localParticipant.chatParticipantRole ==
-                ChatParticipantChatParticipantRoleEnum.Owner ||
-                localParticipant.chatParticipantRole ==
-                  ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <Button
-                  className="bg-black"
-                  onClick={() =>
-                    handleAction("Promote", selectedMessage.userId)
-                  }
-                >
-                  Promote
-                </Button>
-              )}
-            {localParticipant &&
-              (localParticipant.chatParticipantRole ==
-                ChatParticipantChatParticipantRoleEnum.Owner ||
-                localParticipant.chatParticipantRole ==
-                  ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <Button
-                  className="bg-black"
-                  onClick={() => handleAction("Mute", selectedMessage.userId)}
-                >
-                  Mute
-                </Button>
+                  ChatParticipantChatParticipantRoleEnum.Admin) &&
+              currentChatRoom.participants.find(
+                (p) => p.user.id === selectedMessage.userId,
+              )?.chatParticipantRole !==
+                ChatParticipantChatParticipantRoleEnum.Owner && (
+                <>
+                  <Button
+                    className="bg-black"
+                    onClick={() => handleAction("Kick", selectedMessage.userId)}
+                  >
+                    Kick
+                  </Button>
+                  <Button
+                    className="bg-black"
+                    onClick={() =>
+                      handleAction("Promote", selectedMessage.userId)
+                    }
+                  >
+                    Promote
+                  </Button>
+                  <Button
+                    className="bg-black"
+                    onClick={() => handleAction("Mute", selectedMessage.userId)}
+                  >
+                    Mute
+                  </Button>
+                </>
               )}
             <Button
               className="bg-black"
