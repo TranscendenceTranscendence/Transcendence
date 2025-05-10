@@ -33,5 +33,6 @@ export * from "./SearchUserResponseDto";
 export * from "./UpdateAddUserToBlockedListDto";
 export * from "./UpdateChatParticipantDto";
 export * from "./UpdateChatRoomDto";
+export * from "./UpdateUserDto";
 export * from "./UpdateUserResponse";
 export * from "./User";

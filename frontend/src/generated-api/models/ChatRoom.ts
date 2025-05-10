@@ -76,6 +76,12 @@ export interface ChatRoom {
    * @memberof ChatRoom
    */
   chatParticipants?: Array<ChatParticipant>;
+  /**
+   *
+   * @type {string}
+   * @memberof ChatRoom
+   */
+  wsRoomId: string;
 }
 
 /**
@@ -100,6 +106,7 @@ export function instanceOfChatRoom(value: object): value is ChatRoom {
   if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
   if (!("chatRoomType" in value) || value["chatRoomType"] === undefined)
     return false;
+  if (!("wsRoomId" in value) || value["wsRoomId"] === undefined) return false;
   return true;
 }
 
@@ -128,6 +135,7 @@ export function ChatRoomFromJSONTyped(
       json["chatParticipants"] == null
         ? undefined
         : (json["chatParticipants"] as Array<any>).map(ChatParticipantFromJSON),
+    wsRoomId: json["wsRoomId"],
   };
 }
 
@@ -157,5 +165,6 @@ export function ChatRoomToJSONTyped(
       value["chatParticipants"] == null
         ? undefined
         : (value["chatParticipants"] as Array<any>).map(ChatParticipantToJSON),
+    wsRoomId: value["wsRoomId"],
   };
 }

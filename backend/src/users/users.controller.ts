@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import type { CreateUserDto } from './dto/create-user.dto';
 import {
-  type UpdateUserDto,
+  UpdateUserDto,
   UpdateUserResponse,
   UpdateAddUserToBlockedListDto,
 } from './dto/update-user.dto';

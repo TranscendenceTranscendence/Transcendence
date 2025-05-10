@@ -59,6 +59,7 @@ export interface Achievement {
 export const AchievementTypeEnum = {
   Login: "FIRST_LOGIN",
   ProfileUpdate: "FIRST_PROFILE_UPDATE",
+  Message: "FIRST_MESSAGE",
 } as const;
 export type AchievementTypeEnum =
   (typeof AchievementTypeEnum)[keyof typeof AchievementTypeEnum];

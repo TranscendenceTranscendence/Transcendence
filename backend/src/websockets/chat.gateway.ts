@@ -52,6 +52,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const room = await this.chatRoomsService.findOne(roomId);
       client.join(room.wsRoomId);
       client.data.roomId = room.wsRoomId;
+
+      const participant = room.chatParticipants.find(
+        (p) => p.user_id === client.user.id,
+      );
+
+      this.server.to(room.wsRoomId).emit('joined', {
+        participant,
+        joined_at: new Date(),
+      });
+
       if (!room) {
         console.error('No room was found');
         return;
@@ -75,6 +85,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.warn(`Room ID missing on disconnect for socket ${client.id}`);
       return;
     }
+    const room = await this.chatRoomsService.findOneByWsRoomId(roomId);
+    const participant = room.chatParticipants.find(
+      (p) => p.user_id === user.sub,
+    );
+    this.server.to(roomId).emit('left', {
+      participant,
+      left_at: new Date(),
+    });
+    client.leave(roomId);
+    client.disconnect();
+    console.log(`User ${user.sub} disconnected from room ${roomId}`);
   }
 
   @SubscribeMessage('message')

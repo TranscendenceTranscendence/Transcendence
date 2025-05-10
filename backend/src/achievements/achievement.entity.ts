@@ -4,6 +4,7 @@ import { User } from '../users/user.entity';
 export enum AchievementType {
   FIRST_LOGIN = 'FIRST_LOGIN',
   FIRST_PROFILE_UPDATE = 'FIRST_PROFILE_UPDATE',
+  FIRST_MESSAGE = 'FIRST_MESSAGE', // New achievement type
 }
 
 @Entity('achievements')

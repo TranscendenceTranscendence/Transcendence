@@ -13,13 +13,18 @@ import { chat_participant_roles } from "../PostRequest";
 import { UpdateParticipant } from "@/chat/ChatApiCalls";
 import { ChatRoomChatRoomTypeEnum } from "@/generated-api/models/ChatRoom";
 
+export interface ChatEvent {
+  message: string;
+  participant: ChatParticipant;
+  sentTime: Date;
+}
 interface ChatContextProps {
   chatRooms: {
-    find(arg0: (chatRoom: any) => boolean): unknown;
     [key: number]: {
       messages: ChatMessage[];
+      events: ChatEvent[];
       participants: ChatParticipant[];
-      chat_room_type: ChatRoomChatRoomTypeEnum;
+      chatRoomType: ChatRoomChatRoomTypeEnum;
     };
   };
   currentChatRoomId: number | null;
@@ -56,17 +61,73 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Handle incoming messages
     socketConnection.on("message", (data: ChatMessage) => {
-      console.log("Received message:", data);
       setChatRooms((prev) => {
         const chatRoom = prev[data.chatRoomId] || {
           messages: [],
+          events: [],
           participants: [],
+          chatRoomType: ChatRoomChatRoomTypeEnum.Public,
         };
         return {
           ...prev,
           [data.chatRoomId]: {
             ...chatRoom,
             messages: [...chatRoom.messages, data],
+          },
+        };
+      });
+    });
+
+    // Handle users joining the chat room
+    socketConnection.on("joined", (data: { participant: ChatParticipant }) => {
+      console.debug("User joined", data);
+      setChatRooms((prev) => {
+        const chatRoom = prev[chatRoomId] || {
+          messages: [],
+          participants: [],
+          events: [],
+          chatRoomType: ChatRoomChatRoomTypeEnum.Public,
+        };
+        return {
+          ...prev,
+          [chatRoomId]: {
+            ...chatRoom,
+            events: [
+              ...chatRoom.events,
+              {
+                message: `${data.participant.user.nickname} joined the chat`,
+                participant: data.participant,
+                sentTime: new Date(),
+              },
+            ],
+            participants: [...chatRoom.participants, data.participant],
+          },
+        };
+      });
+    });
+
+    // Handle users leaving the chat room
+    socketConnection.on("left", (data: { participant: ChatParticipant }) => {
+      console.debug("User left", data);
+      setChatRooms((prev) => {
+        const chatRoom = prev[chatRoomId];
+        if (!chatRoom) return prev;
+
+        return {
+          ...prev,
+          [chatRoomId]: {
+            ...chatRoom,
+            events: [
+              ...chatRoom.events,
+              {
+                message: `${data.participant.user.nickname} left the chat`,
+                participant: data.participant,
+                sentTime: new Date(),
+              },
+            ],
+            participants: chatRoom.participants.filter(
+              (participant) => participant.userId !== data.participant.userId,
+            ),
           },
         };
       });
@@ -105,8 +166,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       ...prev,
       [newChatRoomId]: {
         messages: messages,
+        events: [],
         participants: chatParticipants,
-        chat_room_type: chatRoom.chatRoomType,
+        chatRoomType: chatRoom.chatRoomType,
       },
     }));
 
@@ -137,7 +199,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           chatRoomId: chatRoomId,
         },
       });
-      // Scroll to the bottom of the chat when a new message is sent
 
       // Send the new message to the WebSocket
       socketRef.current.emit("message", newMessage);
@@ -154,7 +215,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (participant.chatParticipantRole === chat_participant_roles.Owner) {
       try {
         api.ChatRooms.chatRoomsControllerRemove({
-          id: participant.chatRoomId.toString(),
+          id: participant.chatRoomId,
         });
         // console.log("Chat room deleted", result);
       } catch (error) {
@@ -164,7 +225,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         participant.leftAt = new Date();
         UpdateParticipant(participant.chatRoomId, participant.userId, false);
-        console.log("Participant leftAt is updated");
       } catch (error) {
         // console.error("Failed to update leftAt participant:", error);
       }

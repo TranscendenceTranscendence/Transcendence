@@ -18,7 +18,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export const PostChatRoom = ({ userId }) => {
+interface PostChatRoomProps {
+  userId: number;
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+export const PostChatRoom = ({ userId, setIsOpen }: PostChatRoomProps) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [response, setResponse] = useState<{ error?: string } | null>(null);
@@ -41,6 +46,8 @@ export const PostChatRoom = ({ userId }) => {
     } catch (error) {
       console.error("Error creating chat room:", error);
       setResponse({ error: String(error) });
+    } finally {
+      setIsOpen(false);
     }
   };
 

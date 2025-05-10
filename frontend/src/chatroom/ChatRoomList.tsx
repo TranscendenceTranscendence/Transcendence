@@ -62,12 +62,6 @@ const ChatRoomList: React.FC<ChatRoomListProps> = ({
                             new Date(p.leftAt).getTime() ===
                               new Date(0).getTime() ||
                             new Date(p.leftAt).getTime() === -3600000;
-                          console.log(
-                            "leftAt -->",
-                            p.leftAt.getTime(),
-                            new Date(0).getTime(),
-                          );
-                          console.log("results-->", isParticipant, left);
                           return isParticipant && left;
                         },
                       )}
