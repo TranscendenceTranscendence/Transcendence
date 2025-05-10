@@ -24,7 +24,7 @@ import {
 } from "@/chat/ChatApiCalls";
 import { EditChatRoomPasswordDialog } from "@/chatroom/EditChatRoomPassword";
 import InviteToGame from "../../pages/profile/components/InviteToGame";
-import Invite from "@/pages/invite/Invite";
+
 
 const messageSchema = z.object({
   message: z.string().min(1, "Message cannot be empty"),
