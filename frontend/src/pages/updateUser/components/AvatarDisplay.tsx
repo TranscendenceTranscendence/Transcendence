@@ -37,6 +37,8 @@ export default function AvatarDisplay({
   }, [me.user?.id, user?.id]);
 
   if (avatarUrl) {
+    console.log("Avatar URL:", avatarUrl);
+
     return (
       <Avatar
         className={cn(
@@ -44,7 +46,14 @@ export default function AvatarDisplay({
           className ? " " + className : "",
         )}
       >
-        <AvatarImage src={config.backendUrl + avatarUrl} alt="User Avatar" />
+        <AvatarImage
+          src={
+            avatarUrl.includes("http")
+              ? avatarUrl
+              : config.backendUrl + avatarUrl
+          }
+          alt="User Avatar"
+        />
         <AvatarFallback>:(</AvatarFallback>
       </Avatar>
     );
@@ -62,7 +71,14 @@ export default function AvatarDisplay({
         userStatus ? statusStyles[userStatus] : "",
       )}
     >
-      <AvatarImage src={config.backendUrl + user.avatar} alt="User Avatar" />
+      <AvatarImage
+        src={
+          user.avatar.includes("http")
+            ? user.avatar
+            : config.backendUrl + user.avatar
+        }
+        alt="User Avatar"
+      />
     </Avatar>
   );
 }

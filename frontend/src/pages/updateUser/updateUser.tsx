@@ -17,7 +17,7 @@ export default function UpdateUser() {
     <div className="flex flex-col sm:flex-row min-h-screen">
       {/* Sidebar for avatar display */}
       <div className=" md:flex flex-col items-start bg-background p-10 border-r w-1/3">
-        <AvatarDisplay avatarUrl={avatarUrl} />
+        <AvatarDisplay avatarUrl={avatarUrl} className="w-full" />
       </div>
 
       {/* Main content */}

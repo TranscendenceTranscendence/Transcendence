@@ -35,11 +35,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
     cb: any,
   ) {
     let user = await this.usersService.findOne(profile.id);
-
+    console.log('User found:', user);
+    console.log('Profile:', profile);
     if (user == null) {
       user = new User();
       user.id = profile.id;
-      user.avatar = this.defaultAvatar; // Set default avatar if profile image is not available
+      user.avatar = profile._json.image.link; // Set default avatar if profile image is not available
       user.user_status = UserStatus.Offline;
       user.is_second_auth_done = false;
       user.email = profile.emails[0].value;
