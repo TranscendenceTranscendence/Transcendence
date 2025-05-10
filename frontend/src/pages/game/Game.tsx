@@ -121,7 +121,7 @@ export default function Pong() {
     const index = Math.round(me.user.elo / 1000) % themes.length;
     const selectedTheme = themes[index];
     updateTheme(selectedTheme);
-  }, []);
+  }, [me.user.elo]);
 
   useEffect(() => {
     const fetchUserData = async () => {
