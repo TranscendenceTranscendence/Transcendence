@@ -7,26 +7,9 @@ import AvatarDisplay from "../pages/updateUser/components/AvatarDisplay";
 import { Avatar } from "@/components/ui/avatar";
 import { useUser } from "@/utils/providers/UserProvider";
 
-// class User {
-//   id: number;
-//   nickname: string;
-//   email: string;
-//   ladderLevel: number;
-//   avatar: string;
-//   constructor({ id, nickname, email, ladderLevel, avatar }: User) {
-//     this.id = id;
-//     this.nickname = nickname;
-//     this.email = email;
-//     this.ladderLevel = ladderLevel;
-//     this.avatar = avatar;
-//   }
-// }
-
 export function AppSidebar() {
   {
     const me = useUser();
-    // const api = useApi();
-
     if (!me.user) {
       return <div>Loading...</div>;
     }
@@ -39,7 +22,7 @@ export function AppSidebar() {
           </Avatar>
           <div className="flex flex-col items-center gap-4">
             <p className="font-bold text-3xl">{me.user.nickname}</p>
-            <p className="font-bold text-lg">Level {me.user.ladderLevel}</p>
+            <p className="font-bold text-lg">ELO: {me.user.elo}</p>
           </div>
           <br />
           <div className="flex flex-col gap-2">
