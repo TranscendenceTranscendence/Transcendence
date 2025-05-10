@@ -283,10 +283,11 @@ const Chat = () => {
           >
             <LogOut className="w-5 h-5" />
           </Button>
-          {localParticipant.chatParticipantRole ===
-            ChatParticipantChatParticipantRoleEnum.Owner && (
-            <EditChatRoomPasswordDialog id={currentChatRoomId} />
-          )}{" "}
+          {localParticipant &&
+            localParticipant.chatParticipantRole ===
+              ChatParticipantChatParticipantRoleEnum.Owner && (
+              <EditChatRoomPasswordDialog id={currentChatRoomId} />
+            )}{" "}
         </div>
         {currentChatRoom.chatRoomType === ChatRoomChatRoomTypeEnum.Dm && (
           <h3>
@@ -322,13 +323,13 @@ const Chat = () => {
         />
       </CardContent>
       <CardFooter className="space-x-2 py-3">
-        {localParticipant.isMuted ? (
+        {localParticipant && localParticipant.isMuted ? (
           <div>
             <p className="text-gray-500 text-sm">
               You are currently muted you can send messages again at
             </p>
             <p>
-              {localParticipant.bannedUntil
+              {localParticipant && localParticipant.bannedUntil
                 ? new Date(localParticipant.bannedUntil).toLocaleString()
                 : "Not banned"}
             </p>
@@ -374,39 +375,33 @@ const Chat = () => {
               (localParticipant.chatParticipantRole ==
                 ChatParticipantChatParticipantRoleEnum.Owner ||
                 localParticipant.chatParticipantRole ==
-                  ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <Button
-                  className="bg-black"
-                  onClick={() => handleAction("Kick", selectedMessage.userId)}
-                >
-                  Kick
-                </Button>
-              )}
-            {localParticipant &&
-              (localParticipant.chatParticipantRole ==
-                ChatParticipantChatParticipantRoleEnum.Owner ||
-                localParticipant.chatParticipantRole ==
-                  ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <Button
-                  className="bg-black"
-                  onClick={() =>
-                    handleAction("Promote", selectedMessage.userId)
-                  }
-                >
-                  Promote
-                </Button>
-              )}
-            {localParticipant &&
-              (localParticipant.chatParticipantRole ==
-                ChatParticipantChatParticipantRoleEnum.Owner ||
-                localParticipant.chatParticipantRole ==
-                  ChatParticipantChatParticipantRoleEnum.Admin) && (
-                <Button
-                  className="bg-black"
-                  onClick={() => handleAction("Mute", selectedMessage.userId)}
-                >
-                  Mute
-                </Button>
+                  ChatParticipantChatParticipantRoleEnum.Admin) &&
+              currentChatRoom.participants.find(
+                (p) => p.user.id === selectedMessage.userId,
+              )?.chatParticipantRole !==
+                ChatParticipantChatParticipantRoleEnum.Owner && (
+                <>
+                  <Button
+                    className="bg-black"
+                    onClick={() => handleAction("Kick", selectedMessage.userId)}
+                  >
+                    Kick
+                  </Button>
+                  <Button
+                    className="bg-black"
+                    onClick={() =>
+                      handleAction("Promote", selectedMessage.userId)
+                    }
+                  >
+                    Promote
+                  </Button>
+                  <Button
+                    className="bg-black"
+                    onClick={() => handleAction("Mute", selectedMessage.userId)}
+                  >
+                    Mute
+                  </Button>
+                </>
               )}
             <Button
               className="bg-black"
