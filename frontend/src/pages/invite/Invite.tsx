@@ -59,8 +59,7 @@ const Invite: React.FC = () => {
     fetchAllOnlineUsers();
     fetchCurrentUser();
 
-    // Set up polling to refresh online users list
-    const interval = setInterval(fetchAllOnlineUsers, 30000); // Refresh every 30 seconds
+    const interval = setInterval(fetchAllOnlineUsers, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -86,7 +85,6 @@ const Invite: React.FC = () => {
     }
   }, [currentUser]);
 
-  // Fetch sent invites
   useEffect(() => {
     const fetchSentInvites = async () => {
       if (!currentUser?.id) return;
@@ -110,7 +108,6 @@ const Invite: React.FC = () => {
     try {
       setLoading(true);
 
-      // Send invite via REST API
       await api.Invite.inviteControllerCreateInvite({
         createInviteDto: {
           receiverUserId: targetUserId,
@@ -125,11 +122,12 @@ const Invite: React.FC = () => {
         description: `Game invitation sent to ${targetName}`,
       });
 
-      // Refresh sent invites
       if (currentUser?.id) {
         const response = await api.Invite.inviteControllerGetSentInvites();
         setSentInvites(response || []);
       }
+
+      navigate("/game");
     } catch (err) {
       console.error("Error sending invite:", err);
       toast({
@@ -145,17 +143,14 @@ const Invite: React.FC = () => {
   const handleAcceptInvite = async (inviteId: number) => {
     try {
       setLoading(true);
-      // Accept invite via API
       const response = await api.Invite.inviteControllerAcceptInvite({
         inviteId: inviteId,
       });
 
-      // Navigate to game if we have a game room ID
       if (response?.gameRoomId) {
         navigate(`/game/${response.gameRoomId}`);
       }
 
-      // Remove from pending invites
       setPendingInvites((prev) =>
         prev.filter((invite) => invite.id !== inviteId),
       );
@@ -164,6 +159,7 @@ const Invite: React.FC = () => {
         title: "Success",
         description: "Game invitation accepted",
       });
+      navigate("/game");
     } catch (err) {
       console.error("Error accepting invite:", err);
       toast({

@@ -3,7 +3,7 @@ import { useConfig } from "@/utils/config";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
-import "./Game.css"; // Import your scoped CSS
+import "./Game.css";
 import { Game } from "@/generated-api";
 import { useUser } from "@/utils/providers/UserProvider";
 
@@ -305,13 +305,10 @@ export default function Pong() {
       if (tableElement) {
         const tableRect = tableElement.getBoundingClientRect();
 
-        // Calculate position relative to the table
         const relativeY = event.clientY - tableRect.top;
 
-        // Convert to percentage of table height (0-100)
         const yPercent = (relativeY / tableRect.height) * 100;
 
-        // Get actual paddle height as percentage of table
         const paddleElement = document.getElementById(
           playerNumber === 0 ? "player1" : "player2",
         );

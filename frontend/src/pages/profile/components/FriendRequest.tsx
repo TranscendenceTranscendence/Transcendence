@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { User } from "../../../generated-api/models";
 import { SearchUserResponseDto } from "@/generated-api";
 import { useApi } from "@/utils/api";
+import { useUser } from "@/utils/providers/UserProvider";
 
 interface FriendRequestProps {
   user: User | SearchUserResponseDto;
@@ -20,9 +21,18 @@ interface ApiError {
 
 const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   const api = useApi();
+  const { user: currentUser } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [friendStatus, setFriendStatus] = useState<string | null>(null);
+  const [isSelf, setIsSelf] = useState(false);
+
+  useEffect(() => {
+    if (currentUser && user && currentUser.id === user.id) {
+      setIsSelf(true);
+      setIsLoading(false);
+    }
+  }, [currentUser, user]);
 
   const fetchFriendStatus = async () => {
     if (!user) {
@@ -44,6 +54,12 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
       return;
     }
 
+    if (currentUser && currentUser.id === user.id) {
+      setIsSelf(true);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -55,19 +71,28 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
       if (response.friendStatus) {
         setFriendStatus(response.friendStatus);
       }
-    } catch (err) {
+    } catch (err: unknown) {
+      const apiError = err as ApiError;
       console.error("Failed to get friend status:", err);
-      setError("Failed to check friendship status");
+
+      if (
+        apiError.response?.data?.message ===
+        "You cannot be friends with yourself"
+      ) {
+        setIsSelf(true);
+      } else {
+        setError("Failed to check friendship status");
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user && user.id) {
+    if (user && user.id && !isSelf) {
       fetchFriendStatus();
     }
-  }, [user?.id]);
+  }, [user?.id, isSelf]);
 
   const handleSendRequest = async () => {
     if (!user || !user.id) return;
@@ -77,7 +102,6 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
 
     try {
       await api.Friends.friendsControllerSendFriendRequest({ id: user.id });
-      // After sending request, refresh the status
       await fetchFriendStatus();
     } catch (err: unknown) {
       console.error("Failed to send friend request:", err);
@@ -93,6 +117,10 @@ const FriendRequest: React.FC<FriendRequestProps> = ({ user }) => {
   };
 
   const buttonClasses = "w-24 justify-center text-nowrap md:w-24";
+
+  if (isSelf) {
+    return null;
+  }
 
   if (isLoading) {
     return (
