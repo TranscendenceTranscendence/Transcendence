@@ -29,9 +29,6 @@ export function AppSidebar() {
             <Button className="p-4 rounded-xl w-48" asChild>
               <Link to={`/profile/${me.user.id}`}>Profile</Link>
             </Button>
-            <Button className="p-4 rounded-xl w-48" asChild>
-              <Link to={`/profile/${me.user.id}`}>Share Profile</Link>
-            </Button>
             <div className="flex items-center gap-2">
               <Button onClick={me.logout} className="p-4 rounded-xl">
                 Logout
