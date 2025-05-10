@@ -249,8 +249,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const hitPosition = (ball.y - paddleY) / (paddleHeight / 2);
         ball.dy = ball.dy * 0.5 + hitPosition * 2;
 
-        const maxSpeed = 2.0;
-        const minSpeed = 0.5;
+        const maxSpeed = 1.35;
+        const minSpeed = 0.25;
         if (Math.abs(ball.dy) > maxSpeed)
           ball.dy = Math.sign(ball.dy) * maxSpeed;
         if (Math.abs(ball.dy) < minSpeed)

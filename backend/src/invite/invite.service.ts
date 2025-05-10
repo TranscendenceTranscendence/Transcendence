@@ -127,7 +127,7 @@ export class InviteService {
     if (game.status === GameStatus.CANCELLED) {
       invite.status = InviteStatus.EXPIRED;
       await this.inviteRepository.save(invite);
-      throw new InternalServerErrorException('Game has already been canceled');
+      throw new BadRequestException('Game has already been canceled');
     }
 
     game.player2_user_id = invite.receiverUserId;
@@ -161,7 +161,6 @@ export class InviteService {
       invite.gameRoomId,
     );
     game.status = GameStatus.CANCELLED;
-
     invite.status = InviteStatus.DECLINED;
 
     await this.inviteRepository.save(invite);
