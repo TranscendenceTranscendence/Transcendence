@@ -16,6 +16,7 @@ import { ChatRoomContainer } from "@/chatroom/ChatRoomContainer";
 import { DialogPostChatRoom } from "@/chatroom/DialogPostChatroom";
 import SearchUsersBox from "./components/SearchUsersBox";
 import { FriendRequestsBox } from "./components/FriendRequestsBox";
+import Statistics from "../statistics/Statistics";
 
 export default function Page() {
   const navigate = useNavigate();
@@ -93,6 +94,9 @@ export default function Page() {
           </div>
           <div className=" col-span-1 w-full">
             <AchievementBox achievements={achievements} />
+          </div>
+          <div className="col-span-full">
+            <Statistics />
           </div>
         </div>
       </SidebarInset>
