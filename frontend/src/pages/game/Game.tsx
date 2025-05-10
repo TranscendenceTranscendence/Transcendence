@@ -118,7 +118,7 @@ export default function Pong() {
 
   useEffect(() => {
     // Example: Apply the initial theme
-    const index = Math.round(me.user.elo / 100) % themes.length;
+    const index = Math.round(me.user.elo / 1000) % themes.length;
     const selectedTheme = themes[index];
     updateTheme(selectedTheme);
   }, []);
