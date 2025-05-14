@@ -83,13 +83,6 @@ export default function UserProfile() {
             <AvatarDisplay user={currentUser} />
           </div>
           <div className="flex flex-col pr-[50px] pt-[50px]">
-            <div className="flex items-end gap-2 justify-end">
-              <div className={`w-6 h-6 rounded-full ${statusColor}`}></div>
-              <h3 className="text-xl font-semibold text-right align-bottom">
-                {currentUser.userStatus}
-              </h3>
-            </div>
-            <br />
             <UserDetails user={currentUser} />
             <div className="pt-8">
               <AchievementBox achievements={achievements} />

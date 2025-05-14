@@ -272,9 +272,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       try {
         await this.gamesService.finishGameWithFinalScore(roomId, game.score);
 
-        const playerArray = Object.values(game.players).map(
+        let playerArray = Object.values(game.players).map(
           (player) => player.playerName,
         );
+
+        if (playerArray.length != 2) {
+          const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
+          playerArray = [
+            String(dbGame.player1_user_id),
+            String(dbGame.player2_user_id),
+          ];
+        }
+
         this.server.to(roomId).emit('gameEnd', {
           winner: game.score[0] > game.score[1] ? 0 : 1,
           finalScore: game.score,
