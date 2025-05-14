@@ -45,10 +45,10 @@ const EditChatRoomPassword = ({ id }: { id: number }) => {
     <div>
       <form onSubmit={onSubmit}>
         <input
-          type="text"
+          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Add title"
+          placeholder="Enter password"
           required
         />
         <button type="submit">Submit</button>

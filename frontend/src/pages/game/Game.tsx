@@ -3,8 +3,60 @@ import { useConfig } from "@/utils/config";
 import { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
-import "./Game.css"; // Import your scoped CSS
+import "./Game.css";
 import { Game } from "@/generated-api";
+import { useUser } from "@/utils/providers/UserProvider";
+
+const themes = [
+  {
+    gameBackgroundColor: "black",
+    gamePrimaryColor: "white",
+    gameCurrentPlayerColor: "#4CAF50",
+    gameOpponentPlayerColor: "#F44336",
+    gameOverlayBackground: "rgba(0, 0, 0, 0.8)",
+    gameLabelColor: "rgba(255, 255, 255, 0.7)",
+  },
+  {
+    gameBackgroundColor: "#282c34",
+    gamePrimaryColor: "#61dafb",
+    gameCurrentPlayerColor: "#ff6347",
+    gameOpponentPlayerColor: "#ffa500",
+    gameOverlayBackground: "rgba(40, 44, 52, 0.8)",
+    gameLabelColor: "rgba(255, 255, 255, 0.9)",
+  },
+  {
+    gameBackgroundColor: "#f0f0f0",
+    gamePrimaryColor: "#333",
+    gameCurrentPlayerColor: "#007bff",
+    gameOpponentPlayerColor: "#dc3545",
+    gameOverlayBackground: "rgba(240, 240, 240, 0.8)",
+    gameLabelColor: "rgba(51, 51, 51, 0.9)",
+  },
+  {
+    gameBackgroundColor: "#2c3e50",
+    gamePrimaryColor: "#ecf0f1",
+    gameCurrentPlayerColor: "#3498db",
+    gameOpponentPlayerColor: "#e74c3c",
+    gameOverlayBackground: "rgba(44, 62, 80, 0.8)",
+    gameLabelColor: "rgba(236, 240, 241, 0.9)",
+  },
+  {
+    gameBackgroundColor: "#fff",
+    gamePrimaryColor: "#000",
+    gameCurrentPlayerColor: "#ff4500",
+    gameOpponentPlayerColor: "#32cd32",
+    gameOverlayBackground: "rgba(255, 255, 255, 0.8)",
+    gameLabelColor: "rgba(0, 0, 0, 0.9)",
+  },
+  {
+    gameBackgroundColor: "#000",
+    gamePrimaryColor: "#fff",
+    gameCurrentPlayerColor: "#00ff00",
+    gameOpponentPlayerColor: "#ff0000",
+    gameOverlayBackground: "rgba(0, 0, 0, 0.8)",
+    gameLabelColor: "rgba(255, 255, 255, 0.7)",
+  },
+];
 
 interface Player {
   id: string;
@@ -20,6 +72,7 @@ interface GameState {
 }
 
 export default function Pong() {
+  const me = useUser();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [roomId, setRoomId] = useState<string>("");
   const [gameFetched, setGameFetched] = useState<boolean>(false);
@@ -42,6 +95,33 @@ export default function Pong() {
     current: "Player",
     opponent: "Opponent",
   });
+
+  const [theme, setTheme] = useState({
+    gameBackgroundColor: "black",
+    gamePrimaryColor: "white",
+    gameCurrentPlayerColor: "#4CAF50",
+    gameOpponentPlayerColor: "#F44336",
+    gameOverlayBackground: "rgba(0, 0, 0, 0.8)",
+    gameLabelColor: "rgba(255, 255, 255, 0.7)",
+  });
+
+  const updateTheme = (newTheme: Partial<typeof theme>) => {
+    const root = document.documentElement.style;
+    Object.entries(newTheme).forEach(([key, value]) => {
+      root.setProperty(
+        `--${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`,
+        value,
+      );
+    });
+    setTheme((prev) => ({ ...prev, ...newTheme }));
+  };
+
+  useEffect(() => {
+    // Example: Apply the initial theme
+    const index = Math.floor(me.user.elo / 1000) % themes.length;
+    const selectedTheme = themes[index];
+    updateTheme(selectedTheme);
+  }, [me.user.elo]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -225,13 +305,10 @@ export default function Pong() {
       if (tableElement) {
         const tableRect = tableElement.getBoundingClientRect();
 
-        // Calculate position relative to the table
         const relativeY = event.clientY - tableRect.top;
 
-        // Convert to percentage of table height (0-100)
         const yPercent = (relativeY / tableRect.height) * 100;
 
-        // Get actual paddle height as percentage of table
         const paddleElement = document.getElementById(
           playerNumber === 0 ? "player1" : "player2",
         );

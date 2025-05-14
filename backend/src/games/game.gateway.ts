@@ -249,8 +249,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const hitPosition = (ball.y - paddleY) / (paddleHeight / 2);
         ball.dy = ball.dy * 0.5 + hitPosition * 2;
 
-        const maxSpeed = 2.0;
-        const minSpeed = 0.5;
+        const maxSpeed = 1.35;
+        const minSpeed = 0.25;
         if (Math.abs(ball.dy) > maxSpeed)
           ball.dy = Math.sign(ball.dy) * maxSpeed;
         if (Math.abs(ball.dy) < minSpeed)
@@ -272,9 +272,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       try {
         await this.gamesService.finishGameWithFinalScore(roomId, game.score);
 
-        const playerArray = Object.values(game.players).map(
+        let playerArray = Object.values(game.players).map(
           (player) => player.playerName,
         );
+
+        if (playerArray.length != 2) {
+          const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
+          playerArray = [
+            String(dbGame.player1_user_id),
+            String(dbGame.player2_user_id),
+          ];
+        }
+
         this.server.to(roomId).emit('gameEnd', {
           winner: game.score[0] > game.score[1] ? 0 : 1,
           finalScore: game.score,
