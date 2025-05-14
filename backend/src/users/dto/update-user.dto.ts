@@ -13,11 +13,12 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     description: 'The two factor authentication status of the user.',
   })
   two_factor_enabled: boolean;
-  @ApiProperty({ type: 'boolean', description: 'The two factor authentication status of the user.' })
+  @ApiProperty({
+    type: 'boolean',
+    description: 'The two factor authentication status of the user.'
+  })
   @IsOptional()
   is_second_auth_done?: boolean;
-
-
 }
 
 export class UpdateUserResponse {
