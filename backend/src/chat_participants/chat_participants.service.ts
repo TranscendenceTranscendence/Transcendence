@@ -92,7 +92,6 @@ export class ChatParticipantsService {
       chatRoomId,
       id,
     );
-
     Object.assign(existingChatParticipant, updateDto);
     await this.chatParticipantsRepository.save(existingChatParticipant);
 

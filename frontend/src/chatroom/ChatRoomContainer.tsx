@@ -117,7 +117,6 @@ export const ChatRoomContainer = () => {
                 />
                 <button type="submit">Submit</button>
               </form>
-              <p>test</p>
             </div>
           }
         </DialogContent>
