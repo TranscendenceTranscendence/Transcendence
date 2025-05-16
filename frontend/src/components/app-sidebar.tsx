@@ -27,7 +27,7 @@ export function AppSidebar() {
           <br />
           <div className="flex flex-col gap-2">
             <Button className="p-4 rounded-xl w-48" asChild>
-              <Link to={`/profile/${me.user.id}`}>Profile</Link>
+              <Link to={`/profile`}>Profile</Link>
             </Button>
             <Button className="p-4 rounded-xl w-48" asChild>
               <Link to={`/invite`}>Invites</Link>
