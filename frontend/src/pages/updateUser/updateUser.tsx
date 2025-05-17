@@ -1,9 +1,8 @@
 import React from "react";
 import AvatarDisplay from "./components/AvatarDisplay";
-import { Link } from "react-router-dom";
 import ProfileForm from "./components/ProfileForm";
 import type { UpdateUserDto } from "../../generated-api";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function UpdateUser() {
@@ -11,6 +10,10 @@ export default function UpdateUser() {
 
   const onSend = useCallback((data: UpdateUserDto) => {
     setAvatarUrl(data.avatar);
+  }, []);
+
+  const navigateToHome = useCallback(() => {
+    window.location.href = "/";
   }, []);
 
   return (
@@ -24,8 +27,8 @@ export default function UpdateUser() {
       <div className="flex flex-col flex-grow items-start p-4 sm:p-10 w-full md:w-2/3">
         <div className="flex flex-row items-stretch w-full justify-between">
           <ProfileForm onSend={onSend} />
-          <Button className="p-4 rounded-xl w-48" asChild>
-            <Link to={`/`}>Home</Link>
+          <Button className="p-4 rounded-xl w-48" onClick={navigateToHome}>
+            Home
           </Button>
         </div>
       </div>
