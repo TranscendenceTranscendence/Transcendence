@@ -2,7 +2,7 @@ import React from "react";
 import AvatarDisplay from "./components/AvatarDisplay";
 import ProfileForm from "./components/ProfileForm";
 import type { UpdateUserDto } from "../../generated-api";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function UpdateUser() {
