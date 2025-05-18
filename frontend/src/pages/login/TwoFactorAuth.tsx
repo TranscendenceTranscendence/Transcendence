@@ -69,6 +69,7 @@ const TwoFactorAuthForm = () => {
           setSuccess("2FA authentication successful!");
           setError("");
           navigate("/");
+          window.location.reload();
         } else {
           throw new Error("Network response was not ok");
         }
