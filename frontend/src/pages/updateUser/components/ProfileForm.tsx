@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useApi } from "../../../utils/api";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { UpdateUserDto } from "../../../generated-api";
 import {
@@ -38,7 +37,6 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ onSend }: ProfileFormProps) {
   const api = useApi();
-  const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const fetched = React.useRef(false);
 
@@ -69,7 +67,7 @@ export default function ProfileForm({ onSend }: ProfileFormProps) {
   }, [api.Users, form, onSend]);
 
   const handleCheckboxChange = async (checked: boolean) => {
-    navigate(checked ? "/2fa/turn-on" : "/2fa/turn-off");
+    window.location.href = checked ? "/2fa/turn-on" : "/2fa/turn-off";
   };
 
   const handleFileChange = useCallback(
