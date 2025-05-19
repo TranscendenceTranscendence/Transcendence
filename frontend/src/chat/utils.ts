@@ -1,13 +1,11 @@
 import { useApi } from "@/utils/api/index.ts";
 import {
-  ChatParticipant,
   UpdateAddUserToBlockedListDto,
   UpdateChatParticipantDto,
   UpdateChatParticipantDtoChatParticipantRoleEnum,
 } from "@/generated-api/index.ts";
 import { User } from "@/generated-api/models/User.ts";
 import { Blocked } from "@/generated-api/models/Blocked.ts";
-import { UpdateUserResponse } from "@/generated-api/models/UpdateUserResponse.ts";
 
 export const KickUser = async (chatRoomId: number, id: number) => {
   const api = useApi();
@@ -16,7 +14,6 @@ export const KickUser = async (chatRoomId: number, id: number) => {
       chatRoomId,
       id,
     });
-    console.log("Item deleted successfully");
   } catch (error) {
     console.error("Error deleting item:", error);
   }
@@ -28,13 +25,11 @@ export const PromoteUser = async (chatRoomId, id) => {
     chatParticipantRole: UpdateChatParticipantDtoChatParticipantRoleEnum.Admin,
   };
   try {
-    const response: ChatParticipant =
-      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
-        chatRoomId,
-        id,
-        updateChatParticipantDto: updateDto,
-      });
-    console.log("Update Successful:", response);
+    await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+      chatRoomId,
+      id,
+      updateChatParticipantDto: updateDto,
+    });
   } catch (error) {
     console.error("Error updating user:", error);
   }
@@ -43,19 +38,16 @@ export const PromoteUser = async (chatRoomId, id) => {
 export const MuteUser = async (chatRoomId, id) => {
   const api = useApi();
   const muteUntil = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
-  console.log("Mute Until:", muteUntil.toISOString());
   const updateDto: UpdateChatParticipantDto = {
     isMuted: true,
     bannedUntil: muteUntil,
   };
   try {
-    const response: ChatParticipant =
-      await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
-        chatRoomId,
-        id,
-        updateChatParticipantDto: updateDto,
-      });
-    console.log("Update Successful:", response);
+    await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+      chatRoomId,
+      id,
+      updateChatParticipantDto: updateDto,
+    });
   } catch (error) {
     console.error("Error updating user:", error);
   }
@@ -68,7 +60,6 @@ export const BlockUser = async (
   targetUser: User,
 ) => {
   const api = useApi();
-  console.log("target-->", targetUser);
   const updateDto: UpdateAddUserToBlockedListDto = {
     blockedUsers: blockedList,
     targerUser: targetUser,
@@ -77,11 +68,9 @@ export const BlockUser = async (
     twoFactorEnabled: false,
   };
   try {
-    const response: UpdateUserResponse =
-      await api.Users.usersControllerUpdateAddUserToBlockedList({
-        updateAddUserToBlockedListDto: updateDto,
-      });
-    console.log("Update Successful:", response);
+    await api.Users.usersControllerUpdateAddUserToBlockedList({
+      updateAddUserToBlockedListDto: updateDto,
+    });
   } catch (error) {
     console.error("Error updating user:", error);
   }

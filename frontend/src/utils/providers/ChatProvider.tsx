@@ -55,7 +55,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     socketConnection.on("connect", () => {
-      console.log(`Connected to chat WebSocket for room ${chatRoomId}`);
       socketRef.current = socketConnection;
     });
 
@@ -177,8 +176,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     setChatRoomId(newChatRoomId);
-
-    console.log("Current", chatRoomId);
   };
 
   const leaveChatRoom = () => {
@@ -211,13 +208,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const deleteSession = (participant: ChatParticipant) => {
-    // console.log(participant.chatRoomId.toString());
     if (participant.chatParticipantRole === chat_participant_roles.Owner) {
       try {
         api.ChatRooms.chatRoomsControllerRemove({
           id: participant.chatRoomId,
         });
-        // console.log("Chat room deleted", result);
       } catch (error) {
         // console.error("Failed to delete chat room:", error);
       }

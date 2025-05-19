@@ -196,7 +196,6 @@ export class UsersController {
         req.user.id,
         body,
       ));
-      console.log(req.user.blockedUsers, req.user.id);
       if (alreadyBlocked) {
         return {
           success: false,

@@ -28,16 +28,16 @@ function App() {
 
   // Function to validate and remove invalid access_token
   async function validateAccessToken() {
-    console.log("validate token");
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) return; // No token to validate
 
     api.Users.usersControllerMe()
       .then(() => {
-        console.log("Found me!");
+        console.log("Valid access_token! :)");
       })
       .catch((error) => {
-        console.error("Error validating access_token:", error);
+        // console.error("Error validating access_token:", error);
+        console.log("Not a valid access_token! :(");
         localStorage.removeItem("access_token"); // Remove access token if validation fails.
         navigate("/login"); // Redirect to login page
       });

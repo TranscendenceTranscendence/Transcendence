@@ -29,7 +29,7 @@ export class GamesService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const gameData = await this.gamesRepository.create(createGameDto);
+      const gameData = this.gamesRepository.create(createGameDto);
       return this.gamesRepository.save(gameData);
     } catch (error) {
       if (error instanceof HttpException) throw error;

@@ -48,7 +48,6 @@ export const ChatRoomContainer = () => {
           participant.userId,
           true,
         );
-        console.log("Update participant", participant);
       } catch (error) {
         console.error("Error updating participant:", error);
       }
@@ -59,12 +58,10 @@ export const ChatRoomContainer = () => {
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
     if (newChatRoom != null) {
       if (newChatRoom.chatParticipants.some((p) => p.userId === me?.user.id)) {
-        console.log("already in chat room");
         handeSwitchChatRoom(newChatRoom, true);
         return;
       }
       if (newChatRoom.chatRoomType === "protected") {
-        console.log("ask password");
         setAskPassword(true);
         setSelectedChatRoom(newChatRoom);
         return;
@@ -80,10 +77,8 @@ export const ChatRoomContainer = () => {
       },
     });
     if (response) {
-      console.log("Password is correct");
       return true;
     }
-    console.log("Password is incorrect");
     return false;
   };
 
@@ -92,8 +87,6 @@ export const ChatRoomContainer = () => {
     setAskPassword(false);
     if (isValid) {
       handeSwitchChatRoom(selectedChatRoom, false);
-    } else {
-      console.log("Invalid password");
     }
     return isValid;
   };

@@ -56,7 +56,6 @@ export const DialogPrivateChatRoomInvite = ({
   userId: number;
   visitingUserId: number;
 }) => {
-  console.log("Visting in dialog --> ", visitingUserId);
   return (
     <Dialog>
       <DialogTrigger asChild>

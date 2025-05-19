@@ -61,7 +61,6 @@ export const DevBarLayout: React.FC = () => {
         const data = await response.json();
         results.push(data);
       }
-      console.log("Generated test users:", results);
       alert(`Successfully generated 100 test users!`);
     } catch (error) {
       console.error("Error generating test users:", error);
@@ -86,7 +85,6 @@ export const DevBarLayout: React.FC = () => {
     const userId = parseInt(data.userId);
     try {
       const res = await api.Auth.authControllerDevLogin({ userId });
-      console.log(res);
       localStorage.setItem("access_token", res.accessToken);
 
       const decoded = jwtDecode<JwtPayload>(res.accessToken);

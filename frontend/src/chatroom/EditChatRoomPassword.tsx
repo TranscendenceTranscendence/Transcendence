@@ -32,7 +32,6 @@ const EditChatRoomPassword = ({ id }: { id: number }) => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("password", password);
     editPassword();
     setPassword("");
   };

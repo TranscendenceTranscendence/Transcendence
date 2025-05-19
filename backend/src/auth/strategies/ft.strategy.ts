@@ -35,8 +35,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, 'ft') {
     cb: any,
   ) {
     let user = await this.usersService.findOne(profile.id);
-    console.log('User found:', user);
-    console.log('Profile:', profile);
     if (user == null) {
       user = new User();
       user.id = profile.id;
