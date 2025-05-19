@@ -115,7 +115,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           Object.keys(game.players).length == 2 &&
           dbGame.status === GameStatus.PENDING
         )
-          this.startCountdown(roomId);
+          this.startCountdown(client, roomId);
       } catch (error) {
         console.error(`Error fetching game from database: ${error.message}`);
         this.server.to(client.id).emit('update', game);
@@ -125,7 +125,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  private startCountdown(roomId: string) {
+  private startCountdown(client: Socket, roomId: string) {
     let count = 5;
     const game = this.games.get(roomId);
     if (!game || game.countdownActive) return;
@@ -144,14 +144,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           .then(() => {
             game.countdownActive = false;
 
-            this.startGameLoop(roomId);
+            this.startGameLoop(client, roomId);
             this.server.to(roomId).emit('gameStart');
           })
           .catch((error) => {
             console.error(`Error updating game status: ${error.message}`);
             game.countdownActive = false;
 
-            this.startGameLoop(roomId);
+            this.startGameLoop(client, roomId);
             this.server.to(roomId).emit('gameStart');
           });
       }
@@ -183,7 +183,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return game;
   }
 
-  private startGameLoop(roomId: string) {
+  private startGameLoop(client: Socket, roomId: string) {
     const loop = setInterval(() => {
       this.updateGame(roomId, this.games.get(roomId));
 
@@ -279,8 +279,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (playerArray.length != 2) {
           const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
           playerArray = [
-            String(dbGame.player1_user_id),
-            String(dbGame.player2_user_id),
+            String('User ' + dbGame.player1_user_id),
+            String('User ' + dbGame.player2_user_id),
           ];
         }
 
@@ -359,8 +359,21 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   private cleanupGame(roomId: string) {
+    if (!roomId) return;
+
     const game = this.games.get(roomId);
-    if (game && game.timeout) {
+    if (!game) return;
+
+    Object.keys(game.players).forEach((clientId) => {
+      this.playerToRoom.delete(clientId);
+      const userId = this.socketToUserId.get(clientId);
+      if (userId) {
+        this.userIdToSocket.delete(userId);
+      }
+      this.socketToUserId.delete(clientId);
+    });
+
+    if (game.timeout) {
       clearTimeout(game.timeout);
       game.timeout = undefined;
     }

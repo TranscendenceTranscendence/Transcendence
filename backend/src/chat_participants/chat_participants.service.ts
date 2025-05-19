@@ -23,7 +23,6 @@ export class ChatParticipantsService {
     const chatParticipantData = await this.chatParticipantsRepository.create(
       createChatParticipantDto,
     );
-    console.log('Particpant added in backend service create');
     return this.chatParticipantsRepository.save(chatParticipantData);
   }
 

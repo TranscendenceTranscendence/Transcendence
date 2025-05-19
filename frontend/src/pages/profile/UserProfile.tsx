@@ -57,22 +57,6 @@ export default function UserProfile() {
     return <div>Loading...</div>;
   }
 
-  // Determine the status color
-  const statusColor = (() => {
-    switch (currentUser.userStatus) {
-      case "online":
-        return "bg-emerald-500";
-      case "offline":
-        return "bg-gray-500";
-      case "waiting":
-        return "bg-yellow-500";
-      case "playing":
-        return "bg-blue-500";
-      default:
-        return "bg-gray-500";
-    }
-  })();
-
   return (
     <div className="flex flex-column justify-center items-center min-h-screen">
       <Card>

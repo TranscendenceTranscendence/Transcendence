@@ -85,7 +85,6 @@ export class ChatMessagesService {
         to: sent_time_till,
       });
     }
-    console.log('Blocked Users:', blockedUsers);
     if (Array.isArray(blockedUsers) && blockedUsers.length > 0) {
       queryBuilder.andWhere('chat_message.user_id NOT IN (:...blockedUsers)', {
         blockedUsers,

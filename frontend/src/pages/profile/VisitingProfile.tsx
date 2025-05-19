@@ -98,7 +98,6 @@ export default function VisitingProfile() {
         return "bg-gray-500";
     }
   })();
-  console.log("chatRooms", visitingUser);
   return (
     <div className="flex flex-row justify-center items-center min-h-screen">
       <Card>
@@ -129,7 +128,6 @@ export default function VisitingProfile() {
                       if (chatRooms.chatRooms.length > 0) {
                         const existingChatRoom = chatRooms.chatRooms.find(
                           (chatRoom) => {
-                            console.log("chatroom -->", chatRoom);
                             if (
                               !chatRoom.chatParticipants[0] ||
                               !chatRoom.chatParticipants[1] ||
@@ -139,12 +137,7 @@ export default function VisitingProfile() {
                                 "Invalid chat room participants or type",
                               );
                               return false;
-                            } else
-                              console.log(
-                                "Valid start",
-                                chatRoom.chatParticipants[0],
-                                chatRoom.chatParticipants[1],
-                              );
+                            }
                             const isMatch =
                               chatRoom.chatRoomType === "Dm" &&
                               chatRoom.chatParticipants.some((p) => {
@@ -160,17 +153,11 @@ export default function VisitingProfile() {
                                     visitingUser.id;
                                 return condition1 || condition2;
                               });
-                            console.log(
-                              `ChatRoomType is "Dm": ${
-                                chatRoom.chatRoomType === "Dm"
-                              }, Match found: ${isMatch}`,
-                            );
                             return isMatch;
                           },
                         );
 
                         if (existingChatRoom) {
-                          console.log("Already a dm session!!!!!!!!!!!!!!");
                           joinChatRoom(existingChatRoom.id);
                           return;
                         } else {
@@ -179,25 +166,16 @@ export default function VisitingProfile() {
                             me.user.id,
                             visitingUser.id,
                           );
-                          console.log(
-                            "Response from postDmChatRoom:",
-                            response,
-                          );
                           if (response && response.chatRoom) {
                             chatRooms.chatRooms.push(response.chatRoom);
                             joinChatRoom(response.chatRoom.id);
                           }
                         }
-                      } else {
-                        console.log(
-                          "chatRooms array is empty, but it might just be the start",
-                        );
                         const response = await postDmChatRoom(
                           api,
                           me.user.id,
                           visitingUser.id,
                         );
-                        console.log("Response from postDmChatRoom:", response);
                         if (response && response.chatRoom) {
                           chatRooms.chatRooms.push(response.chatRoom);
                           joinChatRoom(response.chatRoom.id);
@@ -206,7 +184,6 @@ export default function VisitingProfile() {
                     } else {
                       console.error("chatRooms is not a valid array");
                     }
-                    console.log(chatRooms);
                   }}
                 >
                   DM {visitingUser.nickname}

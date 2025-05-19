@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { GameStatus } from '../games/game.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { User, UserStatus } from '../users/user.entity';
+import { CreateInviteDto } from './dto/create-invite.dto';
 
 @Injectable()
 export class InviteService {
@@ -20,6 +23,7 @@ export class InviteService {
     private readonly inviteRepository: Repository<Invite>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @Inject(forwardRef(() => GamesService))
     private readonly gamesService: GamesService,
   ) {}
 
@@ -46,36 +50,54 @@ export class InviteService {
         "You can't invite someone if you're already in an active game",
       );
 
+    const sentInvites = await this.inviteRepository.find({
+      where: {
+        senderUserId: senderUserId,
+        status: InviteStatus.PENDING,
+      },
+    });
+
+    if (sentInvites.length > 0)
+      throw new BadRequestException(
+        "You can't invite multiple people at the same time",
+      );
+
     const game = new CreateGameDto();
-
-    game.player1_user_id = senderUserId;
-    game.player2_user_id = null;
     game.room_identifier = uuidv4();
-    game.created_at = new Date();
-    game.score = [0, 0];
-    game.status = GameStatus.PENDING;
-    game.winner_user_id = 0;
-
-    const madeGame = await this.gamesService.create(game);
-
-    if (!madeGame)
-      throw new InternalServerErrorException("Couldn't make a game.");
 
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 5);
 
-    const invite = this.inviteRepository.create({
-      senderUserId: senderUserId,
-      receiverUserId: receiverUserId,
-      status: InviteStatus.PENDING,
-      gameRoomId: madeGame.room_identifier,
-      createdAt: new Date(),
-      expiresAt: expiresAt,
-    });
+    const invite = new CreateInviteDto();
+    invite.senderUserId = senderUserId;
+    invite.receiverUserId = receiverUserId;
+    invite.status = InviteStatus.PENDING;
+    invite.gameRoomId = game.room_identifier;
+    invite.createdAt = new Date();
+    invite.expiresAt = expiresAt;
 
-    if (!invite)
-      throw new InternalServerErrorException("Couldn't make an invite.");
-    this.inviteRepository.save(invite);
+    try {
+      const madeInvite = this.inviteRepository.create(invite);
+      const savedInvite = await this.inviteRepository.save(madeInvite);
+
+      game.player1_user_id = senderUserId;
+      game.player2_user_id = null;
+      game.created_at = new Date();
+      game.score = [0, 0];
+      game.status = GameStatus.PENDING;
+      game.winner_user_id = 0;
+      game.invite_id = savedInvite.id;
+
+      const madeGame = await this.gamesService.create(game);
+      if (!madeGame) {
+        await this.inviteRepository.remove(savedInvite);
+        throw new InternalServerErrorException("Couldn't make a game.");
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to create invite: ${error.message}`,
+      );
+    }
   }
 
   async getPendingInvites(userId: number): Promise<Invite[]> {
@@ -239,6 +261,52 @@ export class InviteService {
       return true;
     } catch (error) {
       console.error('Error checking if game has been canceled: ', error);
+      return false;
+    }
+  }
+
+  async findInviteById(inviteId: number): Promise<Invite> {
+    if (!inviteId || isNaN(inviteId)) {
+      throw new BadRequestException('Invalid invite ID');
+    }
+
+    const invite = await this.inviteRepository.findOne({
+      where: { id: inviteId },
+    });
+
+    if (!invite) {
+      throw new BadRequestException(`Invite with ID ${inviteId} not found`);
+    }
+
+    return invite;
+  }
+
+  async setInviteToExpired(inviteId: number): Promise<boolean> {
+    try {
+      const invite = await this.findInviteById(inviteId);
+
+      invite.status = InviteStatus.EXPIRED;
+      await this.inviteRepository.save(invite);
+
+      try {
+        const game = await this.gamesService.findByRoomIdentifier(
+          invite.gameRoomId,
+        );
+        if (game && game.status !== GameStatus.CANCELLED) {
+          game.status = GameStatus.CANCELLED;
+          await this.gamesService.update(game.id, game);
+        }
+      } catch (gameError) {
+        console.error(
+          `Error updating game for expired invite ${inviteId}:`,
+          gameError,
+        );
+      }
+
+      return true;
+    } catch (error) {
+      console.error(`Error setting invite ${inviteId} to expired:`, error);
+      return false;
     }
   }
 

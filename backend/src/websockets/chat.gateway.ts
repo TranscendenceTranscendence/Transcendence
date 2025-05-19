@@ -95,7 +95,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
     client.leave(roomId);
     client.disconnect();
-    console.log(`User ${user.sub} disconnected from room ${roomId}`);
+    // console.log(`User ${user.sub} disconnected from room ${roomId}`);
   }
 
   @SubscribeMessage('message')

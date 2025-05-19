@@ -67,6 +67,12 @@ export interface CreateGameDto {
    * @memberof CreateGameDto
    */
   createdAt: Date;
+  /**
+   * Invite Id
+   * @type {number}
+   * @memberof CreateGameDto
+   */
+  inviteId: number;
 }
 
 /**
@@ -97,6 +103,7 @@ export function instanceOfCreateGameDto(value: object): value is CreateGameDto {
     return false;
   if (!("score" in value) || value["score"] === undefined) return false;
   if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+  if (!("inviteId" in value) || value["inviteId"] === undefined) return false;
   return true;
 }
 
@@ -120,6 +127,7 @@ export function CreateGameDtoFromJSONTyped(
     score: json["score"],
     endedAt: json["ended_at"] == null ? undefined : new Date(json["ended_at"]),
     createdAt: new Date(json["created_at"]),
+    inviteId: json["invite_id"],
   };
 }
 
@@ -145,5 +153,6 @@ export function CreateGameDtoToJSONTyped(
     ended_at:
       value["endedAt"] == null ? undefined : value["endedAt"].toISOString(),
     created_at: value["createdAt"].toISOString(),
+    invite_id: value["inviteId"],
   };
 }

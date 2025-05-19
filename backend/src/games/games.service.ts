@@ -3,12 +3,15 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  forwardRef,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, Not, DataSource } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game, GameStatus } from './game.entity';
 import { User } from '../users/user.entity';
+import { InviteService } from '../invite/invite.service';
 
 @Injectable()
 export class GamesService {
@@ -18,6 +21,8 @@ export class GamesService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly dataSource: DataSource,
+    @Inject(forwardRef(() => InviteService))
+    private readonly inviteService: InviteService,
   ) {}
 
   async create(createGameDto: CreateGameDto): Promise<Game> {
@@ -29,7 +34,7 @@ export class GamesService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const gameData = await this.gamesRepository.create(createGameDto);
+      const gameData = this.gamesRepository.create(createGameDto);
       return this.gamesRepository.save(gameData);
     } catch (error) {
       if (error instanceof HttpException) throw error;
@@ -436,6 +441,8 @@ export class GamesService {
       }
       game.status = GameStatus.CANCELLED;
       game.ended_at = new Date();
+      if (game.invite_id != 0)
+        await this.inviteService.setInviteToExpired(game.invite_id);
       return await this.gamesRepository.save(game);
     } catch (error) {
       if (error instanceof HttpException) throw error;

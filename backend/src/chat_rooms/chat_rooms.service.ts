@@ -54,7 +54,6 @@ export class ChatRoomsService {
       where: { id: savedChatRoom.id },
       relations: ['chatParticipants', 'chatParticipants.user'],
     });
-    console.log(value);
     return value;
   }
 
@@ -164,14 +163,11 @@ export class ChatRoomsService {
   async checkPassword(chatRoomId: number, password: string): Promise<boolean> {
     const chatRoom: ChatRoom = await this.findOneShallow(+chatRoomId);
 
-    console.log('in service-->', password, chatRoom.password);
     if (!password || !chatRoom.password) {
       throw new HttpException('Password is required', 400);
     }
     // const hashedPassword = await bcrypt.hash(password, 10);
     const isMatch = await bcrypt.compare(password, chatRoom.password);
-    // console.log('compareison -->', hashedPassword, chatRoom.password);
-    console.log(isMatch);
     if (isMatch) {
       return true;
     } else return false;
@@ -189,13 +185,11 @@ export class ChatRoomsService {
       UpdateChatRoomDto.password === ''
     ) {
       UpdateChatRoomDto.chat_room_type = chat_room_types.Public;
-      console.log('Removing password', existingChatRoom.password);
     } else if (
       existingChatRoom.chat_room_type !== chat_room_types.Protected &&
       existingChatRoom.password === '' &&
       UpdateChatRoomDto.password !== ''
     ) {
-      console.log('Making chatRoom protected');
       UpdateChatRoomDto.chat_room_type = chat_room_types.Protected;
     }
     const saltRounds = 10;
@@ -211,7 +205,6 @@ export class ChatRoomsService {
       existingChatRoom,
       UpdateChatRoomDto,
     );
-    console.log(UpdateChatRoomDto);
     return await this.chatRoomsRepository.save(chatRoomData);
   }
 

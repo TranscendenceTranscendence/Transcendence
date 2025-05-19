@@ -73,6 +73,12 @@ export interface Game {
    * @memberof Game
    */
   createdAt: Date;
+  /**
+   *
+   * @type {number}
+   * @memberof Game
+   */
+  inviteId: number;
 }
 
 /**
@@ -105,6 +111,7 @@ export function instanceOfGame(value: object): value is Game {
   if (!("score" in value) || value["score"] === undefined) return false;
   if (!("endedAt" in value) || value["endedAt"] === undefined) return false;
   if (!("createdAt" in value) || value["createdAt"] === undefined) return false;
+  if (!("inviteId" in value) || value["inviteId"] === undefined) return false;
   return true;
 }
 
@@ -129,6 +136,7 @@ export function GameFromJSONTyped(
     score: json["score"],
     endedAt: new Date(json["ended_at"]),
     createdAt: new Date(json["created_at"]),
+    inviteId: json["invite_id"],
   };
 }
 
@@ -154,5 +162,6 @@ export function GameToJSONTyped(
     score: value["score"],
     ended_at: value["endedAt"].toISOString(),
     created_at: value["createdAt"].toISOString(),
+    invite_id: value["inviteId"],
   };
 }

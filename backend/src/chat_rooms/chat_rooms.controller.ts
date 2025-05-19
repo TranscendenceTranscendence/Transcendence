@@ -57,8 +57,6 @@ export class ChatRoomsController {
     try {
       const chatRoom: ChatRoom =
         await this.chatRoomsService.create(createChatRoomDto);
-      console.log('Saved ChatRoom:', chatRoom);
-      console.log(chatRoom);
       return {
         success: true,
         chatRoom: chatRoom,
@@ -263,12 +261,10 @@ export class ChatRoomsController {
   ): Promise<boolean> {
     const { chatRoomId, password } = checkPasswordDto;
     if (!chatRoomId || !password) {
-      console.log('gaat fout hier');
       throw new Error(
         'chatRoomId or password is undefined or missing in the request.',
       );
     }
-    console.log('in controller -->', password, chatRoomId);
     return await this.chatRoomsService.checkPassword(chatRoomId, password);
   }
 
@@ -295,7 +291,6 @@ export class ChatRoomsController {
     @Req() req: AuthenticatedRequest,
   ) {
     const user = req.user;
-    console.log(chatRoomId);
     const chatRoom: ChatRoom =
       await this.chatRoomsService.findOneShallow(+chatRoomId);
     const participant = chatRoom.chatParticipants.find((participant) => {

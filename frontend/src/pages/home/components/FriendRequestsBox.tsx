@@ -17,7 +17,6 @@ export const FriendRequestsBox = () => {
     const fetchFriendRequests = async () => {
       try {
         const response = await api.Friends.friendsControllerGetFriendRequests();
-        console.log(response);
         setFriendRequests(response.data);
       } catch (error) {
         console.error("Failed to fetch friend requests:", error);

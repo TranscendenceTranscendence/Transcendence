@@ -13,13 +13,13 @@ import ProtectedRoute from "./utils/middleware/ProtectedRoute.tsx";
 import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
-import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
 import Game from "./pages/game/Game.tsx";
 import Result from "./pages/result/result.tsx";
 import { useApi } from "@/utils/api";
 import Statistics from "./pages/statistics/Statistics.tsx";
 import Queue from "./pages/queue/Queue.tsx";
 import Invite from "./pages/invite/Invite.tsx";
+import { DevBarLayout } from "./utils/layouts/DevBarLayout.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -28,16 +28,16 @@ function App() {
 
   // Function to validate and remove invalid access_token
   async function validateAccessToken() {
-    console.log("validate token");
     const accessToken = localStorage.getItem("access_token");
     if (!accessToken) return; // No token to validate
 
     api.Users.usersControllerMe()
       .then(() => {
-        console.log("Found me!");
+        console.log("Valid access_token! :)");
       })
-      .catch((error) => {
-        console.error("Error validating access_token:", error);
+      .catch(() => {
+        // console.error("Error validating access_token:", error);
+        console.log("Not a valid access_token! :(");
         localStorage.removeItem("access_token"); // Remove access token if validation fails.
         navigate("/login"); // Redirect to login page
       });

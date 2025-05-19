@@ -84,7 +84,6 @@ export const useAddParticipant = () => {
   const api = useApi();
 
   const addParticipant = async (userId: number, chatRoomId: number) => {
-    console.log(userId, chatRoomId);
     try {
       await api.ChatParticipants.chatParticipantsControllerAddParticipantToChatroom(
         {

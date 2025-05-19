@@ -177,6 +177,7 @@ export default function Pong() {
           socket.on("alreadyConnected", () => {
             setError("You are already connected to this game");
           });
+
           socket.on("gameEnd", (result) => {
             sessionStorage.setItem(
               "gameResult",
@@ -187,10 +188,6 @@ export default function Pong() {
                 timestamp: new Date().toISOString(),
               }),
             );
-
-            setTimeout(() => {
-              navigate("/result");
-            }, 1000);
           });
         }
       } catch (error) {
@@ -203,10 +200,6 @@ export default function Pong() {
 
     return () => {
       isComponentMounted.current = false;
-
-      if (socketRef.current) {
-        // console.log("Player has left the page, but socket remains connected");
-      }
     };
   }, [config.backendUrl]);
 
@@ -293,9 +286,7 @@ export default function Pong() {
       playerNumber: playerNumber,
     });
 
-    return () => {
-      // console.log("Cleaning up socket connection");
-    };
+    return;
   }, [socketConnected, roomId, playerNumber]);
 
   const movePaddle = (event: React.MouseEvent) => {

@@ -37,8 +37,6 @@ export default function AvatarDisplay({
   }, [me.user?.id, user?.id]);
 
   if (avatarUrl) {
-    console.log("Avatar URL:", avatarUrl);
-
     return (
       <Avatar
         className={cn(
