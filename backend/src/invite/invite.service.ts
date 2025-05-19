@@ -88,7 +88,6 @@ export class InviteService {
       game.winner_user_id = 0;
       game.invite_id = savedInvite.id;
 
-      console.log(game);
       const madeGame = await this.gamesService.create(game);
       if (!madeGame) {
         await this.inviteRepository.remove(savedInvite);

@@ -441,7 +441,7 @@ export class GamesService {
       }
       game.status = GameStatus.CANCELLED;
       game.ended_at = new Date();
-      if (game.invite_id)
+      if (game.invite_id != 0)
         await this.inviteService.setInviteToExpired(game.invite_id);
       return await this.gamesRepository.save(game);
     } catch (error) {
