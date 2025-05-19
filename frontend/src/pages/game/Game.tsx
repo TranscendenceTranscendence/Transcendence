@@ -187,10 +187,6 @@ export default function Pong() {
                 timestamp: new Date().toISOString(),
               }),
             );
-
-            setTimeout(() => {
-              navigate("/result");
-            }, 1000);
           });
         }
       } catch (error) {
