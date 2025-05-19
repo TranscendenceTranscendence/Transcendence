@@ -79,7 +79,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Handle users joining the chat room
     socketConnection.on("joined", (data: { participant: ChatParticipant }) => {
-      console.debug("User joined", data);
       setChatRooms((prev) => {
         const chatRoom = prev[chatRoomId] || {
           messages: [],
@@ -107,7 +106,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Handle users leaving the chat room
     socketConnection.on("left", (data: { participant: ChatParticipant }) => {
-      console.debug("User left", data);
       setChatRooms((prev) => {
         const chatRoom = prev[chatRoomId];
         if (!chatRoom) return prev;

@@ -13,7 +13,6 @@ import ProtectedRoute from "./utils/middleware/ProtectedRoute.tsx";
 import PublicRoute from "./utils/middleware/PublicRoute.tsx";
 import UserProfile from "./pages/profile/UserProfile.tsx";
 import VisitingProfile from "./pages/profile/VisitingProfile.tsx";
-import { DevBarLayout } from "@/utils/layouts/DevBarLayout.tsx";
 import Game from "./pages/game/Game.tsx";
 import Result from "./pages/result/result.tsx";
 import { useApi } from "@/utils/api";
@@ -35,7 +34,7 @@ function App() {
       .then(() => {
         console.log("Valid access_token! :)");
       })
-      .catch((error) => {
+      .catch(() => {
         // console.error("Error validating access_token:", error);
         console.log("Not a valid access_token! :(");
         localStorage.removeItem("access_token"); // Remove access token if validation fails.

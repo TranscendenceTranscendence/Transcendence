@@ -1,5 +1,10 @@
 import PropTypes from "prop-types";
-import { Dialog, DialogTrigger, DialogContent } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "@radix-ui/react-dialog";
 import "../css/DialogChatRoom.css";
 import { Button } from "@/components/ui/button";
 import { PostChatRoom } from "./PostChatRoom";
@@ -18,7 +23,9 @@ export const DialogPostChatRoom = ({ userId }) => {
       <DialogContent
         className="dialog-content"
         style={{ background: "none", boxShadow: "none", padding: 0 }}
+        aria-describedby={undefined}
       >
+        <DialogTitle className="sr-only">Create New Chat Room</DialogTitle>
         <PostChatRoom userId={userId} setIsOpen={setIsOpen} />
       </DialogContent>
     </Dialog>

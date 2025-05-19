@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useChatRoomsForPrivateInvite } from "./ApiRequest";
 import PropTypes from "prop-types";
@@ -27,19 +27,33 @@ export const PrivateChatRoomInviteList = ({ visitingUserId }) => {
     }
   };
 
+  const hasChatRooms =
+    chatRooms &&
+    Array.isArray(chatRooms.chatRooms) &&
+    chatRooms.chatRooms.length > 0;
+
   return (
-    <div>
-      {Array.isArray(chatRooms?.chatRooms) &&
-        chatRooms.chatRooms.map((chatRoom) => (
-          <div key={chatRoom.id} className="chat-room-item">
-            <div>{chatRoom.title}</div>
-            <Button
-              onClick={() => addVisitingParticipantToChatRoom(chatRoom.id)}
-            >
-              Invite
-            </Button>
-          </div>
-        ))}
+    <div className="chat-rooms-invite-container">
+      {!hasChatRooms ? (
+        <div className="no-chats-message">
+          <p>
+            No private chats found, make your first chat in the home screen!
+          </p>
+        </div>
+      ) : (
+        <div className="chat-rooms-list">
+          {chatRooms.chatRooms.map((chatRoom) => (
+            <div key={chatRoom.id} className="chat-room-item">
+              <div>{chatRoom.title}</div>
+              <Button
+                onClick={() => addVisitingParticipantToChatRoom(chatRoom.id)}
+              >
+                Invite
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -61,16 +75,16 @@ export const DialogPrivateChatRoomInvite = ({
       <DialogTrigger asChild>
         <Button>Invite to private chat room</Button>
       </DialogTrigger>
-      <div className="content-container">
-        <DialogContent className="dialog-content">
-          <DialogTitle>Invite to Private Chat Room</DialogTitle>
-          <DialogDescription></DialogDescription>
-          <PrivateChatRoomInviteList
-            userId={userId}
-            visitingUserId={visitingUserId}
-          />
-        </DialogContent>
-      </div>
+      <DialogContent className="dialog-content">
+        <DialogTitle>Invite to Private Chat Room</DialogTitle>
+        <DialogDescription>
+          Select a private chat room to invite this user to.
+        </DialogDescription>
+        <PrivateChatRoomInviteList
+          userId={userId}
+          visitingUserId={visitingUserId}
+        />
+      </DialogContent>
     </Dialog>
   );
 };

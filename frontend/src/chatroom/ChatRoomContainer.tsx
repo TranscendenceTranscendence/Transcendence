@@ -7,6 +7,7 @@ import { useChat } from "@/utils/providers/ChatProvider.tsx";
 import { Dialog, DialogContent } from "@/components/ui/dialog.tsx";
 import { useApi } from "@/utils/api/index.ts";
 import { UpdateParticipant } from "@/chat/ChatApiCalls.ts";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 export const ChatRoomContainer = () => {
   const api = useApi();
@@ -93,7 +94,10 @@ export const ChatRoomContainer = () => {
   return (
     <div className="chatRoomBox">
       <Dialog open={askPassword} onOpenChange={setAskPassword}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
+          <DialogTitle className="sr-only">
+            This chat room requires a password
+          </DialogTitle>
           {
             <div className="flex flex-col gap-4">
               <h1>This chat room requires a password</h1>
