@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { InviteService } from './invite.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Invite } from './invite.entity';
@@ -12,7 +12,7 @@ import { User } from '../users/user.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Invite, User]),
-    GamesModule,
+    forwardRef(() => GamesModule), // Use forwardRef to break circular dependency
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

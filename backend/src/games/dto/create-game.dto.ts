@@ -44,4 +44,9 @@ export class CreateGameDto {
   @ApiProperty({ description: 'Game creation time' })
   @IsDate()
   created_at: Date;
+
+  @ApiProperty({ description: 'Invite Id' })
+  @IsNumber()
+  @IsOptional()
+  invite_id: number;
 }

@@ -88,6 +88,7 @@ export class InviteController {
   ): Promise<InviteResponseDto> {
     try {
       const senderUserId = req.user.id;
+
       await this.inviteService.createInvite(
         senderUserId,
         createInviteDto.receiverUserId,
