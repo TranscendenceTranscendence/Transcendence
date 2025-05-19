@@ -27,6 +27,7 @@ export const ChatRoomContainer = () => {
       return;
     }
     await addParticipant(userId, chatRoomId);
+    location.reload();
   };
   const handeSwitchChatRoom = async (
     newChatRoom: ChatRoom,

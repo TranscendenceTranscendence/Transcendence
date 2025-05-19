@@ -19,6 +19,7 @@ import { useApi } from "@/utils/api";
 import Statistics from "./pages/statistics/Statistics.tsx";
 import Queue from "./pages/queue/Queue.tsx";
 import Invite from "./pages/invite/Invite.tsx";
+import { DevBarLayout } from "./utils/layouts/DevBarLayout.tsx";
 
 function App() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -69,27 +70,27 @@ function App() {
 
       <Routes>
         {/* Public Routes */}
-        {/* <Route element={<DevBarLayout />}> */}
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={<Login />} />
+        <Route element={<DevBarLayout />}>
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<Login />} />
+          </Route>
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/update" element={<UpdateUser />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/profile/:id" element={<VisitingProfile />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/queue" element={<Queue />} />
+            <Route path="/result" element={<Result />} />
+            <Route path="/invite" element={<Invite />} />
+            <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
+            <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
+            <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/login" />} />
         </Route>
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/update" element={<UpdateUser />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/profile/:id" element={<VisitingProfile />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/queue" element={<Queue />} />
-          <Route path="/result" element={<Result />} />
-          <Route path="/invite" element={<Invite />} />
-          <Route path="/2fa/turn-on" element={<EnableTwoFactorAuth />} />
-          <Route path="/2fa/turn-off" element={<DisableTwoFactorAuth />} />
-          <Route path="/2fa/authenticate" element={<TwoFactorAuth />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/login" />} />
-        {/* </Route> */}
       </Routes>
     </Fragment>
   );

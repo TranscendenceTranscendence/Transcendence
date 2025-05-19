@@ -172,7 +172,6 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     if (socketRef.current) {
       socketRef.current.emit("joinRoom", { roomId: newChatRoomId });
     }
-
     setChatRoomId(newChatRoomId);
   };
 
