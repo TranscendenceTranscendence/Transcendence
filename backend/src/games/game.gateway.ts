@@ -279,8 +279,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (playerArray.length != 2) {
           const dbGame = await this.gamesService.findByRoomIdentifier(roomId);
           playerArray = [
-            String("Player " + dbGame.player1_user_id),
-            String("Player " + dbGame.player2_user_id),
+            String('Player ' + dbGame.player1_user_id),
+            String('Player ' + dbGame.player2_user_id),
           ];
         }
 
@@ -316,10 +316,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }, 1000);
   }
 
-  private async updateScoreInDatabase(
-    roomId: string,
-    score: [number, number],
-  ) {
+  private async updateScoreInDatabase(roomId: string, score: [number, number]) {
     try {
       await this.gamesService.updateGameScore(roomId, score);
     } catch (error) {
