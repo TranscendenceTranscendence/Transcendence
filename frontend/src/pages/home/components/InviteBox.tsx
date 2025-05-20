@@ -11,6 +11,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "../../../components/ui/avatar";
+import AvatarDisplay from "@/pages/updateUser/components/AvatarDisplay";
 
 const InviteBox: React.FC = () => {
   const api = useApi();
@@ -162,12 +163,7 @@ const InviteBox: React.FC = () => {
                   className="flex items-center justify-between bg-muted p-2 rounded-md"
                 >
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={sender?.avatar} />
-                      <AvatarFallback>
-                        {(sender?.nickname?.[0] || "#").toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <AvatarDisplay user={sender} />
                     <span className="text-sm">
                       {sender?.nickname || `User #${invite.senderUserId}`}
                     </span>
@@ -212,12 +208,7 @@ const InviteBox: React.FC = () => {
                   className="flex items-center justify-between p-2 rounded-md hover:bg-muted"
                 >
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-6 h-6">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback>
-                        {(user.nickname?.[0] || "#").toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <AvatarDisplay user={user} />
                     <span className="text-sm">
                       {user.nickname || `User #${user.id}`}
                     </span>
