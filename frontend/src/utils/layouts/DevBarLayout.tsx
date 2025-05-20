@@ -38,7 +38,7 @@ export const DevBarLayout: React.FC = () => {
 
       for (let i = 1; i <= 100; i++) {
         const userData = {
-          avatar: `default_avatar_${i}.png`,
+          avatar: `pingpong.png`,
           nickname: `user${i}`,
           two_factor_enabled: false,
           is_second_auth_done: false,

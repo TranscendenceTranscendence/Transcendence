@@ -195,6 +195,23 @@ export const MuteUser = async (chatRoomId, id) => {
   }
 };
 
+export const UnMuteUser = async (chatRoomId, id) => {
+  const api = useApi();
+  const updateDto: UpdateChatParticipantDto = {
+    isMuted: false,
+    bannedUntil: new Date(),
+  };
+  try {
+    await api.ChatParticipants.chatParticipantsControllerUpdateParticipant({
+      chatRoomId,
+      id,
+      updateChatParticipantDto: updateDto,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+  }
+};
+
 export const BlockUser = async (targetUser: number) => {
   const api = useApi();
   const updateDto: UpdateAddUserToBlockedListDto = {

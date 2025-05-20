@@ -89,10 +89,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const participant = room.chatParticipants.find(
       (p) => p.user_id === user.sub,
     );
-    this.server.to(roomId).emit('left', {
-      participant,
-      left_at: new Date(),
-    });
+    if (participant)
+      this.server.to(roomId).emit('left', {
+        participant,
+        left_at: new Date(),
+      });
     client.leave(roomId);
     client.disconnect();
     // console.log(`User ${user.sub} disconnected from room ${roomId}`);

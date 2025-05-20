@@ -160,17 +160,19 @@ export class ChatRoomsService {
     return await this.chatRoomsRepository.save(chatRoomData);
   }
 
-  async checkPassword(chatRoomId: number, password: string): Promise<boolean> {
+  async checkPassword(chatRoomId: number, password: string): Promise<number> {
     const chatRoom: ChatRoom = await this.findOneShallow(+chatRoomId);
 
     if (!password || !chatRoom.password) {
       throw new HttpException('Password is required', 400);
     }
-    // const hashedPassword = await bcrypt.hash(password, 10);
     const isMatch = await bcrypt.compare(password, chatRoom.password);
+
     if (isMatch) {
-      return true;
-    } else return false;
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   async editPassword(

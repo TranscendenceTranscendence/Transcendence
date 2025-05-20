@@ -258,14 +258,18 @@ export class ChatRoomsController {
   @UseGuards(JwtAccessAuthGuard)
   async checkPassword(
     @Body() checkPasswordDto: CheckPasswordDto,
-  ): Promise<boolean> {
+  ): Promise<number> {
     const { chatRoomId, password } = checkPasswordDto;
     if (!chatRoomId || !password) {
       throw new Error(
         'chatRoomId or password is undefined or missing in the request.',
       );
     }
-    return await this.chatRoomsService.checkPassword(chatRoomId, password);
+    const result: number = await this.chatRoomsService.checkPassword(
+      chatRoomId,
+      password,
+    );
+    return result;
   }
 
   @Patch('editPassword/:chatRoomId')
