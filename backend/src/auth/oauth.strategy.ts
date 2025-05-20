@@ -10,7 +10,7 @@ export class OAuthStrategy extends PassportStrategy(Strategy, 'oauth') {
       tokenURL: 'https://provider.com/oauth2/token',
       clientID: 'your-client-id',
       clientSecret: 'your-client-secret',
-      callbackURL: 'http://localhost:3000/auth/oauth/callback',
+      callbackURL: 'http://f1r3s12:3000/auth/oauth/callback',
     });
   }
 

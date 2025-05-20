@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-export const BASE_PATH = "https://localhost:3000".replace(/\/+$/, "");
+export const BASE_PATH = "https://f1r3s12:3000".replace(/\/+$/, "");
 
 export interface ConfigurationParameters {
   basePath?: string; // override base path

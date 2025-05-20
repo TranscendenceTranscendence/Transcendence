@@ -20,9 +20,7 @@ export default function Login() {
             asChild
             size="lg"
           >
-            <a href="https://localhost:3000/auth/42/login">
-              Login with 42.intra
-            </a>
+            <a href="https://f1r3s12:3000/auth/42/login">Login with 42.intra</a>
           </Button>
         </CardContent>
       </Card>

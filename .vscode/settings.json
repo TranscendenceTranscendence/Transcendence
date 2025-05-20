@@ -2,7 +2,7 @@
     "sqltools.connections": [
         {
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "f1r3s12",
             "port": 5432,
             "askForPassword": true,
             "driver": "PostgreSQL",

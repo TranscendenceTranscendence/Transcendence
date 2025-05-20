@@ -2,7 +2,7 @@
   "name": "transcendence",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000",
+  "proxy": "http://f1r3s12:3000",
   "dependencies": {
     "@fontsource/inter": "^5.1.0",
     "@hookform/resolvers": "^3.10.0",

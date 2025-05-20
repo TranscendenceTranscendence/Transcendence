@@ -49,7 +49,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
-    const socketConnection = io("wss://localhost:3000/chat", {
+    const socketConnection = io("wss://f1r3s12:3000/chat", {
       transports: ["websocket"],
       auth: { token, roomId: chatRoomId }, // Include roomId in the auth payload
     });
@@ -61,17 +61,27 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     // Handle incoming messages
     socketConnection.on("message", (data: ChatMessage) => {
       setChatRooms((prev) => {
-        const chatRoom = prev[data.chatRoomId] || {
+        const chatRoom: {
+          messages: ChatMessage[];
+          events: ChatEvent[];
+          participants: ChatParticipant[];
+          chatRoomType: ChatRoomChatRoomTypeEnum;
+        } = prev[data.chatRoomId] || {
           messages: [],
           events: [],
           participants: [],
           chatRoomType: ChatRoomChatRoomTypeEnum.Public,
         };
+
+        const messages = [...chatRoom.messages, data].filter(
+          (message) => user?.blockedUsers?.indexOf(message.userId) === -1,
+        );
+
         return {
           ...prev,
           [data.chatRoomId]: {
             ...chatRoom,
-            messages: [...chatRoom.messages, data],
+            messages,
           },
         };
       });
@@ -153,12 +163,21 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const { chatRoom } = await api.ChatRooms.chatRoomsControllerFindOne({
       id: newChatRoomId,
     });
+    if (!chatRoom) {
+      console.error("Chat room not found");
+      return;
+    }
     const { data: messages } =
       await api.ChatMessages.chatMessagesControllerFind({
         chatRoomId: newChatRoomId,
         blockedUsers: user?.blockedUsers,
       });
-    const { chatParticipants } = chatRoom;
+    const { chatParticipants = [] } = chatRoom;
+
+    if (chatParticipants.length === 0) {
+      console.error("No participants found in the chat room");
+      return;
+    }
 
     setChatRooms((prev) => ({
       ...prev,
