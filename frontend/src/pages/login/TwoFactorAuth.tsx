@@ -45,7 +45,7 @@ const TwoFactorAuthForm = () => {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       const response = await axios.post(
-        "https://localhost:3000/2fa/authenticate",
+        "https://f1r3s12:3000/2fa/authenticate",
         { twoFactorAuthenticationCode: data.pin },
         {
           headers: {

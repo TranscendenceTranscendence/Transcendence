@@ -14,7 +14,7 @@
 				"name": "transcendence",
 				"driver": "postgres",
 				"connectionType": "host",
-				"host": "localhost",
+				"host": "f1r3s12",
 				"port": 5432,
 				"ssl": false,
 				"username": "user",

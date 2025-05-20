@@ -32,7 +32,6 @@ const EditChatRoomPassword = ({ id }: { id: number }) => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("password", password);
     editPassword();
     setPassword("");
   };
@@ -40,6 +39,7 @@ const EditChatRoomPassword = ({ id }: { id: number }) => {
   const removePassword = async () => {
     setPassword("");
     editPassword();
+    console.log("Password removed");
   };
   return (
     <div>
@@ -73,10 +73,10 @@ export const EditChatRoomPasswordDialog = ({ id }: { id: number }) => {
         <KeyRound className="w-5 h-5" />
       </DialogTrigger>
       <div className="content-container">
-        <DialogTitle>Change password</DialogTitle>
+        <DialogTitle></DialogTitle>
         <DialogContent className="dialog-content" aria-describedby={undefined}>
           <DialogDescription>
-            Please enter a name for your new chatroom.
+            Please enter a new password for the chat room.
           </DialogDescription>
           <EditChatRoomPassword id={id} />
         </DialogContent>

@@ -56,7 +56,6 @@ export const ChatRoomContainer = () => {
       joinChatRoom(newChatRoom.id);
     }
   };
-
   const handleChatRoomChange = (newChatRoom: ChatRoom) => {
     if (newChatRoom != null) {
       if (newChatRoom.chatParticipants.some((p) => p.userId === me?.user.id)) {
@@ -78,7 +77,7 @@ export const ChatRoomContainer = () => {
         chatRoomId: selectedChatRoom?.id,
       },
     });
-    if (response) {
+    if (response == 1) {
       return true;
     }
     return false;

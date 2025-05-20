@@ -41,7 +41,7 @@ const DisableTwoFactorAuth = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        "https://localhost:3000/2fa/turn-off",
+        "https://f1r3s12:3000/2fa/turn-off",
         {
           twoFactorAuthenticationCode: data.code,
         },

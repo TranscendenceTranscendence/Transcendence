@@ -30,5 +30,6 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     "react-hooks/exhaustive-deps": "off",
     "no-undef": "off",
+    "no-debugger": "off",
   },
 };

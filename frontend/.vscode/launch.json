@@ -8,7 +8,7 @@
         "name": "Chrome Debug",
         "type": "chrome",
         "request": "launch",
-        "url": "http://localhost:3001",
+        "url": "http://f1r3s12:3001",
         "webRoot": "${workspaceFolder}/frontend/src/components"
       }
     ]

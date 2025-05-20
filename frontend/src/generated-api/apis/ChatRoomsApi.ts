@@ -69,7 +69,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerCheckPasswordRaw(
     requestParameters: ChatRoomsControllerCheckPasswordRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<runtime.ApiResponse<boolean>> {
+  ): Promise<runtime.ApiResponse<number>> {
     if (requestParameters["checkPasswordDto"] == null) {
       throw new runtime.RequiredError(
         "checkPasswordDto",
@@ -95,7 +95,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
     );
 
     if (this.isJsonMime(response.headers.get("content-type"))) {
-      return new runtime.JSONApiResponse<boolean>(response);
+      return new runtime.JSONApiResponse<number>(response);
     } else {
       return new runtime.TextApiResponse(response) as any;
     }
@@ -107,7 +107,7 @@ export class ChatRoomsApi extends runtime.BaseAPI {
   async chatRoomsControllerCheckPassword(
     requestParameters: ChatRoomsControllerCheckPasswordRequest,
     initOverrides?: RequestInit | runtime.InitOverrideFunction,
-  ): Promise<boolean> {
+  ): Promise<number> {
     const response = await this.chatRoomsControllerCheckPasswordRaw(
       requestParameters,
       initOverrides,

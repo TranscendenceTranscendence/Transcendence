@@ -80,7 +80,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
-    const socketConnection = io("wss://localhost:3000/users", {
+    const socketConnection = io("wss://f1r3s12:3000/users", {
       reconnectionAttempts: 5,
       transports: ["websocket"],
       auth: { token },

@@ -6,6 +6,6 @@ export class HttpExceptionFilter {
     const ctx = host.switchToHttp();
     const response: any = ctx.getResponse();
 
-    response.redirect('https://localhost:3000');
+    response.redirect('https://f1r3s12:3000');
   }
 }

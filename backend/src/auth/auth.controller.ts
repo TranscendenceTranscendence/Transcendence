@@ -94,10 +94,10 @@ export class AuthController {
 
     if (redirectUrl) {
       req.res.redirect(
-        `http://localhost:3001?access_token=${accessToken}&redirect=${redirectUrl}`,
+        `http://f1r3s12:3001?access_token=${accessToken}&redirect=${redirectUrl}`,
       );
     } else {
-      req.res.redirect(`http://localhost:3001?access_token=${accessToken}`);
+      req.res.redirect(`http://f1r3s12:3001?access_token=${accessToken}`);
     }
     return;
   }

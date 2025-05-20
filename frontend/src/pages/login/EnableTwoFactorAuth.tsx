@@ -40,15 +40,12 @@ const TwoFactorAuth = () => {
   useEffect(() => {
     const generateQRCode = async () => {
       try {
-        const response = await axios.get(
-          "https://localhost:3000/2fa/generate",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-            responseType: "blob",
+        const response = await axios.get("https://f1r3s12:3000/2fa/generate", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        );
+          responseType: "blob",
+        });
 
         const reader = new FileReader();
         reader.onload = () => {
@@ -65,7 +62,7 @@ const TwoFactorAuth = () => {
   const onSubmit = async (data: { code: string }) => {
     try {
       const response = await axios.post(
-        "https://localhost:3000/2fa/turn-on",
+        "https://f1r3s12:3000/2fa/turn-on",
         {
           twoFactorAuthenticationCode: data.code,
         },

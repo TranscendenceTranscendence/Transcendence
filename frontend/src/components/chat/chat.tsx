@@ -323,7 +323,14 @@ const Chat = () => {
         />
       </CardContent>
       <CardFooter className="space-x-2 py-3">
+<<<<<<< HEAD
         {localParticipant && new Date() < localParticipant.bannedUntil ? (
+=======
+        {localParticipant &&
+        localParticipant.isMuted &&
+        localParticipant.bannedUntil &&
+        new Date(localParticipant.bannedUntil) > new Date() ? (
+>>>>>>> ce66cce7631306e532807556adae5a09152368b7
           <div>
             <p className="text-gray-500 text-sm">
               You are currently muted you can send messages again at
