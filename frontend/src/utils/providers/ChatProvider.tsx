@@ -117,13 +117,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
             events: [
               ...chatRoom.events,
               {
-                message: `${data.participant.user.nickname} left the chat`,
+                message: `User left the chat`,
                 participant: data.participant,
                 sentTime: new Date(),
               },
             ],
-            participants: chatRoom.participants.filter(
-              (participant) => participant.userId !== data.participant.userId,
+            participants: chatRoom.participants?.filter(
+              (participant) =>
+                participant?.userId !== data?.participant?.userId,
             ),
           },
         };

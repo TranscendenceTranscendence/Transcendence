@@ -10,6 +10,5 @@
             "database": "postgres",
             "username": "user"
         }
-    ],
-    "dbcode.connections": []
+    ]
 }
