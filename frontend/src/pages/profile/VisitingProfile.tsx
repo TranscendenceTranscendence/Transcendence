@@ -133,9 +133,6 @@ export default function VisitingProfile() {
                               !chatRoom.chatParticipants[1] ||
                               chatRoom.chatRoomType !== "Dm"
                             ) {
-                              console.error(
-                                "Invalid chat room participants or type",
-                              );
                               return false;
                             }
                             const isMatch =
