@@ -6,11 +6,6 @@ import { User, Invite } from "../../../generated-api";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "../../../components/ui/badge";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../components/ui/avatar";
 import AvatarDisplay from "@/pages/updateUser/components/AvatarDisplay";
 
 const InviteBox: React.FC = () => {
