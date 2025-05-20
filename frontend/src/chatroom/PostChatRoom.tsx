@@ -56,6 +56,7 @@ export const PostChatRoom = ({ userId, setIsOpen }: PostChatRoomProps) => {
     await addChatRoom();
     setName("");
     setPassword("");
+    location.reload();
   };
 
   return (

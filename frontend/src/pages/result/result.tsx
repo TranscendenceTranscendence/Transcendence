@@ -49,14 +49,14 @@ export function Result() {
           }, 1000);
         } else {
           console.error("Invalid game result structure:", parsedResult);
-          setTimeout(() => navigate("/queue"), 2000);
+          setTimeout(() => navigate("/"), 2000);
         }
       } catch (e) {
         console.error("Failed to parse game result:", e);
-        setTimeout(() => navigate("/queue"), 2000);
+        setTimeout(() => navigate("/"), 2000);
       }
     } else {
-      setTimeout(() => navigate("/queue"), 2000);
+      setTimeout(() => navigate("/"), 2000);
     }
     setLoading(false);
   }, [navigate]);
