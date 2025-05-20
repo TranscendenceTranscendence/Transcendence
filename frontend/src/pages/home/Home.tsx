@@ -17,6 +17,7 @@ import { DialogPostChatRoom } from "@/chatroom/DialogPostChatroom";
 import SearchUsersBox from "./components/SearchUsersBox";
 import { FriendRequestsBox } from "./components/FriendRequestsBox";
 import Statistics from "../statistics/Statistics";
+import InviteBox from "./components/InviteBox";
 
 export default function Page() {
   const navigate = useNavigate();
@@ -67,38 +68,51 @@ export default function Page() {
           <div className="col-span-full">
             <SearchUsersBox />
           </div>
-          <div className="flex flex-col col-span-1 gap-3">
+
+          {/* First column: Friends + Friend Requests */}
+          <div className="col-span-1 flex flex-col gap-3 h-full">
             <FriendsBox friends={friends} />
             <FriendRequestsBox />
           </div>
-          <div className="col-span-1 flex flex-col gap-4">
+
+          {/* Second column: Play Button + Chat Rooms */}
+          <div className="col-span-1 flex flex-col gap-4 h-full">
             <Button
               onClick={handlePlayClick}
               className="p-16 font-bold text-5xl rounded-xl w-full hover:bg-primary/90"
             >
               P L A Y
             </Button>
-            <div className="rounded-xl bg-gray-200">
-              <div className="flex items-center flex-col">
+            <div className="rounded-xl bg-gray-200 flex-grow">
+              <div className="flex items-center flex-col h-full">
                 <div className="flex flex-row justify-between items-center gap-2 p-4 w-full">
                   <p className="font-bold text-3xl">CHAT ROOMS</p>
                   <div>
                     <DialogPostChatRoom userId={userId} />
                   </div>
                 </div>
-                <div className="w-full">
+                <div className="w-full flex-grow">
                   <ChatRoomContainer />
                 </div>
               </div>
             </div>
           </div>
-          <div className=" col-span-1 w-full">
-            <AchievementBox achievements={achievements} />
+
+          {/* Third column: Achievements + Invite Box */}
+          <div className="col-span-1 flex flex-col gap-4 h-full">
+            <div className="flex-1">
+              <AchievementBox achievements={achievements} />
+            </div>
+            <div className="flex-1">
+              <InviteBox />
+            </div>
           </div>
+
           <div className="col-span-full">
             <Statistics />
           </div>
         </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
       </SidebarInset>
     </SidebarProvider>
   );

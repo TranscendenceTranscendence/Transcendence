@@ -8,32 +8,32 @@ interface AchievementBoxProps {
 
 export const AchievementBox = ({ achievements }: AchievementBoxProps) => {
   return (
-    <div className="row-span-3 w-full">
-      <Card>
-        <CardHeader>
+    <Card className="rounded-xl h-full">
+      <CardHeader className="pb-2">
+        <div className="flex flex-row justify-between items-center gap-2">
           <p className="font-bold text-3xl">ACHIEVEMENTS</p>
-        </CardHeader>
-        <CardContent>
-          {achievements.length === 0 && (
-            <p className="p-4 text-lg text-gray-600">No achievements yet :(</p>
-          )}
-          <div className="grid grid-cols-1 gap-4">
-            {achievements.map((achievement) => (
-              <div
-                key={achievement.userId + achievement.type}
-                className="flex items-center gap-4 px-4 py-1 rounded-lg"
-              >
-                <div>
-                  <p className="font-bold text-xl">{achievement.type}</p>
-                  <p className="text-lg text-gray-600">
-                    {formatDate(achievement.createdAt)}
-                  </p>
-                </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {achievements.length === 0 && (
+          <p className="text-sm text-gray-600">No achievements yet :(</p>
+        )}
+        <div className="grid grid-cols-1 gap-2 max-h-[264px] overflow-y-auto">
+          {achievements.map((achievement) => (
+            <div
+              key={achievement.userId + achievement.type}
+              className="flex items-center gap-4 px-3 py-2 rounded-lg bg-white/50"
+            >
+              <div>
+                <p className="font-bold text-sm">{achievement.type}</p>
+                <p className="text-xs text-gray-600">
+                  {formatDate(achievement.createdAt)}
+                </p>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
