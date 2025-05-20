@@ -258,7 +258,7 @@ export default function Pong() {
 
         if (!game || !game.roomIdentifier) {
           setError("No active game found");
-          setTimeout(() => navigate("/queue"), 1300);
+          setTimeout(() => navigate("/"), 1300);
           return;
         }
 
