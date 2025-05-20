@@ -126,7 +126,7 @@ export class ChatRoomsService {
       where: { id },
       relations: ['chatParticipants', 'chatParticipants.user'],
     });
-    
+
     if (!chatRoomData) throw new HttpException('ChatRoom Not Found', 404);
     return chatRoomData;
   }
